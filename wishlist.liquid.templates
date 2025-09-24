@@ -1,0 +1,520 @@
+{% comment %} <div class="wt-product">
+  <div class="section">
+    <h2 class="text-center">Wishlist</h2>
+    <div id="wt-wrapper" style="overflow-x:auto;">
+      <table id="wt-table" border="1" cellspacing="0" cellpadding="10">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th></th>
+            <th>Price</th>
+            <th>Stock Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="wt-items">
+          <!-- Wishlist items go here -->
+          <!-- by Rupz Web youtube.com/@rupz_web -->
+        </tbody>
+      </table>
+    </div>
+    <div id="wt-count" style="display:none;"></div>
+  </div>
+</div>
+
+<script>
+  const STOREFRONT_TOKEN = 'e898d35c47a170bc6ed17f9cffc7e3d1'; // Replace this with your token 🔐
+  const STORE_URL = `${window.location.protocol}//${window.location.host}`;
+
+  async function fetchProductByHandle(handle) {
+    const query = `
+      query {
+        product(handle: "${handle}") {
+          title
+          handle
+          variants(first: 50) {
+            edges {
+              node {
+                id
+                title
+                availableForSale
+                price {
+                  amount
+                }
+                image {
+                  src
+                }
+              }
+            }
+          }
+        }
+      }`;
+
+    const res = await fetch(`${STORE_URL}/api/2023-10/graphql.json`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': STOREFRONT_TOKEN,
+      },
+      body: JSON.stringify({ query }),
+    });
+
+    const json = await res.json();
+    return json.data.product;
+  }
+
+  async function displayWishlist() {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const wishlistContainer = document.getElementById('wt-items');
+    wishlistContainer.innerHTML = '';
+
+    if (wishlist.length === 0) {
+      wishlistContainer.innerHTML = `
+        <tr>
+          <td colspan="5" class="empty-wt">Your wishlist is currently empty.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    for (const handle of wishlist) {
+      const product = await fetchProductByHandle(handle);
+      if (!product) continue;
+
+      const variants = product.variants.edges.map(edge => edge.node);
+      const firstVariant = variants[0];
+      const imageUrl = firstVariant.image?.src || 'https://via.placeholder.com/100';
+      const price = firstVariant.price?.amount || 'N/A';
+      const inStock = firstVariant.availableForSale ? 'In Stock' : 'Out of Stock';
+
+      let variantDropdown = '';
+      if (variants.length > 1) {
+        variantDropdown = `
+          <select class="variant-selector" name="wt-select" data-handle="${product.handle}" onchange="handleVariantChange(this)">
+            ${variants.map(v => `
+              <option value="${v.id}" data-available="${v.availableForSale}" data-price="${v.price.amount}">
+                ${v.title}
+              </option>
+            `).join('')}
+          </select>
+        `;
+      }
+
+      const row = document.createElement('tr');
+      row.id = `wishlist-row-${product.handle}`;
+      row.innerHTML = `
+        <td>
+          <a href="${STORE_URL}/products/${product.handle}">
+            <img src="${imageUrl}" alt="${product.title}" width="80" height="80" />
+          </a>
+        </td>
+        <td>
+          <a href="${STORE_URL}/products/${product.handle}">
+            <span>${product.title}</span>
+          </a>
+          ${variantDropdown}
+        </td>
+        <td class="price-cell">$${price}</td>
+        <td class="stock-cell">${inStock}</td>
+        <td>
+          <button class="wa-btn" onclick="addToCartWishlistProduct('${firstVariant.id}', this)">ADD TO CART</button>
+          <button class="w-remove" onclick="removeFromWishlist('${product.handle}')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="icon icon-remove" viewBox="0 0 16 16">
+              <path fill="currentColor" d="M14 3h-3.53a3.07 3.07 0 0 0-.6-1.65C9.44.82 8.8.5 8 .5s-1.44.32-1.87.85A3.06 3.06 0 0 0 5.53 3H2a.5.5 0 0 0 0 1h1.25v10c0 .28.22.5.5.5h8.5a.5.5 0 0 0 .5-.5V4H14a.5.5 0 0 0 0-1M6.91 1.98c.23-.29.58-.48 1.09-.48s.85.19 1.09.48c.2.24.3.6.36 1.02h-2.9c.05-.42.17-.78.36-1.02m4.84 11.52h-7.5V4h7.5z"/>
+              <path fill="currentColor" d="M6.55 5.25a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 1 0v-6a.5.5 0 0 0-.5-.5m2.9 0a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 1 0v-6a.5.5 0 0 0-.5-.5"/>
+            </svg> Remove
+          </button>
+        </td>
+      `;
+      wishlistContainer.appendChild(row);
+    }
+  }
+
+  function handleVariantChange(selectElement) {
+    const row = selectElement.closest('tr');
+    const priceCell = row.querySelector('.price-cell');
+    const stockCell = row.querySelector('.stock-cell');
+    const addToCartBtn = row.querySelector('.wa-btn');
+
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    const newVariantId = selectedOption.value;
+    const available = selectedOption.getAttribute('data-available') === 'true';
+    const price = selectedOption.getAttribute('data-price');
+
+    priceCell.textContent = `$${price}`;
+    stockCell.textContent = available ? 'In Stock' : 'Out of Stock';
+    addToCartBtn.setAttribute('onclick', `addToCartWishlistProduct('${newVariantId}', this)`);
+  }
+
+  function updateWishlistCount() {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const countEl = document.getElementById('wt-count');
+
+    if (wishlist.length > 0) {
+      countEl.textContent = `${wishlist.length}`;
+      countEl.style.display = 'flex';
+    } else {
+      countEl.textContent = '';
+      countEl.style.display = 'none';
+    }
+  }
+
+  function removeFromWishlist(handle) {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    wishlist = wishlist.filter(h => h !== handle);
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+
+    const row = document.getElementById(`wishlist-row-${handle}`);
+    if (row) row.remove();
+
+    if (wishlist.length === 0) {
+      const wishlistContainer = document.getElementById('wt-items');
+      wishlistContainer.innerHTML = `
+        <tr>
+          <td colspan="5" class="empty-wt">Your wishlist is currently empty.</td>
+        </tr>
+      `;
+    }
+
+    updateWishlistCount();
+  }
+
+  function addToCartWishlistProduct(variantId, button) {
+    const numericVariantId = variantId.match(/\d+$/)?.[0];
+
+    const data = {
+      id: parseInt(numericVariantId),
+      quantity: 1
+    };
+
+    fetch(`${STORE_URL}/cart/add.js`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(error => {
+          throw new Error(error.message || 'Unknown error');
+        });
+      }
+      return res.json();
+    })
+    .then(response => {
+      showSuccessNotification('Added to cart!');
+      refreshCartBubble();
+    })
+    .catch(error => {
+      console.error('Add to cart error:', error);
+    });
+  }
+
+  function showSuccessNotification(message) {
+    const existing = document.getElementById("success-notification");
+    if (existing) existing.remove();
+		/*! ⓒ Rupz Web - youtube.com/@rupz_web - Do not remove */
+    const notification = document.createElement("div");
+    notification.id = "success-notification";
+    notification.className = "success-notification";
+    notification.innerHTML = `
+      <div class="success-msg">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="icon icon-checkmark" viewBox="0 0 12 9">
+          <path fill="currentColor" fill-rule="evenodd" d="M11.35.643a.5.5 0 0 1 .006.707l-6.77 6.886a.5.5 0 0 1-.719-.006L.638 4.845a.5.5 0 1 1 .724-.69l2.872 3.011 6.41-6.517a.5.5 0 0 1 .707-.006z" clip-rule="evenodd"/>
+        </svg>
+        <span> ${message}</span>
+      </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      setTimeout(() => notification.remove(), 1000);
+    }, 2000);
+  }
+
+  function refreshCartBubble() {
+  fetch(location.href)
+    .then(res => res.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      const newCartIcon = doc.querySelector('[data-testid="cart-icon"]');
+      const currentCartIcon = document.querySelector('[data-testid="cart-icon"]');
+
+      if (newCartIcon && currentCartIcon) {
+        currentCartIcon.innerHTML = newCartIcon.innerHTML;
+      }
+
+      const itemCount = doc.querySelector('[data-testid="cart-bubble"]')?.textContent?.trim();
+      if (itemCount && parseInt(itemCount) > 0) {
+        currentCartIcon?.classList.add('header-actions__cart-icon--has-cart');
+      }
+    });
+  }
+
+  displayWishlist();
+</script> {% endcomment %}
+<div class="wt-product">
+  <div class="section">
+    <h2 class="text-center">Wishlist</h2>
+    <div id="wt-wrapper" style="overflow-x:auto;">
+      <table id="wt-table" border="1" cellspacing="0" cellpadding="10">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th></th>
+            <th>Price</th>
+            <th>Stock Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="wt-items">
+          <!-- Wishlist items go here -->
+          <!-- by Rupz Web youtube.com/@rupz_web -->
+        </tbody>
+      </table>
+    </div>
+    <div id="wt-count" style="display:none;"></div>
+  </div>
+</div>
+
+<script>
+  const STOREFRONT_TOKEN = 'e898d35c47a170bc6ed17f9cffc7e3d1'; // Replace this with your token 🔐
+  const STORE_URL = `${window.location.protocol}//${window.location.host}`;
+
+  async function fetchProductByHandle(handle) {
+    const query = `
+      query {
+        product(handle: "${handle}") {
+          title
+          handle
+          variants(first: 50) {
+            edges {
+              node {
+                id
+                title
+                availableForSale
+                price {
+                  amount
+                }
+                image {
+                  src
+                }
+              }
+            }
+          }
+        }
+      }`;
+
+    const res = await fetch(`${STORE_URL}/api/2023-10/graphql.json`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': STOREFRONT_TOKEN,
+      },
+      body: JSON.stringify({ query }),
+    });
+
+    const json = await res.json();
+    return json.data.product;
+  }
+
+  async function displayWishlist() {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const wishlistContainer = document.getElementById('wt-items');
+    wishlistContainer.innerHTML = '';
+
+    if (wishlist.length === 0) {
+      wishlistContainer.innerHTML = `
+        <tr>
+          <td colspan="5" class="empty-wt">Your wishlist is currently empty.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    for (const handle of wishlist) {
+      const product = await fetchProductByHandle(handle);
+      if (!product) continue;
+
+      const variants = product.variants.edges.map(edge => edge.node);
+      const firstVariant = variants[0];
+      const imageUrl = firstVariant.image?.src || 'https://via.placeholder.com/100';
+      const price = firstVariant.price?.amount || 'N/A';
+      const inStock = firstVariant.availableForSale ? 'In Stock' : 'Out of Stock';
+
+      let variantDropdown = '';
+      if (variants.length > 1) {
+        variantDropdown = `
+          <select class="variant-selector" name="wt-select" data-handle="${product.handle}" onchange="handleVariantChange(this)">
+            ${variants.map(v => `
+              <option value="${v.id}" data-available="${v.availableForSale}" data-price="${v.price.amount}">
+                ${v.title}
+              </option>
+            `).join('')}
+          </select>
+        `;
+      }
+
+      const row = document.createElement('tr');
+      row.id = `wishlist-row-${product.handle}`;
+      row.innerHTML = `
+        <td>
+          <a href="${STORE_URL}/products/${product.handle}">
+            <img src="${imageUrl}" alt="${product.title}" width="80" height="80" />
+          </a>
+        </td>
+        <td>
+          <a href="${STORE_URL}/products/${product.handle}">
+            <span>${product.title}</span>
+          </a>
+          ${variantDropdown}
+        </td>
+        <td class="price-cell">$${price}</td>
+        <td class="stock-cell">${inStock}</td>
+        <td>
+          <button class="wa-btn" onclick="addToCartWishlistProduct('${firstVariant.id}', this)">ADD TO CART</button>
+          <button class="w-remove" onclick="removeFromWishlist('${product.handle}')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="icon icon-remove" viewBox="0 0 16 16">
+              <path fill="currentColor" d="M14 3h-3.53a3.07 3.07 0 0 0-.6-1.65C9.44.82 8.8.5 8 .5s-1.44.32-1.87.85A3.06 3.06 0 0 0 5.53 3H2a.5.5 0 0 0 0 1h1.25v10c0 .28.22.5.5.5h8.5a.5.5 0 0 0 .5-.5V4H14a.5.5 0 0 0 0-1M6.91 1.98c.23-.29.58-.48 1.09-.48s.85.19 1.09.48c.2.24.3.6.36 1.02h-2.9c.05-.42.17-.78.36-1.02m4.84 11.52h-7.5V4h7.5z"/>
+              <path fill="currentColor" d="M6.55 5.25a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 1 0v-6a.5.5 0 0 0-.5-.5m2.9 0a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 1 0v-6a.5.5 0 0 0-.5-.5"/>
+            </svg> Remove
+          </button>
+        </td>
+      `;
+      wishlistContainer.appendChild(row);
+    }
+  }
+
+  function handleVariantChange(selectElement) {
+    const row = selectElement.closest('tr');
+    const priceCell = row.querySelector('.price-cell');
+    const stockCell = row.querySelector('.stock-cell');
+    const addToCartBtn = row.querySelector('.wa-btn');
+
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    const newVariantId = selectedOption.value;
+    const available = selectedOption.getAttribute('data-available') === 'true';
+    const price = selectedOption.getAttribute('data-price');
+
+    priceCell.textContent = `$${price}`;
+    stockCell.textContent = available ? 'In Stock' : 'Out of Stock';
+    addToCartBtn.setAttribute('onclick', `addToCartWishlistProduct('${newVariantId}', this)`);
+  }
+
+  function updateWishlistCount() {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const countEl = document.getElementById('wt-count');
+
+    if (wishlist.length > 0) {
+      countEl.textContent = `${wishlist.length}`;
+      countEl.style.display = 'flex';
+    } else {
+      countEl.textContent = '';
+      countEl.style.display = 'none';
+    }
+  }
+
+  function removeFromWishlist(handle) {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    wishlist = wishlist.filter(h => h !== handle);
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+
+    const row = document.getElementById(`wishlist-row-${handle}`);
+    if (row) row.remove();
+
+    if (wishlist.length === 0) {
+      const wishlistContainer = document.getElementById('wt-items');
+      wishlistContainer.innerHTML = `
+        <tr>
+          <td colspan="5" class="empty-wt">Your wishlist is currently empty.</td>
+        </tr>
+      `;
+    }
+
+    updateWishlistCount();
+  }
+
+  function addToCartWishlistProduct(variantId, button) {
+    const numericVariantId = variantId.match(/\d+$/)?.[0];
+
+    const data = {
+      id: parseInt(numericVariantId),
+      quantity: 1
+    };
+
+    fetch(`${STORE_URL}/cart/add.js`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(error => {
+          throw new Error(error.message || 'Unknown error');
+        });
+      }
+      return res.json();
+    })
+    .then(response => {
+      showSuccessNotification('Added to cart!');
+      refreshCartBubble();
+    })
+    .catch(error => {
+      console.error('Add to cart error:', error);
+    });
+  }
+
+  function showSuccessNotification(message) {
+    const existing = document.getElementById("success-notification");
+    if (existing) existing.remove();
+		/*! ⓒ Rupz Web - youtube.com/@rupz_web - Do not remove */
+    const notification = document.createElement("div");
+    notification.id = "success-notification";
+    notification.className = "success-notification";
+    notification.innerHTML = `
+      <div class="success-msg">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="icon icon-checkmark" viewBox="0 0 12 9">
+          <path fill="currentColor" fill-rule="evenodd" d="M11.35.643a.5.5 0 0 1 .006.707l-6.77 6.886a.5.5 0 0 1-.719-.006L.638 4.845a.5.5 0 1 1 .724-.69l2.872 3.011 6.41-6.517a.5.5 0 0 1 .707-.006z" clip-rule="evenodd"/>
+        </svg>
+        <span> ${message}</span>
+      </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      setTimeout(() => notification.remove(), 1000);
+    }, 2000);
+  }
+
+  function refreshCartBubble() {
+  fetch(location.href)
+    .then(res => res.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      const newCartIcon = doc.querySelector('[data-testid="cart-icon"]');
+      const currentCartIcon = document.querySelector('[data-testid="cart-icon"]');
+
+      if (newCartIcon && currentCartIcon) {
+        currentCartIcon.innerHTML = newCartIcon.innerHTML;
+      }
+
+      const itemCount = doc.querySelector('[data-testid="cart-bubble"]')?.textContent?.trim();
+      if (itemCount && parseInt(itemCount) > 0) {
+        currentCartIcon?.classList.add('header-actions__cart-icon--has-cart');
+      }
+    });
+  }
+
+  displayWishlist();
+</script>

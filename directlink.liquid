@@ -1,0 +1,299 @@
+{% comment %}
+  Section: Shop by Price
+{% endcomment %}
+
+<div class="shop-price-section">
+  <div class="shop-container">
+    <div class="shop-head">
+      <div class="shop-heading">
+        <h2>{{ section.settings.heading }}</h2>
+      </div>
+      <div class="shop-subheading">
+        <p>{{ section.settings.subheading }}</p>
+      </div>
+    </div>
+
+    <div class="shop-catelog">
+      <div class="shop-wrapper">
+        {% for block in section.blocks %}
+          <div class="shop-item">
+            <a class="item-anchor" href="{{ block.settings.link }}">
+              <div class="item-img">
+                {% if block.settings.image != blank %}
+                  <img src="{{ block.settings.image | image_url: width: 400 }}" alt="{{ block.settings.title | escape }}" loading="lazy" width="" height="">
+                {% endif %}
+              </div>
+              <div class="item-title">
+                <h3>{{ block.settings.title }}</h3>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.shop-price-section {
+  padding: 50px 20px;
+  background: #fafafa;
+}
+
+.shop-price-section .shop-heading h2 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.shop-price-section .shop-subheading p {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 40px;
+  color: #555;
+}
+
+.shop-price-section .shop-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.shop-price-section .shop-item {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.shop-price-section .shop-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.shop-price-section .item-img img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.shop-price-section .item-title h3 {
+  padding: 15px;
+  font-size: 18px;
+  color: #222;
+}
+</style>
+
+{% schema %}
+{
+  "name": "Shop by Price",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by Price"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Sarees for every occasion — from everyday elegance to heirloom treasures"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "price_card",
+      "name": "Price Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Under ₹5k"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop by Price",
+      "category": "Custom Sections",
+      "blocks": [
+        { "type": "price_card" },
+        { "type": "price_card" },
+        { "type": "price_card" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+{% comment %} 
+
+{% schema %}
+{
+  "name": "Direct link",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Slide 1 Image"
+    },
+    {
+      "type": "url",
+      "id": "link_1",
+      "label": "Slide 1 Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button_1",
+      "label": "Show Slide 1 Button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_text_1",
+      "label": "Slide 1 Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Slide 2 Image"
+    },
+    {
+      "type": "url",
+      "id": "link_2",
+      "label": "Slide 2 Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button_2",
+      "label": "Show Slide 2 Button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_text_2",
+      "label": "Slide 2 Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "Slide 3 Image"
+    },
+    {
+      "type": "url",
+      "id": "link_3",
+      "label": "Slide 3 Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button_3",
+      "label": "Show Slide 3 Button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_text_3",
+      "label": "Slide 3 Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "select",
+      "id": "button_position_1",
+      "label": "Button Position (Slide 1)",
+      "options": [
+        { "value": "bottom-left", "label": "Bottom Left" },
+        { "value": "bottom-right", "label": "Bottom Right" },
+        { "value": "bottom-center", "label": "Bottom Center" },
+        { "value": "top-left", "label": "Top Left" },
+        { "value": "top-right", "label": "Top Right" },
+        { "value": "top-center", "label": "Top Center" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "bottom-left"
+    },
+    {
+      "type": "select",
+      "id": "button_position_2",
+      "label": "Button Position (Slide 2)",
+      "options": [
+        { "value": "bottom-left", "label": "Bottom Left" },
+        { "value": "bottom-right", "label": "Bottom Right" },
+        { "value": "bottom-center", "label": "Bottom Center" },
+        { "value": "top-left", "label": "Top Left" },
+        { "value": "top-right", "label": "Top Right" },
+        { "value": "top-center", "label": "Top Center" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "bottom-left"
+    },
+    {
+      "type": "select",
+      "id": "button_position_3",
+      "label": "Button Position (Slide 3)",
+      "options": [
+        { "value": "bottom-left", "label": "Bottom Left" },
+        { "value": "bottom-right", "label": "Bottom Right" },
+        { "value": "bottom-center", "label": "Bottom Center" },
+        { "value": "top-left", "label": "Top Left" },
+        { "value": "top-right", "label": "Top Right" },
+        { "value": "top-center", "label": "Top Center" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "bottom-left"
+    },
+    {
+      "type": "select",
+      "id": "slider_width",
+      "label": "Width",
+      "options": [
+        { "value": "page", "label": "Page Width" },
+        { "value": "full", "label": "Full Width" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "select",
+      "id": "pagination_style",
+      "label": "Pagination",
+      "options": [
+        { "value": "dots", "label": "Dots" },
+        { "value": "counter", "label": "Counter" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "dots"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Direct link"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}

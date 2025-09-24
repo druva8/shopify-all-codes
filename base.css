@@ -1,0 +1,291 @@
+button#checkout {
+background-color: #AD2D2D!important;
+color:#000000;
+}
+.shopify-payment-button .shopify-payment-button__button--unbranded {
+background:#AD2D2D  !important;
+color:rgb(244, 236, 236) !important;
+} 
+/* wishlist */
+.wishlist-link{
+  position: relative;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wishlist-link.header__icon{
+  --button-color: var(--color-foreground);
+}
+
+.wt-count-bubble{
+  position: absolute;
+  background-color: rgb(var(--color-button));
+  color: rgb(var(--color-button-text));
+  height: 1.2rem !important;
+  width: 1.2rem;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: .7rem;
+  bottom: 1.2rem;
+  left: 1.5rem;
+  line-height: calc(1 + .1 / var(--font-body-scale));
+  background: var(--color-primary-button-background);
+  color: var(--color-primary-button-text);
+}
+
+button.wt-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  margin-bottom: 0;
+  color: #000;
+  margin-top: 0;
+  padding-left: 0;
+}
+
+button.wt-button:hover svg{
+  stroke: black;
+}
+
+button.wt-button span svg{
+  margin-bottom: -3px;
+  margin-right: 2px;
+}
+
+product-card button.wt-button {
+  position: fixed;
+  top: 1rem;
+  right: 0.6rem;
+  z-index: 2;
+}
+
+.main-product-wt-btn{
+  margin-top: 1rem !important;
+}
+
+.main-product-wt-btn svg{
+  display: inline;
+}
+
+.main-product-wt-btn .wishlist-heart-blank{
+  fill: #000000;
+}
+
+.main-product-wt-btn .wishlist-heart-fill{
+  fill: #000000;
+}
+
+.wishlist-heart-fill{
+  display: none;
+  fill: #fff;
+}
+
+.wishlist-heart-blank{
+  fill: #ffffff;
+}
+
+.wt-button.active .wishlist-heart-fill {
+  display: inline;
+}
+
+.wt-button.active .wishlist-heart-blank {
+  display: none;
+}
+
+.wt-product {
+  margin-top: 40px;
+  margin-bottom: 70px;
+}
+
+.wt-product h1{
+  text-align: center;
+}
+
+table#wt-table {
+  width: 100%;
+  line-height: 1.4;
+  border: none !important;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.wt-product th, .wt-product td {
+  text-align: left;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: 1px solid #ebebeb !important;
+}
+
+.wt-product td {
+  color: #191919;
+  font-weight: 500;
+}
+
+.wt-product td a{
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #191919;
+  gap: 10px;
+}
+
+.wt-product td img{
+  border: 1px solid #00000017;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+.wt-product td select {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f0f0f0;
+  display: flex;
+  outline: none;
+  margin-top: 3px;
+  margin-bottom: 2px;
+  padding: 1px 2px;
+  min-width: 60px;
+  color: #000;
+  max-width: fit-content;
+}
+
+button.wa-btn {
+  outline: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 5px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  background: #000;
+  color: #fff;
+}
+
+button.wa-btn:hover{
+  opacity: 0.8;
+}
+
+button.wa-btn:disabled{
+  opacity: 0.4;
+}
+
+.w-remove{
+  background: none;
+  outline: none;
+  border: none;
+  color: #ff7878;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+}
+
+.wt-product th {
+  color: gray;
+  font-weight: 300;
+  text-transform: uppercase;
+  text-align: left;
+  letter-spacing: 1px;
+  font-size: 12px;
+}
+
+table#wt-table th:first-child{
+  width: 100px;
+}
+
+table#wt-table th:nth-child(2){
+  width: 40%;
+}
+
+table#wt-table th:last-child{
+  width: 22%;
+}
+
+.empty-wt{
+  text-align: center !important;
+  font-size: 1.5rem;
+  font-weight: bold !important;
+  grid-column: 1 / 5;
+}
+
+@media (max-width: 749px){
+  table#wt-table{
+    box-shadow: none !important;
+  }
+  table#wt-table thead th{
+    display: none;
+  }
+  table#wt-table thead th:first-child{
+    display: block;
+  }
+  table#wt-table tr{
+    display: grid;
+    grid-template-columns: 100px auto;
+    border-bottom: 1px solid #ebebeb !important;
+    padding: 16px 0;
+  }
+  table#wt-table td:first-child{
+    grid-row: 1/5;
+    padding-right: 12px !important;
+  }
+  table#wt-table td:nth-child(2){
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 15px;
+  }
+  table#wt-table td:nth-child(3){
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .wt-product td, .wt-product th {
+    border: none !Important;
+    padding: 0 !important;
+  }
+  .wt-product img {
+    width: 100%;
+    height: auto;
+  }
+  .wt-product td a {
+    gap: 5px;
+  }
+  button.wa-btn{
+    margin-bottom: unset;
+    margin-top: 3px;
+  }
+}
+
+.success-notification {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  z-index: 9999;
+  background: #18ba2a;
+  color: #fff;
+  box-shadow: 0 0 10px #00340626;
+  border: 1px solid #18ba2a26;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.success-msg{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.success-msg svg{
+  width: 14px;
+}
