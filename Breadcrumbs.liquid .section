@@ -1,0 +1,172 @@
+{% comment %}
+  File: sections/breadcrumbs.liquid
+{% endcomment %}
+
+<div id="shopify-section-{{ section.id }}" class="shopify-section">
+  <style>
+    @media only screen and (max-width:787px){
+      .breadcrumbs {
+        margin: 12px 0px !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+      }
+    }
+
+    .breadcrumbs {
+      margin: 15px 0px;
+      padding-left: 50px;
+      padding-right: 50px;
+      min-height: 24px;
+    }
+
+    .breadcrumbs__list {
+      font-size: 1.2rem;
+      color: #434343;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .breadcrumbs__item {
+      display: inline-block;
+    }
+
+    .breadcrumbs .breadcrumbs__item:not(:last-child):after {
+      content: '|';
+      font-family: initial;
+      line-height: 13px;
+      vertical-align: middle;
+      margin: 0 10px;
+    }
+
+    .breadcrumbs a:visited {
+      color: #434343;
+      text-decoration: none;
+    }
+
+    .breadcrumbs__link {
+      text-decoration: none;
+      color: #434343;
+      font-size: 14px;
+    }
+
+    .breadcrumbs__link[aria-current="page"] {
+      color: inherit;
+      font-weight: normal;
+      text-decoration: none;
+      font-family: "Assistant-SemiBold";
+    }
+
+    .breadcrumbs__link[aria-current="page"]:hover,
+    .breadcrumbs__link[aria-current="page"]:focus {
+      text-decoration: underline;
+    }
+
+    @media screen and (min-width:1440px){
+      .breadcrumbs {
+        padding-left: 100px;
+        padding-right: 100px;
+      }
+    }
+  </style>
+
+  <nav class="breadcrumbs" role="navigation" aria-label="breadcrumbs">
+    <ol class="breadcrumbs__list">
+      <li class="breadcrumbs__item">
+        <a class="breadcrumbs__link" href="/">Home</a>
+      </li>
+
+      {% if template.name == 'collection' %}
+        <li class="breadcrumbs__item">
+          <a class="breadcrumbs__link" href="{{ collection.url }}" aria-current="page">
+            {{ collection.title }}
+          </a>
+        </li>
+      {% elsif template.name == 'product' %}
+        {% if collection %}
+          <li class="breadcrumbs__item">
+            <a class="breadcrumbs__link" href="{{ collection.url }}">
+              {{ collection.title }}
+            </a>
+          </li>
+        {% endif %}
+        <li class="breadcrumbs__item">
+          <a class="breadcrumbs__link" href="{{ product.url }}" aria-current="page">
+            {{ product.title }}
+          </a>
+        </li>
+      {% elsif template.name == 'page' %}
+        <li class="breadcrumbs__item">
+          <a class="breadcrumbs__link" href="{{ page.url }}" aria-current="page">
+            {{ page.title }}
+          </a>
+        </li>
+      {% endif %}
+    </ol>
+  </nav>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@id": "{{ shop.url }}",
+            "name": "Homepage"
+          }
+        }
+        {% if template.name == 'collection' %}
+        ,{
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@id": "{{ shop.url }}{{ collection.url }}",
+            "name": "{{ collection.title }}"
+          }
+        }
+        {% elsif template.name == 'product' %}
+        ,{
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@id": "{{ shop.url }}{{ collection.url }}",
+            "name": "{{ collection.title }}"
+          }
+        },{
+          "@type": "ListItem",
+          "position": 3,
+          "item": {
+            "@id": "{{ shop.url }}{{ product.url }}",
+            "name": "{{ product.title }}"
+          }
+        }
+        {% elsif template.name == 'page' %}
+        ,{
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@id": "{{ shop.url }}{{ page.url }}",
+            "name": "{{ page.title }}"
+          }
+        }
+        {% endif %}
+      ]
+    }
+  </script>
+</div>
+
+{% schema %}
+{
+  "name": "Breadcrumbs",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Breadcrumbs",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}
