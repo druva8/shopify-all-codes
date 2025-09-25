@@ -1,0 +1,122 @@
+{% comment %}
+  File: sections/announcement-bar.liquid
+{% endcomment %}
+
+<div id="shopify-section-{{ section.id }}" class="shopify-section shopify-section-group-header-group announcement-bar--sticky">
+  <style>
+    @media only screen and (min-width:1440px) {
+      .announcement-bar .announcement-bar__text {
+        font-size: 16px !important;
+      }
+    }
+
+    @media only screen and (max-width:787px) {
+      .announcement-bar {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        padding-top: 5px !important;
+        padding-bottom: 6px !important;
+      }
+      .announcement-bar .announcement-bar__text {
+        font-size: 12px !important;
+      }
+      .announcement-bar__slides {
+        width: 100% !important;
+      }
+    }
+
+    .announcement-bar {
+      padding-left: 50px;
+      padding-right: 50px;
+    }
+    .announcement-bar .announcement-bar__text {
+      font-size: 14px;
+      line-height: 1.5;
+      font-family: 'Assistant-Regular';
+      font-style: normal;
+      font-weight: 400;
+    }
+
+    .announcement-bar--sticky {
+      position: sticky !important;
+      top: 0;
+      z-index: 1001;
+      transition: all 0.3s ease;
+    }
+  </style>
+
+  <aside class="announcement-bar spacing-style section section--full-width color-scheme-{{ section.settings.color_scheme }}"
+    style="--padding-block-start: 8px; --padding-block-end:8px; --padding-inline-start:0px; --padding-inline-end:0px; --border-bottom-width: 0px;">
+    
+    <announcement-bar-component class="announcement-bar__slider" autoplay="5" aria-live="polite">
+      <div class="announcement-bar__slides">
+        {% for block in section.blocks %}
+          <slideshow-slide class="announcement-bar__slide text-block text-block--align-center text-block--full-width">
+            <p class="announcement-bar__text">{{ block.settings.text }}</p>
+            {% if block.settings.link != blank %}
+              <a class="announcement-bar__link" href="{{ block.settings.link }}">
+                <span class="visually-hidden">{{ block.settings.text }}</span>
+              </a>
+            {% endif %}
+          </slideshow-slide>
+        {% endfor %}
+      </div>
+    </announcement-bar-component>
+  </aside>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const announcementBar = document.querySelector('.announcement-bar');
+    if (!announcementBar) return;
+    const announcementBarParent = announcementBar.parentElement;
+    if (!announcementBarParent) return;
+    announcementBarParent.classList.add('announcement-bar--sticky');
+    announcementBarParent.classList.remove('announcement-bar--menu-open');
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "dark", "label": "Dark" },
+        { "value": "light", "label": "Light" }
+      ],
+      "default": "default"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Announcement",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Announcement text",
+          "default": "Free shipping on orders over ₹4,999 within India and ₹39,999 internationally*"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Optional link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Announcement Bar",
+      "category": "Header"
+    }
+  ]
+}
+{% endschema %}
