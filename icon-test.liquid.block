@@ -1,0 +1,231 @@
+{% assign block_settings = block.settings %}
+{% assign icon_block_class = 'icon-block__media icon-block-' | append: block.id %}
+
+<div class="icon-block icon-block--{{ block_settings.icon_position }}">
+  {% capture icon %}
+    {% render 'icon-or-image',
+      icon: block_settings.icon,
+      image_upload: block_settings.image_upload,
+      width: block_settings.width,
+      class_name: icon_block_class,
+      attributes: block.shopify_attributes
+    %}
+  {% endcapture %}
+
+  {%- if block_settings.link != blank -%}
+    <a
+      href="{{ block_settings.link }}"
+      class="text-inherit icon-block__link"
+      {% if block_settings.open_in_new_tab %}
+        target="_blank" rel="noopener"
+      {% endif %}
+    >
+      {{ icon }}
+      <span class="icon-block__text">{{ block_settings.text }}</span>
+    </a>
+  {%- else -%}
+    {{ icon }}
+    <span class="icon-block__text">{{ block_settings.text }}</span>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+.icon-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  fill: currentcolor;
+}
+.icon-block__media {
+  flex-shrink: 0;
+}
+.icon-block--top {
+  flex-direction: column; /* Icon above text */
+  text-align: center;
+}
+.icon-block--side {
+  flex-direction: row; /* Icon beside text */
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.icon",
+  "class": "icon-block",
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon_position",
+      "label": "Icon position",
+      "options": [
+        { "value": "top", "label": "Top of text" },
+        { "value": "side", "label": "Beside text" }
+      ],
+      "default": "side"
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "t:settings.icon",
+      "options": [
+        { "value": "none", "label": "t:options.none" },
+        { "value": "apple", "label": "t:options.apple" },
+        { "value": "map_pin", "label": "t:options.map_pin" },
+        { "value": "star", "label": "t:options.star" }
+      ],
+      "default": "apple"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_upload",
+      "label": "Custom image icon"
+    },
+    {
+      "type": "range",
+      "id": "width",
+      "label": "Icon size",
+      "min": 12,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text label",
+      "default": "My Icon Block"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "Open in new tab",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icon + Text Block",
+      "category": "Basic"
+    }
+  ]
+}
+{% endschema %}
+
+{% comment %} {% assign block_settings = block.settings %}
+{% assign icon_block_class = 'icon-block__media icon-block-' | append: block.id %}
+
+{% capture icon %}
+  {% render 'icon-or-image',
+    icon: block_settings.icon,
+    image_upload: block_settings.image_upload,
+    width: block_settings.width,
+    class_name: icon_block_class,
+    attributes: block.shopify_attributes
+  %}
+{% endcapture %}
+
+<li class="icon-block__item">
+  {%- if block_settings.link != blank -%}
+    <a
+      href="{{ block_settings.link }}"
+      class="text-inherit icon-block__link"
+      {% if block_settings.open_in_new_tab %}
+        target="_blank" rel="noopener"
+      {% endif %}
+    >
+      {{ icon }}
+      <span class="icon-block__text">{{ block_settings.text }}</span>
+    </a>
+  {%- else -%}
+    {{ icon }}
+    <span class="icon-block__text">{{ block_settings.text }}</span>
+  {%- endif -%}
+</li>
+
+{% stylesheet %}
+  .icon-block {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    fill: currentcolor;
+    flex-shrink: 0;
+  }
+  .icon-block__media {
+    height: auto;
+  }
+  .icon-block__text {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Icon + Text Block",
+  "class": "icon-block",
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "Icon",
+      "options": [
+        { "value": "map_pin", "label": "Map Pin" },
+        { "value": "phone", "label": "Phone" },
+        { "value": "envelope", "label": "Email" },
+        { "value": "globe", "label": "Website" },
+        { "value": "building", "label": "Building" }
+      ],
+      "default": "map_pin"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_upload",
+      "label": "Custom Image Icon"
+    },
+    {
+      "type": "range",
+      "id": "width",
+      "label": "Icon Width",
+      "min": 12,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Your contact info"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Optional Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "Open in new tab",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icon + Text Example",
+      "category": "Contact",
+      "settings": {
+        "icon": "phone",
+        "text": "+1 (857) 366-6800",
+        "link": "tel:+18573666800"
+      }
+    }
+  ]
+}
+{% endschema %} {% endcomment %}
