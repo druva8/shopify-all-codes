@@ -1,0 +1,91 @@
+<div class="footer-custom-text-icon"
+     style="
+       font-size: {{ block.settings.text_size }}px;
+       color: {{ block.settings.text_color }};
+       text-align: {{ block.settings.text_align }};
+     ">
+
+  {% if block.settings.icon != blank %}
+    <img class="footer-custom-text-icon__icon"
+         src="{{ block.settings.icon | image_url: width: 40 }}"
+         alt="icon"  width=""height="">
+  {% endif %}
+
+  {% if block.settings.link != blank %}
+    <a href="{{ block.settings.link }}" class="footer-custom-text-icon__text">
+      {{ block.settings.text }}
+    </a>
+  {% else %}
+    <span class="footer-custom-text-icon__text">
+      {{ block.settings.text }}
+    </span>
+  {% endif %}
+</div>
+
+<style>
+  .footer-custom-text-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .footer-custom-text-icon__icon {
+    width: 24px;
+    height: auto;
+  }
+  .footer-custom-text-icon__text {
+    text-decoration: none;
+  }
+</style>
+
+{%- comment -%}
+  Snippet: custom-text-icon.liquid
+  Usage:
+  {% render 'custom-text-icon',
+    text: "Your custom text",
+    icon: "shopify://shop_images/your-icon.png",
+    link: "/collections/all",
+    text_size: 18,
+    text_color: "#333333",
+    text_align: "center"
+  %}
+{%- endcomment -%}
+
+{% comment %} <div class="custom-text-icon-block"
+     style="
+       font-size: {{ text_size | default: 16 }}px;
+       color: {{ text_color | default: '#000000' }};
+       text-align: {{ text_align | default: 'left' }};
+     ">
+  {% if icon %}
+    <div class="icon-wrap">
+      <img src="{{ icon | image_url: width: 64 }}" alt="icon" width=" "height="" />
+    </div>
+  {% endif %}
+
+  <div class="text-wrap">
+    {% if link %}
+      <a href="{{ link }}">
+        {{ text }}
+      </a>
+    {% else %}
+      {{ text }}
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .custom-text-icon-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+  }
+  .custom-text-icon-block .icon-wrap img {
+    max-width: 40px;
+    height: auto;
+  }
+  .custom-text-icon-block .text-wrap a {
+    text-decoration: none;
+    color: inherit;
+  }
+</style> {% endcomment %}
