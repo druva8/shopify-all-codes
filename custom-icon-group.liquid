@@ -1,0 +1,38 @@
+<div
+  class="footer__content-top page-width"
+  style="display:flex; flex-direction:column; gap:{{ section.settings.gap | default: 12 }}px; padding: {{ section.settings.padding | default: '10px' }};"
+>
+  {% for block in section.blocks %}
+    {% if block.type == 'custom__group' %}
+      {% assign item = block.settings %}
+      <div class="footer-custom-item" style="display:flex; flex-direction:column; align-items:center; gap:8px; font-size:{{ item.text_size | default:16 }}px; color:{{ item.text_color | default:'#000' }};">
+        {% if item.icon_1 != blank %}
+          <img src="{{ item.icon_1 | image_url: width:24 }}" alt="{{ item.text_1 | escape }}" style="width:24px;height:auto;"width="" height="">
+        {% endif %}
+        {% if item.link_1 != blank %}
+          <a href="{{ item.link_1 }}" style="color:{{ item.text_color | default:'#000' }};">{{ item.text_1 }}</a>
+        {% else %}
+          <span>{{ item.text_1 }}</span>
+        {% endif %}
+
+        {% if item.icon_2 != blank %}
+          <img src="{{ item.icon_2 | image_url: width:24 }}" alt="{{ item.text_2 | escape }}" style="width:24px;height:auto;"width=""height="">
+        {% endif %}
+        {% if item.link_2 != blank %}
+          <a href="{{ item.link_2 }}" style="color:{{ item.text_color | default:'#000' }};">{{ item.text_2 }}</a>
+        {% else %}
+          <span>{{ item.text_2 }}</span>
+        {% endif %}
+
+        {% if item.icon_3 != blank %}
+          <img src="{{ item.icon_3 | image_url: width:24 }}" alt="{{ item.text_3 | escape }}" style="width:24px;height:auto;"width=""height="">
+        {% endif %}
+        {% if item.link_3 != blank %}
+          <a href="{{ item.link_3 }}" style="color:{{ item.text_color | default:'#000' }};">{{ item.text_3 }}</a>
+        {% else %}
+          <span>{{ item.text_3 }}</span>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
