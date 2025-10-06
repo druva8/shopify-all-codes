@@ -1,0 +1,228 @@
+<section class="discover-nalli">
+  <div class="shop-head">
+    <div class="shop-heading">
+      <h2>{{ section.settings.main_heading }}</h2>
+    </div>
+    <div class="shop-subheading">
+      <p>{{ section.settings.sub_heading }}</p>
+    </div>
+  </div>
+
+  <!-- Desktop Accordion -->
+  <div class="fancy-accordion-container desk-fancy">
+    {% for block in section.blocks %}
+      <div class="fancy-accordion-item {% if forloop.first %}active{% endif %}">
+        <a href="{{ block.settings.link }}">
+          <div 
+            class="fancy-accordion-content" 
+            style="background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url('{{ block.settings.image | img_url: 'master' }}') center center / cover;">
+            <div class="fancy-overlay"></div>
+            <div>
+              <h2 class="fancy-accordion-title">{{ block.settings.title }}</h2>
+            </div>
+            <hr class="hr-accord">
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Mobile Swiper -->
+  <div class="mob-fancy swiper">
+    <div class="swiper-wrapper">
+      {% for block in section.blocks %}
+        <div class="swiper-slide">
+          <div class="fancy-accordion-item-mob">
+            <a href="{{ block.settings.link }}">
+              <div 
+                class="fancy-accordion-content" 
+                style="background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url('{{ block.settings.image | img_url: 'master' }}') center center / cover;">
+                <div class="fancy-overlay"></div>
+                <div>
+                  <div class="fancy-accordion-title">{{ block.settings.title }}</div>
+                </div>
+                <div>
+                  <p class="fancy-subtext">{{ block.settings.subtext }}</p>
+                </div>
+                <div>
+                  <a href="{{ block.settings.link }}" class="fancy-anchor">
+                    <p>Read More</p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="11" viewBox="0 0 12 11" fill="none">
+                      <path d="M6.83333 0.949219L11 5.32422M11 5.32422L6.83333 9.69922M11 5.32422L1 5.32422" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="swiper-btn-prev"></div>
+    <div class="swiper-btn-next"></div>
+    <div class="swiper-scrollbar"></div>
+  </div>
+</section>
+
+<style>
+.discover-nalli {
+  width: 100%;
+  overflow: hidden;
+}
+.shop-head {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.shop-heading h2 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+.shop-subheading p {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.fancy-accordion-container {
+  display: flex;
+  height: 500px;
+  transition: all 0.3s ease;
+}
+.fancy-accordion-item {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  transition: flex 0.5s ease;
+}
+.fancy-accordion-item:hover {
+  flex: 2;
+}
+.fancy-accordion-content {
+  position: relative;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 20px;
+  transition: all 0.4s ease;
+}
+.fancy-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  transition: background 0.3s ease;
+}
+.fancy-accordion-item:hover .fancy-overlay {
+  background: rgba(0,0,0,0.1);
+}
+.fancy-accordion-title {
+  position: relative;
+  font-size: 1.5rem;
+  font-weight: 600;
+  z-index: 2;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+.hr-accord {
+  border: none;
+  height: 3px;
+  width: 60px;
+  background: white;
+  margin: 10px auto 0;
+  opacity: 0.8;
+}
+
+/* Mobile Swiper Styles */
+.mob-fancy {
+  display: none;
+}
+@media(max-width: 768px) {
+  .desk-fancy {
+    display: none;
+  }
+  .mob-fancy {
+    display: block;
+  }
+  .fancy-accordion-content {
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    text-align: center;
+  }
+  .fancy-subtext {
+    font-size: 1rem;
+    margin: 10px 0;
+    color: #fff;
+  }
+  .fancy-anchor {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .swiper-btn-prev,
+  .swiper-btn-next {
+    color: #666;
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Discover Nalli Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "main_heading",
+      "label": "Main Heading",
+      "default": "Discover Nalli"
+    },
+    {
+      "type": "text",
+      "id": "sub_heading",
+      "label": "Sub Heading",
+      "default": "First & The Finest Since 1928"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Accordion Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "subtext",
+          "label": "Description / Subtext"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Discover Nalli Section",
+      "category": "Custom Sections"
+    }
+  ]
+}
+{% endschema %}
