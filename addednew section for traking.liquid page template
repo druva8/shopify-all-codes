@@ -1,0 +1,69 @@
+{% schema %}
+{
+  "name": "Tracking Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "iframe_height",
+      "label": "Iframe Height (px)",
+      "default": "200",
+      "info": "Set the height of the tracking widget iframe in pixels."
+    },
+    {
+      "type": "text",
+      "id": "widget_url",
+      "label": "Tracking Widget URL",
+      "default": "https://app.eshipz.com/track-widget/dc4a9d23-43c8-48c6-802b-a3c3bc9b2c01",
+      "info": "Base URL for the tracking widget. Add query parameters manually if needed."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tracking Section",
+      "settings": {
+        "iframe_height": "200",
+        "widget_url": "https://app.eshipz.com/track-widget/dc4a9d23-43c8-48c6-802b-a3c3bc9b2c01"
+      }
+    }
+  ]
+}
+{% endschema %}
+
+<div class="
+  spacing-style
+  layout-panel-flex
+  layout-panel-flex--column
+  section-content-wrapper
+  mobile-column
+" style="
+  --flex-direction: column; --flex-wrap: nowrap;
+  --gap: 12px;
+  --horizontal-alignment: center; --vertical-alignment: center;
+  --vertical-alignment-mobile: center;
+  --padding-block-start: 0px; --padding-block-end: 0px;
+" data-testid="section-content">
+  <div>
+    <iframe id="eshipz_tracker" frameborder="0" marginwidth="0" marginheight="0" width="100%" height="{{ section.settings.iframe_height }}" src="{{ section.settings.widget_url }}"></iframe>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/url-search-params/1.1.0/url-search-params.js"></script>
+    <script type="application/javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+        let params = new URLSearchParams(window.location.search);
+        let eshipzTracker = document.getElementById("eshipz_tracker");
+        if (eshipzTracker) {
+          let url_string = "{{ section.settings.widget_url | escape }}";
+          let trackURL = url_string || "https://app.eshipz.com/track-widget/dc4a9d23-43c8-48c6-802b-a3c3bc9b2c01";
+          if (params && params.has('q')) {
+            let order_id = params.get('q');
+            if (order_id) {
+              trackURL = trackURL + '&q=' + encodeURIComponent(order_id);
+            }
+          }
+          eshipzTracker.src = trackURL;
+        } else {
+          console.error("eShipz tracker iframe not found.");
+        }
+      });
+    </script>
+  </div>
+</div>
