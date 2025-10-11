@@ -1,0 +1,651 @@
+{% comment %} <div class="timeline-container">
+  <div class="timeline-heading">
+    <h2 class="timeline-head">{{ section.settings.heading | default: 'OUR LEGACY' }}</h2>
+  </div>
+
+  <div class="swiper swiper-main-template--our_legacy_section swiper-initialized swiper-horizontal swiper-autoheight">
+    <div class="swiper-wrapper" id="swiper-wrapper-legacy" aria-live="polite" style="height: 280px;">
+      {% for block in section.blocks %}
+        <div class="swiper-slide" style="width: 1381px; margin-right: 30px;" role="group" aria-label="{{ forloop.index }} / {{ section.blocks.size }}">
+          <div class="legacy-slide">
+            <div class="legacy-content">
+              <h3 class="legacy-head">{{ block.settings.title }}</h3>
+              <p class="legacy-text">{{ block.settings.description }}</p>
+            </div>
+            <div class="legacy-image">
+              {% if block.settings.image %}
+                <img src="{{ block.settings.image | img_url: '800x' }}" alt="{{ block.settings.image.alt | default: block.settings.title }}" loading="lazy" width="651" height="367">
+              {% else %}
+                <p>No image uploaded</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-swipe">
+      <div class="swiper-button-next swiper-btn-next-template--our_legacy_section" tabindex="0" role="button" aria-label="Next slide" aria-controls="swiper-wrapper-legacy"></div>
+      <div class="swiper-button-prev swiper-btn-prev-template--our_legacy_section" tabindex="0" role="button" aria-label="Previous slide" aria-controls="swiper-wrapper-legacy"></div>
+    </div>
+
+    <!-- Progressbar -->
+    <div class="swiper-pagination swiper-pagination-template--our_legacy_section swiper-pagination-horizontal"></div>
+    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+  </div>
+
+  <!-- Timeline Years -->
+  <div class="swiper swiper-years-template--our_legacy_section swiper-initialized swiper-horizontal swiper-watch-progress swiper-thumbs">
+    <div class="swiper-wrapper" id="swiper-wrapper-years" aria-live="polite">
+      {% for block in section.blocks %}
+        <div class="swiper-slide year-slide" style="width: 345.25px;" role="group" aria-label="{{ forloop.index }} / {{ section.blocks.size }}">
+          <span class="switch-title">{{ block.settings.year }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "About History",
+  "tag": "section",
+  "class": "about-history-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "OUR LEGACY"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "history_item",
+      "name": "History Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "year",
+          "label": "Year",
+          "default": "1928"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Madras Calling"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "By 1928, the famed Kanchipuram weaver, Chinnasami Chetty, was visiting Madras twice a week. As an astute businessman, he decided Thyagaraja Nagar near Mambalam station would be his residence and depot. He later assigned his son-in-law, Mr. P. Lakshmiah Chetty, to manage the deliveries from Kanchipuram, while he managed the retailing front. The rest, as they say, is history."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About History",
+      "blocks": [
+        {
+          "type": "history_item"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .timeline-container { text-align: center; padding: 50px 20px; background-color: #1a1a1a; color: white; }
+  .timeline-heading h2 { font-size: 2.5em; }
+  .legacy-slide { display: flex; justify-content: space-around; align-items: center; }
+  .legacy-content { max-width: 600px; }
+  .legacy-image img { max-width: 400px; }
+  .year-slide { padding: 10px; }
+  .swiper-slide { display: flex; align-items: center; }
+  .swiper-button-next, .swiper-button-prev { color: #fff; }
+  .swiper-years-template--our_legacy_section .swiper-wrapper { overflow-x: auto; }
+  .swiper-years-template--our_legacy_section .swiper-slide { flex-shrink: 0; }
+</style> {% endcomment %}
+
+{% comment %} <div class="timeline-container">
+  <div class="timeline-heading">
+    <h2 class="timeline-head">{{ section.settings.heading | default: 'OUR LEGACY' }}</h2>
+  </div>
+
+  <div class="swiper swiper-main-template--our_legacy_section swiper-initialized swiper-horizontal swiper-autoheight">
+    <div class="swiper-wrapper" id="swiper-wrapper-legacy" aria-live="polite" style="height: 280px;">
+      {% for block in section.blocks %}
+        <div
+          class="swiper-slide"
+          style="width: 1381px; margin-right: 30px;"
+          role="group"
+          aria-label="{{ forloop.index }} / {{ section.blocks.size }}"
+        >
+          <div class="legacy-slide">
+            <div class="legacy-content">
+              <h3 class="legacy-head">{{ block.settings.title }}</h3>
+              <p class="legacy-text">{{ block.settings.description }}</p>
+            </div>
+            <div class="legacy-image">
+              {% if block.settings.image %}
+                <img
+                  src="{{ block.settings.image | img_url: '800x' }}"
+                  alt="{{ block.settings.image.alt | default: block.settings.title }}"
+                  loading="lazy"
+                  width="651"
+                  height="367"
+                >
+              {% else %}
+                <p>No image uploaded</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-swipe">
+      <div
+        class="swiper-button-next swiper-btn-next-template--our_legacy_section"
+        tabindex="0"
+        role="button"
+        aria-label="Next slide"
+        aria-controls="swiper-wrapper-legacy"
+      ></div>
+      <div
+        class="swiper-button-prev swiper-btn-prev-template--our_legacy_section"
+        tabindex="0"
+        role="button"
+        aria-label="Previous slide"
+        aria-controls="swiper-wrapper-legacy"
+      ></div>
+    </div>
+
+    <!-- Progressbar -->
+    <div
+      class="swiper-pagination swiper-pagination-template--our_legacy_section swiper-pagination-horizontal"
+    ></div>
+    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+  </div>
+
+  <!-- Timeline Years -->
+  <div class="swiper swiper-years-template--our_legacy_section swiper-initialized swiper-horizontal swiper-watch-progress swiper-thumbs">
+    <div class="swiper-wrapper" id="swiper-wrapper-years" aria-live="polite">
+      {% for block in section.blocks %}
+        <div
+          class="swiper-slide year-slide"
+          style="width: 345.25px; min-width: 345.25px;"
+          role="group"
+          aria-label="{{ forloop.index }} / {{ section.blocks.size }}"
+        >
+          <span class="switch-title">{{ block.settings.year }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "About History",
+  "tag": "section",
+  "class": "about-history-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "OUR LEGACY"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "history_item",
+      "name": "History Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "year",
+          "label": "Year",
+          "default": "1928"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Madras Calling"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "By 1928, the famed Kanchipuram weaver, Chinnasami Chetty, was visiting Madras twice a week. As an astute businessman, he decided Thyagaraja Nagar near Mambalam station would be his residence and depot. He later assigned his son-in-law, Mr. P. Lakshmiah Chetty, to manage the deliveries from Kanchipuram, while he managed the retailing front. The rest, as they say, is history."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About History",
+      "blocks": [
+        {
+          "type": "history_item"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .timeline-container { text-align: center; padding: 50px 20px; background-color: #1a1a1a; color: white; position: relative; }
+  .timeline-heading h2 { font-size: 2.5em; }
+  .legacy-slide { display: flex; justify-content: space-around; align-items: center; }
+  .legacy-content { max-width: 600px; }
+  .legacy-image img { max-width: 400px; }
+  .year-slide { padding: 10px; text-align: center; }
+  .swiper-slide { display: flex; align-items: center; }
+  .swiper-button-next, .swiper-button-prev { color: #fff; cursor: pointer; }
+  .swiper-years-template--our_legacy_section .swiper-wrapper {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .swiper-years-template--our_legacy_section .swiper-slide {
+    flex-shrink: 0;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .swiper-years-template--our_legacy_section {
+    overflow: hidden;
+    margin-top: 20px;
+  }
+  .swiper-years-template--our_legacy_section::-webkit-scrollbar {
+    height: 8px;
+  }
+  .swiper-years-template--our_legacy_section::-webkit-scrollbar-track {
+    background: #333;
+  }
+  .swiper-years-template--our_legacy_section::-webkit-scrollbar-thumb {
+    background-color: #666;
+    border-radius: 4px;
+  }
+  .swiper-years-template--our_legacy_section::-webkit-scrollbar-thumb:hover {
+    background-color: #999;
+  }
+</style> {% endcomment %}
+<div class="timeline-container">
+  <div class="timeline-heading">
+    <h2 class="timeline-head">{{ section.settings.heading | default: 'OUR LEGACY' }}</h2>
+  </div>
+
+  <div class="swiper swiper-main-template--our_legacy_section swiper-initialized swiper-horizontal swiper-autoheight">
+    <div class="swiper-wrapper" id="swiper-wrapper-legacy" aria-live="polite" style="height: 280px;">
+      {% for block in section.blocks %}
+        <div
+          class="swiper-slide"
+          style="width: 1381px; margin-right: 30px;"
+          role="group"
+          aria-label="{{ forloop.index }} / {{ section.blocks.size }}"
+        >
+          <div class="legacy-slide">
+            <div class="legacy-content">
+              <h3 class="legacy-head">{{ block.settings.title }}</h3>
+              <p class="legacy-text">{{ block.settings.description }}</p>
+            </div>
+            <div class="legacy-image">
+              {% if block.settings.image %}
+                <img
+                  src="{{ block.settings.image | img_url: '800x' }}"
+                  alt="{{ block.settings.image.alt | default: block.settings.title }}"
+                  loading="lazy"
+                  width="651"
+                  height="367"
+                >
+              {% else %}
+                <p>No image uploaded</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-swipe">
+      <div
+        class="swiper-button-next swiper-btn-next-template--our_legacy_section"
+        tabindex="0"
+        role="button"
+        aria-label="Next slide"
+        aria-controls="swiper-wrapper-legacy"
+      ></div>
+      <div
+        class="swiper-button-prev swiper-btn-prev-template--our_legacy_section"
+        tabindex="0"
+        role="button"
+        aria-label="Previous slide"
+        aria-controls="swiper-wrapper-legacy"
+      ></div>
+    </div>
+
+    <!-- Progressbar -->
+    <div
+      class="swiper-pagination swiper-pagination-template--our_legacy_section swiper-pagination-horizontal"
+    ></div>
+    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+  </div>
+
+  <!-- Timeline Years (Moved to Bottom) -->
+  <div class="years-timeline">
+    <div class="swiper swiper-years-template--our_legacy_section swiper-initialized swiper-horizontal swiper-watch-progress swiper-thumbs">
+      <div class="swiper-wrapper" id="swiper-wrapper-years" aria-live="polite">
+        {% for block in section.blocks %}
+          <div
+            class="swiper-slide year-slide"
+            style="width: 345.25px; min-width: 345.25px;"
+            role="group"
+            aria-label="{{ forloop.index }} / {{ section.blocks.size }}"
+          >
+            <span class="switch-title">{{ block.settings.year }}</span>
+          </div>
+        {% endfor %}
+      </div>
+      <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "About History",
+  "tag": "section",
+  "class": "about-history-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "OUR LEGACY"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "history_item",
+      "name": "History Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "year",
+          "label": "Year",
+          "default": "1928"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Madras Calling"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "By 1928, the famed Kanchipuram weaver, Chinnasami Chetty, was visiting Madras twice a week. As an astute businessman, he decided Thyagaraja Nagar near Mambalam station would be his residence and depot. He later assigned his son-in-law, Mr. P. Lakshmiah Chetty, to manage the deliveries from Kanchipuram, while he managed the retailing front. The rest, as they say, is history."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About History",
+      "blocks": [
+        {
+          "type": "history_item"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .timeline-container { text-align: center; padding: 50px 20px; background-color: #1a1a1a; color: white; position: relative; }
+  .timeline-heading h2 { font-size: 2.5em; }
+  .legacy-slide { display: flex; justify-content: space-around; align-items: center; }
+  .legacy-content { max-width: 600px; }
+  .legacy-image img { max-width: 400px; }
+  .year-slide { padding: 10px; text-align: center; }
+  .swiper-slide { display: flex; align-items: center; }
+  .swiper-button-next, .swiper-button-prev { color: #fff; cursor: pointer; }
+  .swiper-years-template--our_legacy_section .swiper-wrapper {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    justify-content: center;
+  }
+  .swiper-years-template--our_legacy_section .swiper-slide {
+    flex-shrink: 0;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .years-timeline {
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .swiper-years-template--our_legacy_section {
+    width: 100%;
+  }
+  .swiper-years-template--our_legacy_section::-webkit-scrollbar {
+    height: 8px;
+    background: #333;
+  }
+  .swiper-years-template--our_legacy_section::-webkit-scrollbar-track {
+    background: #333;
+  }
+  .swiper-years-template--our_legacy_section::-webkit-scrollbar-thumb {
+    background-color: #666;
+    border-radius: 4px;
+  }
+  .swiper-years-template--our_legacy_section::-webkit-scrollbar-thumb:hover {
+    background-color: #999;
+  }
+</style>
+{% comment %} <div class="timeline-container">
+  <div class="timeline-heading">
+    <h2 class="timeline-head">{{ section.settings.heading | default: 'OUR LEGACY' }}</h2>
+  </div>
+
+  <div class="swiper swiper-main-template--our_legacy_section swiper-initialized swiper-horizontal swiper-autoheight">
+    <div class="swiper-wrapper" id="swiper-wrapper-legacy" aria-live="polite" style="height: 280px;">
+      {% for block in section.blocks %}
+        <div
+          class="swiper-slide"
+          style="width: 1381px; margin-right: 30px;"
+          role="group"
+          aria-label="{{ forloop.index }} / {{ section.blocks.size }}"
+        >
+          <div class="legacy-slide">
+            <div class="legacy-content">
+              <h3 class="legacy-head">{{ block.settings.title }}</h3>
+              <p class="legacy-text">{{ block.settings.description }}</p>
+            </div>
+            <div class="legacy-image">
+              {% if block.settings.image %}
+                <img
+                  src="{{ block.settings.image | img_url: '800x' }}"
+                  alt="{{ block.settings.image.alt | default: block.settings.title }}"
+                  loading="lazy"
+                  width="651"
+                  height="367"
+                >
+              {% else %}
+                <p>No image uploaded</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-swipe">
+      <div
+        class="swiper-btn-next-template--our_legacy_section"
+        tabindex="0"
+        role="button"
+        aria-label="Next slide"
+        aria-controls="swiper-wrapper-legacy"
+        aria-disabled="false"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          style="stroke-width: 1px; stroke: #fff;"
+        >
+          <polygon points="7.293 4.707 14.586 12 7.293 19.293 8.707 20.707 17.414 12 8.707 3.293 7.293 4.707" style="fill: #ffffff;"></polygon>
+        </svg>
+      </div>
+      <div
+        class="swiper-btn-prev-template--our_legacy_section"
+        tabindex="0"
+        role="button"
+        aria-label="Previous slide"
+        aria-controls="swiper-wrapper-legacy"
+        aria-disabled="false"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          style="stroke-width: 1px; stroke: #fff;"
+        >
+          <polygon points="15.293 3.293 6.586 12 15.293 20.707 16.707 19.293 9.414 12 16.707 4.707 15.293 3.293" style="fill: #ffffff;"></polygon>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Progressbar -->
+    <div
+      class="swiper-pagination-progressbar swiper-pagination-progressbar-template--our_legacy_section swiper-pagination-horizontal"
+      style="display:none;"
+    >
+      <span
+        class="swiper-pagination-progressbar-fill"
+        style="transform: translate3d(0px, 0px, 0px) scaleX(0.25) scaleY(1); transition-duration: 500ms;"
+      ></span>
+    </div>
+    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+  </div>
+
+  <!-- Timeline Years -->
+  <div class="swiper swiper-years-template--our_legacy_section swiper-initialized swiper-horizontal swiper-watch-progress swiper-thumbs">
+    <div class="swiper-wrapper" id="swiper-wrapper-years" aria-live="polite">
+      {% for block in section.blocks %}
+        <div
+          class="swiper-slide year-slide"
+          style="width: 345.25px;"
+          role="group"
+          aria-label="{{ forloop.index }} / {{ section.blocks.size }}"
+        >
+          <span class="switch-title">{{ block.settings.year }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "About History",
+  "tag": "section",
+  "class": "about-history-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "OUR LEGACY"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "history_item",
+      "name": "History Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "year",
+          "label": "Year",
+          "default": "1928"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Madras Calling"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "By 1928, the famed Kanchipuram weaver, Chinnasami Chetty, was visiting Madras twice a week. As an astute businessman, he decided Thyagaraja Nagar near Mambalam station would be his residence and depot. He later assigned his son-in-law, Mr. P. Lakshmiah Chetty, to manage the deliveries from Kanchipuram, while he managed the retailing front. The rest, as they say, is history."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About History",
+      "blocks": [
+        {
+          "type": "history_item"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .timeline-container { text-align: center; padding: 50px 20px; background-color: #1a1a1a; color: white; }
+  .timeline-heading h2 { font-size: 2.5em; }
+  .legacy-slide { display: flex; justify-content: space-around; align-items: center; }
+  .legacy-content { max-width: 600px; }
+  .legacy-image img { max-width: 400px; }
+  .year-slide { padding: 10px; }
+  .swiper-slide { display: flex; align-items: center; }
+</style>  {% endcomment %}
