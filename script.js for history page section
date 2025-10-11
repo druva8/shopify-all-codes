@@ -1,0 +1,73 @@
+// document.addEventListener('DOMContentLoaded', function () {
+//   new Swiper('.swiper-main-template--our_legacy_section', {
+//     loop: false,
+//     autoHeight: true,
+//     navigation: {
+//       nextEl: '.swiper-btn-next-template--our_legacy_section',
+//       prevEl: '.swiper-btn-prev-template--our_legacy_section',
+//     },
+//     thumbs: {
+//       swiper: {
+//         el: '.swiper-years-template--our_legacy_section',
+//         slidesPerView: 'auto',
+//       },
+//     },
+//   });
+// });
+
+//   document.addEventListener('DOMContentLoaded', function () {
+//     const mainSwiper = new Swiper('.swiper-main-template--our_legacy_section', {
+//       loop: false,
+//       autoHeight: true,
+//       navigation: {
+//         nextEl: '.swiper-btn-next-template--our_legacy_section',
+//         prevEl: '.swiper-btn-prev-template--our_legacy_section',
+//       },
+//       pagination: {
+//         el: '.swiper-pagination-template--our_legacy_section',
+//         type: 'progressbar',
+//       },
+//     });
+
+//     const thumbsSwiper = new Swiper('.swiper-years-template--our_legacy_section', {
+//       slidesPerView: 'auto',
+//       freeMode: true, // Allows free scrolling
+//       watchSlidesProgress: true,
+//       scrollbar: {
+//         el: '.swiper-wrapper', // Custom scrollbar (optional, can be removed if using CSS scrollbar)
+//         draggable: true,
+//       },
+//     });
+
+//     mainSwiper.controller.control = thumbsSwiper;
+//     thumbsSwiper.controller.control = mainSwiper;
+//   });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const mainSwiper = new Swiper('.swiper-main-template--our_legacy_section', {
+      loop: false,
+      autoHeight: true,
+      navigation: {
+        nextEl: '.swiper-btn-next-template--our_legacy_section',
+        prevEl: '.swiper-btn-prev-template--our_legacy_section',
+      },
+      pagination: {
+        el: '.swiper-pagination-template--our_legacy_section',
+        type: 'progressbar',
+      },
+    });
+
+    const thumbsSwiper = new Swiper('.swiper-years-template--our_legacy_section', {
+      slidesPerView: 'auto',
+      freeMode: true,
+      watchSlidesProgress: true,
+      scrollbar: {
+        el: '.swiper-wrapper',
+        draggable: true,
+        hide: false, // Ensure scrollbar is always visible
+      },
+    });
+
+    mainSwiper.controller.control = thumbsSwiper;
+    thumbsSwiper.controller.control = mainSwiper;
+  });
