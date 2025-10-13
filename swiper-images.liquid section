@@ -13,9 +13,10 @@
     {% for block in section.blocks %}
       <div class="fancy-accordion-item {% if forloop.first %}active{% endif %}">
         <a href="{{ block.settings.link }}">
-          <div 
-            class="fancy-accordion-content" 
-            style="background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url('{{ block.settings.image | img_url: 'master' }}') center center / cover;">
+          <div
+            class="fancy-accordion-content"
+            style="background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url('{{ block.settings.image | img_url: 'master' }}') center center / cover;"
+          >
             <div class="fancy-overlay"></div>
             <div>
               <h2 class="fancy-accordion-title">{{ block.settings.title }}</h2>
@@ -34,9 +35,10 @@
         <div class="swiper-slide">
           <div class="fancy-accordion-item-mob">
             <a href="{{ block.settings.link }}">
-              <div 
-                class="fancy-accordion-content" 
-                style="background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url('{{ block.settings.image | img_url: 'master' }}') center center / cover;">
+              <div
+                class="fancy-accordion-content"
+                style="background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.5)), url('{{ block.settings.image | img_url: 'master' }}') center center / cover;"
+              >
                 <div class="fancy-overlay"></div>
                 <div>
                   <div class="fancy-accordion-title">{{ block.settings.title }}</div>
@@ -65,111 +67,501 @@
   </div>
 </section>
 
+{% comment %}
+  <style>
+      .discover-nalli {
+        width: 100%;
+        overflow: hidden;
+      }
+      .shop-head {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .shop-heading h2 {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+      .shop-subheading p {
+        font-size: 1.1rem;
+        color: #666;
+      }
+
+      .fancy-accordion-container {
+        display: flex;
+        height: 500px;
+        transition: all 0.3s ease;
+      }
+      .fancy-accordion-item {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+        transition: flex 0.5s ease;
+      }
+      .fancy-accordion-item:hover {
+        flex: 2;
+      }
+      .fancy-accordion-content {
+        position: relative;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        padding: 20px;
+        transition: all 0.4s ease;
+      }
+      .fancy-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.3);
+        transition: background 0.3s ease;
+      }
+      .fancy-accordion-item:hover .fancy-overlay {
+        background: rgba(0,0,0,0.1);
+      }
+      .fancy-accordion-title {
+        position: relative;
+        font-size: 1.5rem;
+        font-weight: 600;
+        text:white;
+        z-index: 2;
+        text-shadow: 0 2px 5px rgba(39, 36, 36, 0.4);
+      }
+      .hr-accord {
+        border: none;
+        height: 3px;
+        width: 60px;
+        background: white;
+        margin: 10px auto 0;
+        opacity: 0.8;
+      }
+
+      /* Mobile Swiper Styles */
+      .mob-fancy {
+        display: none;
+      }
+      @media(max-width: 768px) {
+        .desk-fancy {
+          display: none;
+        }
+        .mob-fancy {
+          display: block;
+        }
+        .fancy-accordion-content {
+          height: 400px;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          text-align: center;
+        }
+        .fancy-subtext {
+          font-size: 1rem;
+          margin: 10px 0;
+          color: #fff;
+        }
+        .fancy-anchor {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          color: white;
+          text-decoration: none;
+          font-weight: 500;
+        }
+        .swiper-btn-prev,
+        .swiper-btn-next {
+          color: #666;
+        }
+      }
+      .swiper-btn-prev,
+    .swiper-btn-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+      color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+    .swiper-btn-prev:hover,
+    .swiper-btn-next:hover {
+      background: #fff;
+    }
+    .swiper-btn-prev {
+      left: 10px;
+    }
+    .swiper-btn-next {
+      right: 10px;
+    }
+    .swiper-scrollbar {
+      margin-top: 10px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+      {% comment %} .swiper-btn-prev,
+      .swiper-btn-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.7);
+        color: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+      }
+      .swiper-btn-prev:hover,
+      .swiper-btn-next:hover {
+        background: #fff;
+        text:black;
+      }
+      .swiper-btn-prev {
+        left: 10px;
+      }
+      .swiper-btn-next {
+        right: 10px;
+      }
+      .swiper-scrollbar {
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.3);
+      } {% endcomment %}
+  </style>
+{% endcomment %}
+{% comment %}
+  <style>
+    .discover-nalli {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .shop-head {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .shop-heading h2 {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .shop-subheading p {
+      font-size: 1.1rem;
+      color: #666;
+    }
+
+    /* -------- DESKTOP ACCORDION -------- */
+    .fancy-accordion-container {
+      display: flex;
+      height: 500px;
+      transition: all 0.3s ease;
+    }
+
+    .fancy-accordion-item {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      transition: flex 0.5s ease;
+    }
+
+    .fancy-accordion-item:hover {
+      flex: 2;
+    }
+
+    .fancy-accordion-content {
+      position: relative;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      padding: 20px;
+      transition: all 0.4s ease;
+    }
+
+    .fancy-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.3);
+      transition: background 0.3s ease;
+    }
+
+    .fancy-accordion-item:hover .fancy-overlay {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .fancy-accordion-title {
+      position: relative;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: white;
+      z-index: 2;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    }
+
+    .hr-accord {
+      border: none;
+      height: 3px;
+      width: 60px;
+      background: white;
+      margin: 10px auto 0;
+      opacity: 0.8;
+    }
+
+    /* -------- MOBILE SWIPER -------- */
+    .mob-fancy {
+      display: none;
+      position: relative;
+    }
+
+    @media (max-width: 768px) {
+      .desk-fancy {
+        display: none !important;
+      }
+      .mob-fancy {
+        display: block !important;
+      }
+      .fancy-accordion-content {
+        height: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        text-align: center;
+      }
+      .fancy-subtext {
+        font-size: 1rem;
+        margin: 10px 0;
+        color: #fff;
+      }
+      .fancy-anchor {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      /* Swiper navigation buttons */
+      .swiper-btn-prev,
+      .swiper-btn-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.7);
+        color: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .swiper-btn-prev:hover,
+      .swiper-btn-next:hover {
+        background: #fff;
+      }
+
+      .swiper-btn-prev {
+        left: 10px;
+      }
+
+      .swiper-btn-next {
+        right: 10px;
+      }
+
+      .swiper-scrollbar {
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  </style>
+{% endcomment %}
 <style>
-.discover-nalli {
-  width: 100%;
-  overflow: hidden;
-}
-.shop-head {
-  text-align: center;
-  margin-bottom: 40px;
-}
-.shop-heading h2 {
-  font-size: 2rem;
-  font-weight: 700;
-}
-.shop-subheading p {
-  font-size: 1.1rem;
-  color: #666;
-}
-
-.fancy-accordion-container {
-  display: flex;
-  height: 500px;
-  transition: all 0.3s ease;
-}
-.fancy-accordion-item {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  transition: flex 0.5s ease;
-}
-.fancy-accordion-item:hover {
-  flex: 2;
-}
-.fancy-accordion-content {
-  position: relative;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding: 20px;
-  transition: all 0.4s ease;
-}
-.fancy-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.3);
-  transition: background 0.3s ease;
-}
-.fancy-accordion-item:hover .fancy-overlay {
-  background: rgba(0,0,0,0.1);
-}
-.fancy-accordion-title {
-  position: relative;
-  font-size: 1.5rem;
-  font-weight: 600;
-  z-index: 2;
-  text-shadow: 0 2px 5px rgba(0,0,0,0.4);
-}
-.hr-accord {
-  border: none;
-  height: 3px;
-  width: 60px;
-  background: white;
-  margin: 10px auto 0;
-  opacity: 0.8;
-}
-
-/* Mobile Swiper Styles */
-.mob-fancy {
-  display: none;
-}
-@media(max-width: 768px) {
-  .desk-fancy {
-    display: none;
+  /* === Base Section Layout === */
+  .discover-nalli {
+    width: 100%;
+    overflow: hidden;
   }
-  .mob-fancy {
-    display: block;
-  }
-  .fancy-accordion-content {
-    height: 400px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+
+  /* === Heading Styles === */
+  .shop-head {
     text-align: center;
+    margin-bottom: 40px;
   }
-  .fancy-subtext {
-    font-size: 1rem;
-    margin: 10px 0;
-    color: #fff;
+
+  .shop-heading h2 {
+    font-size: 2rem;
+    font-weight: 700;
   }
-  .fancy-anchor {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-  }
-  .swiper-btn-prev,
-  .swiper-btn-next {
+
+  .shop-subheading p {
+    font-size: 1.1rem;
     color: #666;
   }
-}
+
+  /* === DESKTOP ACCORDION === */
+  .desk-fancy {
+    display: flex;
+    height: 500px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+  }
+
+  .fancy-accordion-item {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    transition: flex 0.5s ease;
+  }
+
+  .fancy-accordion-item:hover {
+    flex: 2;
+  }
+
+  .fancy-accordion-content {
+    position: relative;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 20px;
+    transition: all 0.4s ease;
+  }
+
+  .fancy-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    transition: background 0.3s ease;
+  }
+
+  .fancy-accordion-item:hover .fancy-overlay {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .fancy-accordion-title {
+    position: relative;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    z-index: 2;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    text-align: center;
+  }
+
+  .hr-accord {
+    border: none;
+    height: 3px;
+    width: 60px;
+    background: white;
+    margin: 10px auto 0;
+    opacity: 0.8;
+  }
+
+  /* === MOBILE SWIPER === */
+  .mob-fancy {
+    display: none !important;  /* hidden by default on desktop */
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  @media (max-width: 768px) {
+    .desk-fancy {
+      display: none !important;
+    }
+
+    .mob-fancy {
+      display: block !important;
+    }
+
+    .fancy-accordion-content {
+      height: 400px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      text-align: center;
+    }
+
+    .fancy-subtext {
+      font-size: 1rem;
+      margin: 10px 0;
+      color: #fff;
+    }
+
+    .fancy-anchor {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    /* Swiper navigation buttons */
+    .swiper-btn-prev,
+    .swiper-btn-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .swiper-btn-prev:hover,
+    .swiper-btn-next:hover {
+      background: #fff;
+    }
+
+    .swiper-btn-prev {
+      left: 10px;
+    }
+
+    .swiper-btn-next {
+      right: 10px;
+    }
+
+    .swiper-scrollbar {
+      margin-top: 10px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
 </style>
 
 {% schema %}
@@ -226,3 +618,132 @@
   ]
 }
 {% endschema %}
+{% comment %}
+  {% javascript %}
+    const swiperEl = document.querySelector('.mob-fancy.swiper');
+
+    if (swiperEl) {
+      const swiper = new Swiper(swiperEl, {
+        slidesPerView: 1,
+        spaceBetween: 10,
+        loop: true,
+        navigation: {
+          nextEl: '.swiper-btn-next',
+          prevEl: '.swiper-btn-prev',
+        },
+        scrollbar: {
+          el: '.swiper-scrollbar',
+          draggable: true,
+        },
+      });
+    }
+  {% endjavascript %}
+{% endcomment %}
+{% comment %}
+  {% javascript %}
+    function initDiscoverNalliSwiper() {
+      const swiperEl = document.querySelector('.mob-fancy.swiper');
+
+      // Only initialize swiper on mobile devices
+      if (window.innerWidth <= 768 && swiperEl && !swiperEl.classList.contains('swiper-initialized')) {
+        new Swiper(swiperEl, {
+          slidesPerView: 1,
+          spaceBetween: 10,
+          loop: true,
+          navigation: {
+            nextEl: '.swiper-btn-next',
+            prevEl: '.swiper-btn-prev',
+          },
+          scrollbar: {
+            el: '.swiper-scrollbar',
+            draggable: true,
+          },
+        });
+      }
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', initDiscoverNalliSwiper);
+
+    // Re-check when screen resizes
+    window.addEventListener('resize', () => {
+      const swiperEl = document.querySelector('.mob-fancy.swiper');
+      if (window.innerWidth > 768 && swiperEl && swiperEl.swiper) {
+        swiperEl.swiper.destroy(true, true);
+      } else if (window.innerWidth <= 768) {
+        initDiscoverNalliSwiper();
+      }
+    });
+  {% endjavascript %}
+{% endcomment %}
+{% comment %}
+  {% javascript %}
+    function initDiscoverNalliSwiper() {
+      const swiperEl = document.querySelector('.mob-fancy.swiper');
+
+      // Only initialize swiper on mobile
+      if (window.innerWidth <= 768 && swiperEl && !swiperEl.classList.contains('swiper-initialized')) {
+        new Swiper(swiperEl, {
+          slidesPerView: 1,
+          spaceBetween: 10,
+          loop: true,
+          navigation: {
+            nextEl: '.swiper-btn-next',
+            prevEl: '.swiper-btn-prev',
+          },
+          scrollbar: {
+            el: '.swiper-scrollbar',
+            draggable: true,
+          },
+        });
+      }
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', initDiscoverNalliSwiper);
+
+    // Recheck when screen resizes
+    window.addEventListener('resize', () => {
+      const swiperEl = document.querySelector('.mob-fancy.swiper');
+      if (window.innerWidth > 768 && swiperEl && swiperEl.swiper) {
+        swiperEl.swiper.destroy(true, true);
+      } else if (window.innerWidth <= 768) {
+        initDiscoverNalliSwiper();
+      }
+    });
+  {% endjavascript %}
+{% endcomment %}
+{% javascript %}
+  function initDiscoverNalliSwiper() {
+    const swiperEl = document.querySelector('.mob-fancy.swiper');
+
+    if (window.innerWidth <= 768 && swiperEl && !swiperEl.classList.contains('swiper-initialized')) {
+      new Swiper(swiperEl, {
+        slidesPerView: 1,
+        spaceBetween: 10,
+        loop: true,
+        navigation: {
+          nextEl: '.swiper-btn-next',
+          prevEl: '.swiper-btn-prev',
+        },
+        scrollbar: {
+          el: '.swiper-scrollbar',
+          draggable: true,
+        },
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', initDiscoverNalliSwiper);
+
+  window.addEventListener('resize', () => {
+    const swiperEl = document.querySelector('.mob-fancy.swiper');
+
+    if (window.innerWidth > 768 && swiperEl && swiperEl.swiper) {
+      swiperEl.swiper.destroy(true, true);
+      swiperEl.classList.remove('swiper-initialized');
+    } else if (window.innerWidth <= 768) {
+      initDiscoverNalliSwiper();
+    }
+  });
+{% endjavascript %}
