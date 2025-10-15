@@ -1,0 +1,700 @@
+{% comment %} {% comment %}
+  Custom Testimonials Section (like Nalli.com)
+{% endcomment %}
+
+<section id="testimonials-section" class="testimonials-wrapper">
+  <div class="page-width">
+    <div class="testimonials-container">
+      {% for block in section.blocks %}
+        <div class="testimonial-item {% if forloop.first %}active{% endif %}">
+          <div class="quote-icon">❝</div>
+          <p class="testimonial-text">{{ block.settings.testimonial_text }}</p>
+          <div class="quote-icon end">❞</div>
+          <p class="testimonial-author">- {{ block.settings.author_name }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="testimonial-navigation">
+      <button class="prev">&#10094;</button>
+      <button class="next">&#10095;</button>
+    </div>
+  </div>
+
+  <style>
+    .testimonials-wrapper {
+      background-color: #f8f8f8;
+      padding: 60px 20px;
+      text-align: center;
+      position: relative;
+    }
+    .testimonial-item {
+      display: none;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .testimonial-item.active {
+      display: block;
+    }
+    .testimonial-text {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #555;
+      margin: 20px 0;
+    }
+    .testimonial-author {
+      font-weight: 600;
+      color: #333;
+      margin-top: 10px;
+    }
+    .quote-icon {
+      font-size: 28px;
+      color: #bbb;
+    }
+    .quote-icon.end {
+      display: block;
+      margin-top: 10px;
+    }
+    .testimonial-navigation {
+      margin-top: 20px;
+    }
+    .testimonial-navigation button {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #888;
+      margin: 0 10px;
+      transition: color 0.3s;
+    }
+    .testimonial-navigation button:hover {
+      color: #000;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const testimonials = document.querySelectorAll('#testimonials-section .testimonial-item');
+      let index = 0;
+
+      function showTestimonial(i) {
+        testimonials.forEach((t, j) => t.classList.toggle('active', i === j));
+      }
+
+      document.querySelector('#testimonials-section .next').addEventListener('click', () => {
+        index = (index + 1) % testimonials.length;
+        showTestimonial(index);
+      });
+
+      document.querySelector('#testimonials-section .prev').addEventListener('click', () => {
+        index = (index - 1 + testimonials.length) % testimonials.length;
+        showTestimonial(index);
+      });
+    });
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials Section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "testimonial_text",
+          "label": "Testimonial text"
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Author name"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Testimonials Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}
+
+{% comment %}
+  Custom Testimonials Section with Scroll/Progress Bar (like Nalli.com)
+{% endcomment %}
+
+
+
+
+{% comment %} <section id="testimonials-section" class="testimonials-wrapper">
+  <div class="page-width">
+    <div class="testimonials-container">
+      {% for block in section.blocks %}
+        <div class="testimonial-item {% if forloop.first %}active{% endif %}">
+          <div class="quote-icon">❝</div>
+          <p class="testimonial-text">{{ block.settings.testimonial_text }}</p>
+          <div class="quote-icon end">❞</div>
+          <p class="testimonial-author">- {{ block.settings.author_name }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="testimonial-navigation">
+      <button class="prev">&#10094;</button>
+      <button class="next">&#10095;</button>
+    </div>
+
+    <div class="testimonial-progress-bar">
+      <div class="progress"></div>
+    </div>
+  </div>
+
+  <style>
+    .testimonials-wrapper {
+      background-color: #f8f8f8;
+      padding: 60px 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .testimonial-item {
+      display: none;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .testimonial-item.active {
+      display: block;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .testimonial-text {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #555;
+      margin: 20px 0;
+    }
+
+    .testimonial-author {
+      font-weight: 600;
+      color: #333;
+      margin-top: 10px;
+    }
+
+    .quote-icon {
+      font-size: 28px;
+      color: #bbb;
+    }
+
+    .quote-icon.end {
+      display: block;
+      margin-top: 10px;
+    }
+
+    .testimonial-navigation {
+      margin-top: 20px;
+    }
+
+    .testimonial-navigation button {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #888;
+      margin: 0 10px;
+      transition: color 0.3s;
+    }
+
+    .testimonial-navigation button:hover {
+      color: #000;
+    }
+
+    /* Scroll bar below arrows */
+    .testimonial-progress-bar {
+      width: 220px;
+      height: 4px;
+      background-color: #ddd;
+      margin: 20px auto 0;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .testimonial-progress-bar .progress {
+      height: 100%;
+      background-color: #c41e3a; /* Nalli red tone */
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const testimonials = document.querySelectorAll('#testimonials-section .testimonial-item');
+      const progress = document.querySelector('#testimonials-section .testimonial-progress-bar .progress');
+      const prevBtn = document.querySelector('#testimonials-section .prev');
+      const nextBtn = document.querySelector('#testimonials-section .next');
+      let index = 0;
+
+      function showTestimonial(i) {
+        testimonials.forEach((t, j) => t.classList.toggle('active', i === j));
+        const percent = ((i + 1) / testimonials.length) * 100;
+        progress.style.width = percent + '%';
+      }
+
+      nextBtn.addEventListener('click', () => {
+        index = (index + 1) % testimonials.length;
+        showTestimonial(index);
+      });
+
+      prevBtn.addEventListener('click', () => {
+        index = (index - 1 + testimonials.length) % testimonials.length;
+        showTestimonial(index);
+      });
+
+      // Initialize
+      showTestimonial(index);
+    });
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials Progress Bar",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "testimonial_text",
+          "label": "Testimonial text"
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Author name"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Testimonials Section with Scroll Bar",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}
+
+
+{% comment %}
+  Testimonials Section — Styled like Nalli.com (with line scroll indicator)
+{% endcomment %}
+
+
+
+{% comment %} <section id="testimonials-section" class="testimonials-wrapper">
+  <div class="page-width">
+    <div class="testimonials-container">
+      {% for block in section.blocks %}
+        <div class="testimonial-item {% if forloop.first %}active{% endif %}">
+          <div class="quote-icon">❝</div>
+          <p class="testimonial-text">{{ block.settings.testimonial_text }}</p>
+          <div class="quote-icon end">❞</div>
+          <p class="testimonial-author">- {{ block.settings.author_name }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="testimonial-navigation">
+      <button class="prev">&#10094;</button>
+      <button class="next">&#10095;</button>
+    </div>
+
+    <!-- Nalli style scroll line -->
+    <div class="testimonial-scroll-line">
+      <div class="scroll-progress"></div>
+    </div>
+  </div>
+
+  <style>
+    .testimonials-wrapper {
+      background-color: #f8f8f8;
+      padding: 60px 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .testimonial-item {
+      display: none;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    .testimonial-item.active {
+      display: block;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .testimonial-text {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #555;
+      margin: 20px 0;
+    }
+
+    .testimonial-author {
+      font-weight: 600;
+      color: #333;
+      margin-top: 10px;
+    }
+
+    .quote-icon {
+      font-size: 28px;
+      color: #bbb;
+    }
+
+    .quote-icon.end {
+      display: block;
+      margin-top: 10px;
+    }
+
+    .testimonial-navigation {
+      margin-top: 15px;
+    }
+
+    .testimonial-navigation button {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #888;
+      margin: 0 10px;
+      transition: color 0.3s;
+    }
+
+    .testimonial-navigation button:hover {
+      color: #000;
+    }
+
+    /* === Nalli-style thin scroll bar === */
+    .testimonial-scroll-line {
+      position: relative;
+      width: 400px;
+      height: 2px;
+      background-color: #ddd;
+      margin: 25px auto 0;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .testimonial-scroll-line .scroll-progress {
+      height: 2px;
+      width: 0%;
+      background-color: #333;
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    @media (max-width: 768px) {
+      .testimonial-scroll-line {
+        width: 250px;
+      }
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const testimonials = document.querySelectorAll('#testimonials-section .testimonial-item');
+      const scrollProgress = document.querySelector('#testimonials-section .scroll-progress');
+      const prevBtn = document.querySelector('#testimonials-section .prev');
+      const nextBtn = document.querySelector('#testimonials-section .next');
+      let index = 0;
+
+      function updateDisplay() {
+        testimonials.forEach((t, i) => t.classList.toggle('active', i === index));
+        const percent = ((index + 1) / testimonials.length) * 100;
+        scrollProgress.style.width = percent + '%';
+      }
+
+      nextBtn.addEventListener('click', () => {
+        index = (index + 1) % testimonials.length;
+        updateDisplay();
+      });
+
+      prevBtn.addEventListener('click', () => {
+        index = (index - 1 + testimonials.length) % testimonials.length;
+        updateDisplay();
+      });
+
+      updateDisplay();
+    });
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials Section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "testimonial_text",
+          "label": "Testimonial text"
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Author name"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Testimonials Section (Nalli Style)",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}
+
+{% comment %}
+  Testimonials Section — Adjustable Width, Height & Alignment (Nalli Style)
+{% endcomment %}
+
+<section id="testimonials-section" class="testimonials-wrapper">
+  <div class="page-width" 
+       style="max-width: {{ section.settings.content_width }}px; 
+              padding: {{ section.settings.section_padding }}px 20px; 
+              text-align: {{ section.settings.text_alignment }};">
+
+    <div class="testimonials-container">
+      {% for block in section.blocks %}
+        <div class="testimonial-item {% if forloop.first %}active{% endif %}">
+          <div class="quote-icon">❝</div>
+          <p class="testimonial-text">{{ block.settings.testimonial_text }}</p>
+          <div class="quote-icon end">❞</div>
+          <p class="testimonial-author">- {{ block.settings.author_name }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="testimonial-navigation">
+      <button class="prev">&#10094;</button>
+      <button class="next">&#10095;</button>
+    </div>
+
+    <!-- Scroll bar below arrows -->
+    <div class="testimonial-scroll-line">
+      <div class="scroll-progress"></div>
+    </div>
+  </div>
+
+  <style>
+    .testimonials-wrapper {
+      background-color: #f8f8f8;
+      position: relative;
+    }
+
+    .testimonial-item {
+      display: none;
+      margin: 0 auto;
+    }
+
+    .testimonial-item.active {
+      display: block;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .testimonial-text {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #555;
+      margin: 20px 0;
+    }
+
+    .testimonial-author {
+      font-weight: 600;
+      color: #333;
+      margin-top: 10px;
+    }
+
+    .quote-icon {
+      font-size: 28px;
+      color: #bbb;
+    }
+
+    .quote-icon.end {
+      display: block;
+      margin-top: 10px;
+    }
+
+    .testimonial-navigation {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .testimonial-navigation button {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #888;
+      margin: 0 10px;
+      transition: color 0.3s;
+    }
+
+    .testimonial-navigation button:hover {
+      color: #000;
+    }
+
+    /* Scroll bar line below arrows */
+    .testimonial-scroll-line {
+      position: relative;
+      width: 600px;
+      height: 2px;
+      background-color: #ddd;
+      margin: 25px auto 0;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .testimonial-scroll-line .scroll-progress {
+      height: 2px;
+      width: 0%;
+      background-color: #333;
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    @media (max-width: 768px) {
+      .testimonial-scroll-line {
+        width: 250px;
+      }
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const section = document.querySelector('#testimonials-section');
+      const testimonials = section.querySelectorAll('.testimonial-item');
+      const scrollProgress = section.querySelector('.scroll-progress');
+      const prevBtn = section.querySelector('.prev');
+      const nextBtn = section.querySelector('.next');
+      let index = 0;
+
+      function updateDisplay() {
+        testimonials.forEach((t, i) => t.classList.toggle('active', i === index));
+        const percent = ((index + 1) / testimonials.length) * 100;
+        scrollProgress.style.width = percent + '%';
+      }
+
+      nextBtn.addEventListener('click', () => {
+        index = (index + 1) % testimonials.length;
+        updateDisplay();
+      });
+
+      prevBtn.addEventListener('click', () => {
+        index = (index - 1 + testimonials.length) % testimonials.length;
+        updateDisplay();
+      });
+
+      updateDisplay();
+    });
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials Section ",
+  "settings": [
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content max width (px)",
+      "min": 50,
+      "max": 2000,
+      "step": 50,
+      "default": 850
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding (top & bottom, px)",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "default": 60
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "testimonial_text",
+          "label": "Testimonial text"
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Author name"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Testimonials Section (Adjustable + Alignment)",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+
