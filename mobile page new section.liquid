@@ -1,0 +1,1823 @@
+{% comment %} {%- style -%}
+  /* Section-specific CSS */
+  .account-section {
+    padding: 5px 0;
+  }
+  .account-section h2 {
+    color: #253746;
+    font-family: 'Garamond Premier Pro', serif;
+    font-size: 2.8rem;
+    font-weight: normal;
+    line-height: 1.2857142857;
+    letter-spacing: 0;
+  }
+  .account-section .subtitle {
+    color: #5E5E5E;
+    font-family: 'DS Trade Gothic', sans-serif;
+    font-size: 13px;
+  }
+  .account-section .btn-login {
+    background-color: #253746;
+    color: white;
+    padding: 0 15px;
+    height: 50px;
+    text-align: center;
+    border: none;
+  }
+  .account-section .join-btn {
+    height: 50px;
+    border: 1px solid black;
+    padding: 8px;
+    font-weight: 600;
+    flex: 1;
+    margin-left: 8px;
+  }
+  .account-section .link-button {
+    display: block;
+    text-align: left;
+    color: #000;
+    text-decoration: none;
+  }
+  .account-section .icon-link-text {
+    font-weight: bold;
+  }
+  .account-section .icon-link-text .block {
+    display: block;
+    font-weight: medium;
+    color: #5E5E5E;
+  }
+  .account-section .link-arrow {
+    display: inline-block;
+    margin-left: 5px;
+  }
+  .account-section hr {
+    height: 0.1px;
+    margin: 25px 0;
+    background-color: #c6c6c6;
+    border: none;
+  }
+  .account-section .flex {
+    display: flex;
+    gap: 15px;
+  }
+  .account-section ul {
+    padding-top: 11px;
+    list-style: none;
+  }
+  .account-section li {
+    margin-bottom: 11px;
+  }
+{%- endstyle -%}
+
+<div class="account-section">
+  <div class="px-0 transition-opacity duration-500">
+    <h2>{{ section.settings.title }}</h2>
+    <span class="subtitle">{{ section.settings.subtitle }}</span>
+  </div>
+
+  <div class="py-[10px] px-0 transition-opacity duration-500">
+    <div class="flex">
+      <button class="button btn-login" onclick="openAccountModal()" data-action="open-login" data-variant="secondary">
+        <span>{{ section.settings.sign_in_text }}</span>
+      </button>
+      <button class="button join-btn" onclick="openAccountModal()" data-action="open-join" data-variant="tertiary-dark">
+        <span>{{ section.settings.join_text }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="py-[10px] px-0">
+    <div>
+      <ul>
+        <li>
+          {% if customer %}
+            <a href="{{ routes.account_url }}" class="link-button">
+              <span class="icon-link-text">
+                <span>{{ section.settings.purchase_history_text }}</span>
+                <span class="block">{{ section.settings.purchase_history_subtext }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% else %}
+            <button class="link-button w-full text-left" onclick="openAccountModal()">
+              <span class="icon-link-text">
+                <span>{{ section.settings.purchase_history_text }}</span>
+                <span class="block">{{ section.settings.purchase_history_subtext }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </button>
+          {% endif %}
+        </li>
+        <li>
+          <a href="{{ section.settings.my_list_link | default: '/pages/my-list' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.my_list_text }}</span>
+              <span class="block">{{ section.settings.my_list_subtext }}</span>
+              <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          {% if customer %}
+            <a href="{{ section.settings.account_settings_link | default: '/account' }}" class="link-button">
+              <span class="icon-link-text">
+                <span>{{ section.settings.account_settings_text }}</span>
+                <span class="block">{{ section.settings.account_settings_subtext }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% else %}
+            <button class="link-button w-full text-left" onclick="openAccountModal()">
+              <span class="icon-link-text">
+                <span>{{ section.settings.account_settings_text }}</span>
+                <span class="block">{{ section.settings.account_settings_subtext }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </button>
+          {% endif %}
+        </li>
+      </ul>
+      <hr>
+    </div>
+    <div>
+      <ul>
+        <li>
+          <a href="{{ section.settings.find_store_link | default: '/pages/store-map-locator' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.find_store_text }}</span>
+              <span aria-hidden="true" class="icon link-arrow-text" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ section.settings.customer_service_link | default: '/pages/help-page' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.customer_service_text }}</span>
+              <span aria-hidden="true" class="icon link-arrow-text" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+      <hr>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Account Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Your Account"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Sign in for rewards, easy order tracking and more."
+    },
+    {
+      "type": "text",
+      "id": "sign_in_text",
+      "label": "Sign In Button Text",
+      "default": "Sign In"
+    },
+    {
+      "type": "text",
+      "id": "join_text",
+      "label": "Join Button Text",
+      "default": "Join"
+    },
+    
+    {
+      "type": "text",
+      "id": "purchase_history_text",
+      "label": "Purchase History Text",
+      "default": "Purchase history"
+    },
+    {
+      "type": "text",
+      "id": "purchase_history_subtext",
+      "label": "Purchase History Subtext",
+      "default": "Track an order, start a return or exchange"
+    },
+    
+    {
+      "type": "text",
+      "id": "my_list_text",
+      "label": "My List Text",
+      "default": "My List"
+    },
+    {
+      "type": "text",
+      "id": "my_list_subtext",
+      "label": "My List Subtext",
+      "default": "Your saved items"
+    },
+   
+    {
+      "type": "text",
+      "id": "account_settings_text",
+      "label": "Account Settings Text",
+      "default": "Account settings"
+    },
+    {
+      "type": "text",
+      "id": "account_settings_subtext",
+      "label": "Account Settings Subtext",
+      "default": "Updated info, payment, addresses, email preferences"
+    },
+    
+    {
+      "type": "text",
+      "id": "find_store_text",
+      "label": "Find My Store Text",
+      "default": "Find My Store"
+    },
+   
+    {
+      "type": "text",
+      "id": "customer_service_text",
+      "label": "Customer Service Text",
+      "default": "Customer Service"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Account Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}
+
+
+
+
+ {% comment %} {%- style -%}
+  /* Section-specific CSS */
+  .account-section {
+    padding: 5px 0;
+  }
+  .account-section h2 {
+    color: #253746;
+    font-family: 'Garamond Premier Pro', serif;
+    font-size: 2.8rem;
+    font-weight: normal;
+    line-height: 1.2857142857;
+    letter-spacing: 0;
+  }
+  .account-section .subtitle {
+    color: #5E5E5E;
+    font-family: 'DS Trade Gothic', sans-serif;
+    font-size: 13px;
+  }
+  .account-section .btn-login {
+    background-color: #253746;
+    color: white;
+    padding: 0 15px;
+    height: 50px;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+  }
+  .account-section .join-btn {
+    height: 50px;
+    border: 1px solid black;
+    padding: 8px;
+    font-weight: 600;
+    flex: 1;
+    margin-left: 8px;
+    cursor: pointer;
+  }
+  .account-section .link-button {
+    display: block;
+    text-align: left;
+    color: #000;
+    text-decoration: none;
+  }
+  .account-section .icon-link-text {
+    font-weight: bold;
+  }
+  .account-section .icon-link-text .block {
+    display: block;
+    font-weight: medium;
+    color: #5E5E5E;
+  }
+  .account-section .link-arrow {
+    display: inline-block;
+    margin-left: 5px;
+  }
+  .account-section hr {
+    height: 0.1px;
+    margin: 25px 0;
+    background-color: #c6c6c6;
+    border: none;
+  }
+  .account-section .flex {
+    display: flex;
+    gap: 15px;
+  }
+  .account-section ul {
+    padding-top: 11px;
+    list-style: none;
+  }
+  .account-section li {
+    margin-bottom: 11px;
+  }
+  /* Fallback for missing fonts */
+  @font-face {
+    font-family: 'Garamond Premier Pro';
+    src: url('https://fonts.cdnfonts.com/s/22527/GaramondPremierPro-It.woff') format('woff');
+  }
+  @font-face {
+    font-family: 'DS Trade Gothic';
+    src: url('https://fonts.cdnfonts.com/s/22527/TradeGothicLTStd-BdCn20.woff') format('woff');
+  }
+{%- endstyle -%}
+
+<div class="account-section">
+  <div class="px-0 transition-opacity duration-500">
+    <h2>{{ section.settings.title | default: 'Your Account' }}</h2>
+    <span class="subtitle">{{ section.settings.subtitle | default: 'Sign in for rewards, easy order tracking and more.' }}</span>
+  </div>
+
+  <div class="py-[10px] px-0 transition-opacity duration-500">
+    <div class="flex">
+      <button class="button btn-login" onclick="openAccountModal()" data-action="open-login" data-variant="secondary">
+        <span>{{ section.settings.sign_in_text | default: 'Sign In' }}</span>
+      </button>
+      <button class="button join-btn" onclick="openAccountModal()" data-action="open-join" data-variant="tertiary-dark">
+        <span>{{ section.settings.join_text | default: 'Join' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="py-[10px] px-0">
+    <div>
+      <ul>
+        <li>
+          {% if customer %}
+            <a href="{{ section.settings.purchase_history_link | default: routes.account_url }}" class="link-button">
+              <span class="icon-link-text">
+                <span>{{ section.settings.purchase_history_text | default: 'Purchase history' }}</span>
+                <span class="block">{{ section.settings.purchase_history_subtext | default: 'Track an order, start a return or exchange' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% else %}
+            <a href="{{ routes.account_login_url }}" class="link-button w-full text-left">
+              <span class="icon-link-text">
+                <span>{{ section.settings.purchase_history_text | default: 'Purchase history' }}</span>
+                <span class="block">{{ section.settings.purchase_history_subtext | default: 'Track an order, start a return or exchange' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% endif %}
+        </li>
+        <li>
+          <a href="{{ section.settings.my_list_link | default: '/pages/my-list' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.my_list_text | default: 'My List' }}</span>
+              <span class="block">{{ section.settings.my_list_subtext | default: 'Your saved items' }}</span>
+              <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          {% if customer %}
+            <a href="{{ section.settings.account_settings_link | default: '/account' }}" class="link-button">
+              <span class="icon-link-text">
+                <span>{{ section.settings.account_settings_text | default: 'Account settings' }}</span>
+                <span class="block">{{ section.settings.account_settings_subtext | default: 'Updated info, payment, addresses, email preferences' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% else %}
+            <a href="{{ routes.account_login_url }}" class="link-button w-full text-left">
+              <span class="icon-link-text">
+                <span>{{ section.settings.account_settings_text | default: 'Account settings' }}</span>
+                <span class="block">{{ section.settings.account_settings_subtext | default: 'Updated info, payment, addresses, email preferences' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% endif %}
+        </li>
+      </ul>
+      <hr>
+    </div>
+    <div>
+      <ul>
+        <li>
+          <a href="{{ section.settings.find_store_link | default: '/pages/store-map-locator' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.find_store_text | default: 'Find My Store' }}</span>
+              <span aria-hidden="true" class="icon link-arrow-text" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ section.settings.customer_service_link | default: '/pages/help-page' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.customer_service_text | default: 'Customer Service' }}</span>
+              <span aria-hidden="true" class="icon link-arrow-text" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+      <hr>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Account Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Your Account"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Sign in for rewards, easy order tracking and more."
+    },
+    {
+      "type": "text",
+      "id": "sign_in_text",
+      "label": "Sign In Button Text",
+      "default": "Sign In"
+    },
+    {
+      "type": "text",
+      "id": "join_text",
+      "label": "Join Button Text",
+      "default": "Join"
+    },
+    {
+      "type": "url",
+      "id": "purchase_history_link",
+      "label": "Purchase History Link"
+    },
+    {
+      "type": "text",
+      "id": "purchase_history_text",
+      "label": "Purchase History Text",
+      "default": "Purchase history"
+    },
+    {
+      "type": "text",
+      "id": "purchase_history_subtext",
+      "label": "Purchase History Subtext",
+      "default": "Track an order, start a return or exchange"
+    },
+    {
+      "type": "url",
+      "id": "my_list_link",
+      "label": "My List Link"
+    },
+    {
+      "type": "text",
+      "id": "my_list_text",
+      "label": "My List Text",
+      "default": "My List"
+    },
+    {
+      "type": "text",
+      "id": "my_list_subtext",
+      "label": "My List Subtext",
+      "default": "Your saved items"
+    },
+    {
+      "type": "url",
+      "id": "account_settings_link",
+      "label": "Account Settings Link"
+    },
+    {
+      "type": "text",
+      "id": "account_settings_text",
+      "label": "Account Settings Text",
+      "default": "Account settings"
+    },
+    {
+      "type": "text",
+      "id": "account_settings_subtext",
+      "label": "Account Settings Subtext",
+      "default": "Updated info, payment, addresses, email preferences"
+    },
+    {
+      "type": "url",
+      "id": "find_store_link",
+      "label": "Find My Store Link"
+    },
+    {
+      "type": "text",
+      "id": "find_store_text",
+      "label": "Find My Store Text",
+      "default": "Find My Store"
+    },
+    {
+      "type": "url",
+      "id": "customer_service_link",
+      "label": "Customer Service Link"
+    },
+    {
+      "type": "text",
+      "id": "customer_service_text",
+      "label": "Customer Service Text",
+      "default": "Customer Service"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Account Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}
+
+
+
+
+
+{% comment %} {%- style -%}
+  /* Section-specific CSS */
+  .account-section {
+    padding: 5px 0;
+  }
+  .account-section h2 {
+    color: #253746;
+    font-family: 'Garamond Premier Pro', serif;
+    font-size: 2.8rem;
+    font-weight: normal;
+    line-height: 1.2857142857;
+    letter-spacing: 0;
+  }
+  .account-section .subtitle {
+    color: #5E5E5E;
+    font-family: 'DS Trade Gothic', sans-serif;
+    font-size: 13px;
+  }
+  .account-section .btn-login {
+    background-color: #253746;
+    color: white;
+    padding: 0 15px;
+    height: 50px;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+  }
+  .account-section .join-btn {
+    height: 50px;
+    border: 1px solid black;
+    padding: 8px;
+    font-weight: 600;
+    flex: 1;
+    margin-left: 8px;
+    cursor: pointer;
+  }
+  .account-section .link-button {
+    display: block;
+    text-align: left;
+    color: #000;
+    text-decoration: none;
+  }
+  .account-section .icon-link-text {
+    font-weight: bold;
+  }
+  .account-section .icon-link-text .block {
+    display: block;
+    font-weight: medium;
+    color: #5E5E5E;
+  }
+  .account-section .link-arrow {
+    display: inline-block;
+    margin-left: 5px;
+  }
+  .account-section hr {
+    height: 0.1px;
+    margin: 25px 0;
+    background-color: #c6c6c6;
+    border: none;
+  }
+  .account-section .flex {
+    display: flex;
+    gap: 15px;
+  }
+  .account-section ul {
+    padding-top: 11px;
+    list-style: none;
+  }
+  .account-section li {
+    margin-bottom: 11px;
+  }
+  /* Fallback for missing fonts */
+  @font-face {
+    font-family: 'Garamond Premier Pro';
+    src: url('https://fonts.cdnfonts.com/s/22527/GaramondPremierPro-It.woff') format('woff');
+  }
+  @font-face {
+    font-family: 'DS Trade Gothic';
+    src: url('https://fonts.cdnfonts.com/s/22527/TradeGothicLTStd-BdCn20.woff') format('woff');
+  }
+{%- endstyle -%}
+
+<div class="account-section">
+  <div class="px-0 transition-opacity duration-500">
+    <h2>{{ section.settings.title | default: 'Your Account' }}</h2>
+    <span class="subtitle">{{ section.settings.subtitle | default: 'Sign in for rewards, easy order tracking and more.' }}</span>
+  </div>
+
+  <div class="py-[10px] px-0 transition-opacity duration-500">
+    <div class="flex">
+      <a href="{{ section.settings.sign_in_url | default: routes.account_login_url }}" class="button btn-login" data-action="open-login" data-variant="secondary">
+        <span>{{ section.settings.sign_in_text | default: 'Sign In' }}</span>
+      </a>
+      <a href="{{ section.settings.join_url | default: routes.account_register_url }}" class="button join-btn" data-action="open-join" data-variant="tertiary-dark">
+        <span>{{ section.settings.join_text | default: 'Join' }}</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="py-[10px] px-0">
+    <div>
+      <ul>
+        <li>
+          {% if customer %}
+            <a href="{{ section.settings.purchase_history_link | default: routes.account_url }}" class="link-button">
+              <span class="icon-link-text">
+                <span>{{ section.settings.purchase_history_text | default: 'Purchase history' }}</span>
+                <span class="block">{{ section.settings.purchase_history_subtext | default: 'Track an order, start a return or exchange' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% else %}
+            <a href="{{ section.settings.sign_in_url | default: routes.account_login_url }}" class="link-button w-full text-left">
+              <span class="icon-link-text">
+                <span>{{ section.settings.purchase_history_text | default: 'Purchase history' }}</span>
+                <span class="block">{{ section.settings.purchase_history_subtext | default: 'Track an order, start a return or exchange' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% endif %}
+        </li>
+        <li>
+          <a href="{{ section.settings.my_list_link | default: '/pages/my-list' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.my_list_text | default: 'My List' }}</span>
+              <span class="block">{{ section.settings.my_list_subtext | default: 'Your saved items' }}</span>
+              <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          {% if customer %}
+            <a href="{{ section.settings.account_settings_link | default: '/account' }}" class="link-button">
+              <span class="icon-link-text">
+                <span>{{ section.settings.account_settings_text | default: 'Account settings' }}</span>
+                <span class="block">{{ section.settings.account_settings_subtext | default: 'Updated info, payment, addresses, email preferences' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% else %}
+            <a href="{{ section.settings.sign_in_url | default: routes.account_login_url }}" class="link-button w-full text-left">
+              <span class="icon-link-text">
+                <span>{{ section.settings.account_settings_text | default: 'Account settings' }}</span>
+                <span class="block">{{ section.settings.account_settings_subtext | default: 'Updated info, payment, addresses, email preferences' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% endif %}
+        </li>
+      </ul>
+      <hr>
+    </div>
+    <div>
+      <ul>
+        <li>
+          <a href="{{ section.settings.find_store_link | default: '/pages/store-map-locator' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.find_store_text | default: 'Find My Store' }}</span>
+              <span aria-hidden="true" class="icon link-arrow-text" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ section.settings.customer_service_link | default: '/pages/help-page' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.customer_service_text | default: 'Customer Service' }}</span>
+              <span aria-hidden="true" class="icon link-arrow-text" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+      <hr>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Account Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Your Account"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Sign in for rewards, easy order tracking and more."
+    },
+    {
+      "type": "text",
+      "id": "sign_in_text",
+      "label": "Sign In Button Text",
+      "default": "Sign In"
+    },
+    {
+      "type": "url",
+      "id": "sign_in_url",
+      "label": "Sign In URL"
+    },
+    {
+      "type": "text",
+      "id": "join_text",
+      "label": "Join Button Text",
+      "default": "Join"
+    },
+    {
+      "type": "url",
+      "id": "join_url",
+      "label": "Join URL"
+    },
+    {
+      "type": "url",
+      "id": "purchase_history_link",
+      "label": "Purchase History Link"
+    },
+    {
+      "type": "text",
+      "id": "purchase_history_text",
+      "label": "Purchase History Text",
+      "default": "Purchase history"
+    },
+    {
+      "type": "text",
+      "id": "purchase_history_subtext",
+      "label": "Purchase History Subtext",
+      "default": "Track an order, start a return or exchange"
+    },
+    {
+      "type": "url",
+      "id": "my_list_link",
+      "label": "My List Link"
+    },
+    {
+      "type": "text",
+      "id": "my_list_text",
+      "label": "My List Text",
+      "default": "My List"
+    },
+    {
+      "type": "text",
+      "id": "my_list_subtext",
+      "label": "My List Subtext",
+      "default": "Your saved items"
+    },
+    {
+      "type": "url",
+      "id": "account_settings_link",
+      "label": "Account Settings Link"
+    },
+    {
+      "type": "text",
+      "id": "account_settings_text",
+      "label": "Account Settings Text",
+      "default": "Account settings"
+    },
+    {
+      "type": "text",
+      "id": "account_settings_subtext",
+      "label": "Account Settings Subtext",
+      "default": "Updated info, payment, addresses, email preferences"
+    },
+    {
+      "type": "url",
+      "id": "find_store_link",
+      "label": "Find My Store Link"
+    },
+    {
+      "type": "text",
+      "id": "find_store_text",
+      "label": "Find My Store Text",
+      "default": "Find My Store"
+    },
+    {
+      "type": "url",
+      "id": "customer_service_link",
+      "label": "Customer Service Link"
+    },
+    {
+      "type": "text",
+      "id": "customer_service_text",
+      "label": "Customer Service Text",
+      "default": "Customer Service"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Account Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}
+ <!-- sections/account-modal.liquid -->
+
+
+
+{% comment %} <modal-dialog id="account-modal" class="fixed inset-0 z-50 flex justify-end hidden bg-black/50">
+  <div
+    role="dialog"
+    aria-modal="true"
+    class=" max-w-full h-full bg-[#f9f7f2]  overflow-y-auto relative shadow-lg drawer-modal"
+  >
+    <button
+      id="ModalClose-account"
+      class="absolute right-0 modal-close-button"
+    >
+      <span aria-hidden="true" class="icon" data-icon="close-anf" data-testid="icon"></span>
+    </button>
+
+    <div class="">
+      <div class="py-[5px] px-0 ">
+        <div class="px-0 transition-opacity duration-500">
+          <h2 class="text-[#253746] font-[garamond-premier-pro] text-[2.8rem] font-normal leading-[1.2857142857] tracking-[0]">
+            <span class="w-[147px] h-[38px]">
+              {%- if customer %}Hi, {{ customer.first_name }}{% else %}{{ 'customer.account.account' | t }}{% endif -%}
+            </span>
+          </h2>
+          {% unless customer %}
+            <span class="text-[#5E5E5E] text-[13px] font-[DS_Trade_Gothic] w-[312.31px] h-[12px]">
+              {{- 'customer.account.sign_in_rewards' | t -}}
+            </span>
+          {% endunless %}
+        </div>
+        {% unless customer %}
+          <div class=" py-[10px] px-0 transition-opacity duration-500">
+            <div class=" flex gap-[15px]">
+              <modal-opener data-modal="#LoginModal">
+                {% comment %} <a href="{{ routes.account_login_url }}"> {% endcomment %}
+                <button
+                  class="button btn-login bg-[#253746] px-[15px] py-0 h-[50px] text-white text-center"
+                  data-action="open-login"
+                  data-variant="secondary"
+                >
+                  <span class="w-[49px] h-[18px] pointer-events-none">{{ 'customer.login_page.sign_in' | t }}</span>
+                </button>
+                {% comment %} </a> {% endcomment %}
+              </modal-opener>
+              <modal-opener data-modal="#CreateAccountModal">
+                {% comment %} <a href="{{ routes.account_register_url }}"> {% endcomment %}
+                <button
+                  data-variant="tertiary-dark"
+                  class="button join-btn  h-[50px] flex-1 border border-black py-2 ml-2 font-semibold"
+                  data-action="open-join"
+                >
+                  <span class="">{{ 'customer.login_page.join' | t }}</span>
+                </button>
+                {% comment %} </a> {% endcomment %}
+              </modal-opener>
+            </div>
+          </div>
+        {% endunless %}
+        <div class="py-[10px] px-0">
+          <div class="">
+            <ul class="pt-[11px]">
+              {%- capture purchase_history_link -%}
+                <span class=".icon-link-text font-bold">
+                  <span>{{ 'customer.purchase_history.title' | t }}</span>
+                  <span class="block font-medium">{{ 'customer.purchase_history.order_track' | t }}</span>
+                  <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon"></span>
+                </span>
+              {%- endcapture -%}
+
+              {%- capture account_settings_link -%}
+                <span class=".icon-link-text font-bold">
+                  <span>{{ 'customer.account.acc_settings' | t }}</span>
+                  <span class="block font-medium">{{ 'customer.account.acc_settings_subtext' | t }}</span>
+                  <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon"></span>
+                </span>
+              {%- endcapture -%}
+
+              <li class="mb-[11px] relative">
+                {% if customer %}
+                  <a class="link-button" href="{{ routes.account_url }}">
+                    {{ purchase_history_link }}
+                  </a>
+                {% else %}
+                  <modal-opener data-modal="#LoginModal">
+                    <button class="link-button w-full text-left">
+                      {{ purchase_history_link }}
+                    </button>
+                  </modal-opener>
+                {% endif %}
+              </li>
+
+              <li class="mb-[11px] relative">
+                <a class="link-button" href="/pages/my-list">
+                  <span class=".icon-link-text font-bold">
+                    <span>{{ 'customer.my_list_page.title' | t }}</span>
+                    <span class="block font-medium">{{ 'customer.my_list_page.save_item_list' | t }}</span>
+                    <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon"></span>
+                  </span>
+                </a>
+              </li>
+
+              <li class="mb-[11px] relative">
+                {% if customer %}
+                  <a class="link-button" href="/pages/account">
+                    {{ account_settings_link }}
+                  </a>
+                {% else %}
+                  <modal-opener data-modal="#LoginModal">
+                    <button class="link-button w-full text-left">
+                      {{ account_settings_link }}
+                    </button>
+                  </modal-opener>
+                {% endif %}
+              </li>
+            </ul>
+
+            <hr class="h-[0.1px] my-[25px] bg-divider border-0 dark:bg-divider">
+          </div>
+          <div class="">
+            <ul class=" pt-[11px]">
+              <li class=" mb-[11px] relative">
+                <a href="/pages/store-map-locator" class="block cursor-pointer link-button">
+                  <span class=".icon-link-text font-bold">
+                    <span class="">{{ 'customer.account.store' | t }}</span>
+                    <span
+                      aria-hidden="true"
+                      class="icon link-arrow-text"
+                      data-icon="right-thin"
+                      data-testid="icon"
+                    ></span>
+                  </span>
+                </a>
+              </li>
+
+              <li class="mb-[11px] relative">
+                <a href="/pages/help-page" class="block cursor-pointer link-button">
+                  <span class=".icon-link-text font-bold">
+                    <span class="">{{ 'customer.account.customer_service' | t }}</span>
+                    <span
+                      aria-hidden="true"
+                      class="icon link-arrow-text"
+                      data-icon="right-thin"
+                      data-testid="icon"
+                    ></span>
+                  </span>
+                </a>
+              </li>
+            </ul>
+            <hr class="h-[0.1px] my-[25px] bg-[#c6c6c6] border-0 dark:bg-[#c6c6c6]">
+            {% if customer %}
+              <div class="mt-2rem">
+                <a
+                  href="{{ routes.account_logout_url }}"
+                  class="w-full py-2 font-semibold  button  !border !border-[#c6c6c6] pb-[3px] pt-[3px] !text-[#253746] hover:!bg-[#4b4b4b] hover:!border-[#4b4b4b] hover:!text-white"
+                >
+                  <span class="">{{ 'customer.log_out' | t }}</span>
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</modal-dialog>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const accountModal = document.getElementById('account-modal');
+    const buttons = [
+      { selector: '[data-action="open-login"]', modalId: '#LoginModal' },
+      { selector: '[data-action="open-join"]', modalId: '#CreateAccountModal' },
+    ];
+
+    buttons.forEach(({ selector, modalId }) => {
+      const button = document.querySelector(selector);
+      if (button && accountModal) {
+        button.addEventListener('click', () => {
+          // Check if the modal has a close method (Shopify custom element)
+          if (typeof accountModal.close === 'function') {
+            accountModal.close();
+          } else {
+            // Fallback to adding 'hidden' class
+            accountModal.classList.add('hidden');
+          }
+        });
+      }
+    });
+  });
+</script> {% endcomment %}
+
+
+<!-- sections/mobile-account-section.liquid -->
+{% comment %} <modal-dialog id="mobile-account-modal" class="fixed inset-0 z-50 flex justify-end hidden bg-black/50">
+  <div
+    role="dialog"
+    aria-modal="true"
+    class="max-w-full h-full bg-[#f9f7f2] overflow-y-auto relative shadow-lg drawer-modal"
+  >
+    <button
+      id="ModalClose-mobile-account"
+      class="absolute right-0 modal-close-button"
+    >
+      <span aria-hidden="true" class="icon" data-icon="close-anf" data-testid="icon"></span>
+    </button>
+
+    <div class="">
+      <div class="py-[5px] px-0">
+        <div class="px-0 transition-opacity duration-500">
+          <h2 class="text-[#253746] font-[garamond-premier-pro] text-[2.8rem] font-normal leading-[1.2857142857] tracking-[0]">
+            <span class="w-[147px] h-[38px]">
+              {%- if customer %}Hi, {{ customer.first_name }}{% else %}{{ 'customer.account.account' | t }}{% endif -%}
+            </span>
+          </h2>
+          {% unless customer %}
+            <span class="text-[#5E5E5E] text-[13px] font-[DS_Trade_Gothic] w-[312.31px] h-[12px]">
+              {{- 'customer.account.sign_in_rewards' | t -}}
+            </span>
+          {% endunless %}
+        </div>
+        {% unless customer %}
+          <div class="py-[10px] px-0 transition-opacity duration-500">
+            <div class="flex gap-[15px]">
+              <modal-opener data-modal="#LoginModal">
+                <button
+                  class="button btn-login bg-[#253746] px-[15px] py-0 h-[50px] text-white text-center"
+                  data-action="open-login"
+                  data-variant="secondary"
+                >
+                  <span class="w-[49px] h-[18px] pointer-events-none">{{ 'customer.login_page.sign_in' | t }}</span>
+                </button>
+              </modal-opener>
+              <modal-opener data-modal="#CreateAccountModal">
+                <button
+                  data-variant="tertiary-dark"
+                  class="button join-btn h-[50px] flex-1 border border-black py-2 ml-2 font-semibold"
+                  data-action="open-join"
+                >
+                  <span class="">{{ 'customer.login_page.join' | t }}</span>
+                </button>
+              </modal-opener>
+            </div>
+          </div>
+        {% endunless %}
+        <div class="py-[10px] px-0">
+          <div class="">
+            <ul class="pt-[11px]">
+              {%- capture purchase_history_link -%}
+                <span class=".icon-link-text font-bold">
+                  <span>{{ 'customer.purchase_history.title' | t }}</span>
+                  <span class="block font-medium">{{ 'customer.purchase_history.order_track' | t }}</span>
+                  <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon"></span>
+                </span>
+              {%- endcapture -%}
+
+              {%- capture account_settings_link -%}
+                <span class=".icon-link-text font-bold">
+                  <span>{{ 'customer.account.acc_settings' | t }}</span>
+                  <span class="block font-medium">{{ 'customer.account.acc_settings_subtext' | t }}</span>
+                  <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon"></span>
+                </span>
+              {%- endcapture -%}
+
+              <li class="mb-[11px] relative">
+                {% if customer %}
+                  <a class="link-button" href="{{ routes.account_url }}">
+                    {{ purchase_history_link }}
+                  </a>
+                {% else %}
+                  <modal-opener data-modal="#LoginModal">
+                    <button class="link-button w-full text-left">
+                      {{ purchase_history_link }}
+                    </button>
+                  </modal-opener>
+                {% endif %}
+              </li>
+
+              <li class="mb-[11px] relative">
+                <a class="link-button" href="/pages/my-list">
+                  <span class=".icon-link-text font-bold">
+                    <span>{{ 'customer.my_list_page.title' | t }}</span>
+                    <span class="block font-medium">{{ 'customer.my_list_page.save_item_list' | t }}</span>
+                    <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon"></span>
+                  </span>
+                </a>
+              </li>
+
+              <li class="mb-[11px] relative">
+                {% if customer %}
+                  <a class="link-button" href="/pages/account">
+                    {{ account_settings_link }}
+                  </a>
+                {% else %}
+                  <modal-opener data-modal="#LoginModal">
+                    <button class="link-button w-full text-left">
+                      {{ account_settings_link }}
+                    </button>
+                  </modal-opener>
+                {% endif %}
+              </li>
+            </ul>
+
+            <hr class="h-[0.1px] my-[25px] bg-divider border-0 dark:bg-divider">
+          </div>
+          <div class="">
+            <ul class="pt-[11px]">
+              <li class="mb-[11px] relative">
+                <a href="/pages/store-map-locator" class="block cursor-pointer link-button">
+                  <span class=".icon-link-text font-bold">
+                    <span class="">{{ 'customer.account.store' | t }}</span>
+                    <span
+                      aria-hidden="true"
+                      class="icon link-arrow-text"
+                      data-icon="right-thin"
+                      data-testid="icon"
+                    ></span>
+                  </span>
+                </a>
+              </li>
+
+              <li class="mb-[11px] relative">
+                <a href="/pages/help-page" class="block cursor-pointer link-button">
+                  <span class=".icon-link-text font-bold">
+                    <span class="">{{ 'customer.account.customer_service' | t }}</span>
+                    <span
+                      aria-hidden="true"
+                      class="icon link-arrow-text"
+                      data-icon="right-thin"
+                      data-testid="icon"
+                    ></span>
+                  </span>
+                </a>
+              </li>
+            </ul>
+            <hr class="h-[0.1px] my-[25px] bg-[#c6c6c6] border-0 dark:bg-[#c6c6c6]">
+            {% if customer %}
+              <div class="mt-2rem">
+                <a
+                  href="{{ routes.account_logout_url }}"
+                  class="w-full py-2 font-semibold button !border !border-[#c6c6c6] pb-[3px] pt-[3px] !text-[#253746] hover:!bg-[#4b4b4b] hover:!border-[#4b4b4b] hover:!text-white"
+                >
+                  <span class="">{{ 'customer.log_out' | t }}</span>
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</modal-dialog>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const accountModal = document.getElementById('mobile-account-modal');
+    const buttons = [
+      { selector: '[data-action="open-login"]', modalId: '#LoginModal' },
+      { selector: '[data-action="open-join"]', modalId: '#CreateAccountModal' },
+    ];
+
+    buttons.forEach(({ selector, modalId }) => {
+      const button = document.querySelector(selector);
+      if (button && accountModal) {
+        button.addEventListener('click', () => {
+          // Check if the modal has a close method (Shopify custom element)
+          if (typeof accountModal.close === 'function') {
+            accountModal.close();
+          } else {
+            // Fallback to adding 'hidden' class
+            accountModal.classList.add('hidden');
+          }
+        });
+      }
+    });
+  });
+</script> {% endcomment %}
+
+<!-- sections/account-page.liquid -->
+ {% comment %} <section class="account-page bg-[#f9f7f2] min-h-screen py-8 px-4 sm:px-6 lg:px-12">
+  <div class="max-w-3xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-[#253746] font-[garamond-premier-pro] text-[2.8rem] font-normal leading-[1.2]">
+        {% if customer %}
+          Hi, {{ customer.first_name }}
+        {% else %}
+          {{ 'customer.account.account' | t }}
+        {% endif %}
+      </h2>
+    </div>
+
+    {% unless customer %}
+      <p class="text-[#5E5E5E] text-[13px] font-[DS_Trade_Gothic] mb-6">
+        {{ 'customer.account.sign_in_rewards' | t }}
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 mb-8">
+        <a href="{{ routes.account_login_url }}" class="button bg-[#253746] text-white px-6 py-3 h-[50px] text-center w-full sm:w-auto"style="background-color: black;">
+          {{ 'customer.login_page.sign_in' | t }}
+        </a>
+        <a href="{{ routes.account_register_url }}" class="button border border-black h-[50px] py-2 px-6 font-semibold text-center w-full sm:w-auto"style="background-color: black;">
+          {{ 'customer.login_page.join' | t }}
+        </a>
+      </div>
+    {% endunless %}
+
+    <ul class="divide-y divide-[#c6c6c6] border-t border-b border-[#c6c6c6] mb-8">
+      <li class="py-4">
+        {% if customer %}
+          <a class="flex justify-between items-center text-[#253746] font-medium" href="{{ routes.account_url }}">
+            <span>
+              {{ 'customer.purchase_history.title' | t }}
+              <span class="block text-sm text-[#5E5E5E]">{{ 'customer.purchase_history.order_track' | t }}</span>
+            </span>
+            <span aria-hidden="true" class="icon" data-icon="right-thin"></span>
+          </a>
+        {% else %}
+          <a href="{{ routes.account_login_url }}" class="flex justify-between items-center text-[#253746] font-medium">
+            <span>
+              {{ 'customer.purchase_history.title' | t }}
+              <span class="block text-sm text-[#5E5E5E]">{{ 'customer.purchase_history.order_track' | t }}</span>
+            </span>
+            <span aria-hidden="true" class="icon" data-icon="right-thin"></span>
+          </a>
+        {% endif %}
+      </li>
+
+      <li class="py-4">
+        <a href="/pages/my-list" class="flex justify-between items-center text-[#253746] font-medium">
+          <span>
+            {{ 'customer.my_list_page.title' | t }}
+            <span class="block text-sm text-[#5E5E5E]">{{ 'customer.my_list_page.save_item_list' | t }}</span>
+          </span>
+          <span aria-hidden="true" class="icon" data-icon="right-thin"></span>
+        </a>
+      </li>
+
+      <li class="py-4">
+        {% if customer %}
+          <a href="/pages/account" class="flex justify-between items-center text-[#253746] font-medium">
+            <span>
+              {{ 'customer.account.acc_settings' | t }}
+              <span class="block text-sm text-[#5E5E5E]">{{ 'customer.account.acc_settings_subtext' | t }}</span>
+            </span>
+            <span aria-hidden="true" class="icon" data-icon="right-thin"></span>
+          </a>
+        {% else %}
+          <a href="{{ routes.account_login_url }}" class="flex justify-between items-center text-[#253746] font-medium">
+            <span>
+              {{ 'customer.account.acc_settings' | t }}
+              <span class="block text-sm text-[#5E5E5E]">{{ 'customer.account.acc_settings_subtext' | t }}</span>
+            </span>
+            <span aria-hidden="true" class="icon" data-icon="right-thin"></span>
+          </a>
+        {% endif %}
+      </li>
+    </ul>
+
+    <ul class="divide-y divide-[#c6c6c6] border-t border-b border-[#c6c6c6] mb-8">
+      <li class="py-4">
+        <a href="/pages/store-map-locator" class="flex justify-between items-center text-[#253746] font-medium">
+          <span>{{ 'customer.account.store' | t }}</span>
+          <span aria-hidden="true" class="icon" data-icon="right-thin"></span>
+        </a>
+      </li>
+
+      <li class="py-4">
+        <a href="/pages/help-page" class="flex justify-between items-center text-[#253746] font-medium">
+          <span>{{ 'customer.account.customer_service' | t }}</span>
+          <span aria-hidden="true" class="icon" data-icon="right-thin"></span>
+        </a>
+      </li>
+    </ul>
+
+    {% if customer %}
+      <div class="mt-6">
+        <a
+          href="{{ routes.account_logout_url }}"
+          class="w-full block py-3 font-semibold text-center border border-[#c6c6c6] text-[#253746] hover:bg-[#4b4b4b] hover:border-[#4b4b4b] hover:text-white"
+        >
+          {{ 'customer.log_out' | t }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>  {% endcomment %}
+
+ 
+ {% comment %} <div class="">
+      <div class="py-[5px] px-0 ">
+        <div class="px-0 transition-opacity duration-500">
+          <h2 class="text-[#253746] font-[garamond-premier-pro] text-[2.8rem] font-normal leading-[1.2857142857] tracking-[0]">
+            <span class="w-[147px] h-[38px]">
+              {%- if customer %}Hi, {{ customer.first_name }}{% else %}{{ 'customer.account.account' | t }}{% endif -%}
+            </span>
+          </h2>
+          {% unless customer %}
+            <span class="text-[#5E5E5E] text-[13px] font-[DS_Trade_Gothic] w-[312.31px] h-[12px]">
+              {{- 'customer.account.sign_in_rewards' | t -}}
+            </span>
+          {% endunless %}
+        </div>
+        {% unless customer %}
+          <div class=" py-[10px] px-0 transition-opacity duration-500">
+            <div class=" flex gap-[15px]">
+              <modal-opener data-modal="#LoginModal">
+                {% comment %} <a href="{{ routes.account_login_url }}"> {% endcomment %}
+                <button
+                  class="button btn-login bg-[#253746] px-[15px] py-0 h-[50px] text-white text-center"
+                  data-action="open-login"
+                  data-variant="secondary"
+                >
+                  <span class="w-[49px] h-[18px] pointer-events-none">{{ 'customer.login_page.sign_in' | t }}</span>
+                </button>
+                {% comment %} </a> {% endcomment %}
+              </modal-opener>
+              <modal-opener data-modal="#CreateAccountModal">
+                {% comment %} <a href="{{ routes.account_register_url }}"> {% endcomment %}
+                <button
+                  data-variant="tertiary-dark"
+                  class="button join-btn  h-[50px] flex-1 border border-black py-2 ml-2 font-semibold"
+                  data-action="open-join"
+                >
+                  <span class="">{{ 'customer.login_page.join' | t }}</span>
+                </button>
+                {% comment %} </a> {% endcomment %}
+              </modal-opener>
+            </div>
+          </div>
+        {% endunless %}
+        <div class="py-[10px] px-0">
+          <div class="">
+            <ul class="pt-[11px]">
+              {%- capture purchase_history_link -%}
+                <span class=".icon-link-text font-bold">
+                  <span>{{ 'customer.purchase_history.title' | t }}</span>
+                  <span class="block font-medium">{{ 'customer.purchase_history.order_track' | t }}</span>
+                  <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon"></span>
+                </span>
+              {%- endcapture -%}
+
+              {%- capture account_settings_link -%}
+                <span class=".icon-link-text font-bold">
+                  <span>{{ 'customer.account.acc_settings' | t }}</span>
+                  <span class="block font-medium">{{ 'customer.account.acc_settings_subtext' | t }}</span>
+                  <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon"></span>
+                </span>
+              {%- endcapture -%}
+
+              <li class="mb-[11px] relative">
+                {% if customer %}
+                  <a class="link-button" href="{{ routes.account_url }}">
+                    {{ purchase_history_link }}
+                  </a>
+                {% else %}
+                  <modal-opener data-modal="#LoginModal">
+                    <button class="link-button w-full text-left">
+                      {{ purchase_history_link }}
+                    </button>
+                  </modal-opener>
+                {% endif %}
+              </li>
+
+              <li class="mb-[11px] relative">
+                <a class="link-button" href="/pages/my-list">
+                  <span class=".icon-link-text font-bold">
+                    <span>{{ 'customer.my_list_page.title' | t }}</span>
+                    <span class="block font-medium">{{ 'customer.my_list_page.save_item_list' | t }}</span>
+                    <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon"></span>
+                  </span>
+                </a>
+              </li>
+
+              <li class="mb-[11px] relative">
+                {% if customer %}
+                  <a class="link-button" href="/pages/account">
+                    {{ account_settings_link }}
+                  </a>
+                {% else %}
+                  <modal-opener data-modal="#LoginModal">
+                    <button class="link-button w-full text-left">
+                      {{ account_settings_link }}
+                    </button>
+                  </modal-opener>
+                {% endif %}
+              </li>
+            </ul>
+
+            <hr class="h-[0.1px] my-[25px] bg-divider border-0 dark:bg-divider">
+          </div>
+          <div class="">
+            <ul class=" pt-[11px]">
+              <li class=" mb-[11px] relative">
+                <a href="/pages/store-map-locator" class="block cursor-pointer link-button">
+                  <span class=".icon-link-text font-bold">
+                    <span class="">{{ 'customer.account.store' | t }}</span>
+                    <span
+                      aria-hidden="true"
+                      class="icon link-arrow-text"
+                      data-icon="right-thin"
+                      data-testid="icon"
+                    ></span>
+                  </span>
+                </a>
+              </li>
+
+              <li class="mb-[11px] relative">
+                <a href="/pages/help-page" class="block cursor-pointer link-button">
+                  <span class=".icon-link-text font-bold">
+                    <span class="">{{ 'customer.account.customer_service' | t }}</span>
+                    <span
+                      aria-hidden="true"
+                      class="icon link-arrow-text"
+                      data-icon="right-thin"
+                      data-testid="icon"
+                    ></span>
+                  </span>
+                </a>
+              </li>
+            </ul>
+            <hr class="h-[0.1px] my-[25px] bg-[#c6c6c6] border-0 dark:bg-[#c6c6c6]">
+            {% if customer %}
+              <div class="mt-2rem">
+                <a
+                  href="{{ routes.account_logout_url }}"
+                  class="w-full py-2 font-semibold  button  !border !border-[#c6c6c6] pb-[3px] pt-[3px] !text-[#253746] hover:!bg-[#4b4b4b] hover:!border-[#4b4b4b] hover:!text-white"
+                >
+                  <span class="">{{ 'customer.log_out' | t }}</span>
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div> {% endcomment %}
+
+ <div class="account-container">
+  <div class="account-spacing-top px-zero">
+    <div class="px-zero fade-in">
+      <h2 class="heading-primary text-dark-blue font-custom-serif text-2.8rem font-normal leading-custom tracking-zero">
+        <span class="title-span width-147 height-38">
+          {%- if customer %}Hi, {{ customer.first_name }}{% else %}{{ 'customer.account.account' | t }}{% endif -%}
+        </span>
+      </h2>
+      {% unless customer %}
+        <span class="subtext-gray text-13 font-custom-sans width-312 height-12">
+          {{- 'customer.account.sign_in_rewards' | t -}}
+        </span>
+      {% endunless %}
+    </div>
+    {% unless customer %}
+      <div class="account-spacing-middle px-zero fade-in">
+        <div class="button-row gap-15">
+          <modal-opener data-modal="#LoginModal">
+            <button
+              class="action-button login-btn bg-dark-blue px-15 py-zero height-50 text-white text-center"
+              data-action="open-login"
+              data-variant="secondary"
+            >
+              <span class="btn-span width-49 height-18 pointer-events-none">{{ 'customer.login_page.sign_in' | t }}</span>
+            </button>
+          </modal-opener>
+          <modal-opener data-modal="#CreateAccountModal">
+            <button
+              data-variant="tertiary-dark"
+              class="action-button join-btn height-50 flex-1 border-black py-2 ml-2 font-semibold"
+              data-action="open-join"
+            >
+              <span class="">{{ 'customer.login_page.join' | t }}</span>
+            </button>
+          </modal-opener>
+        </div>
+      </div>
+    {% endunless %}
+    <div class="account-spacing-bottom px-zero">
+      <div class="link-section">
+        <ul class="link-list pt-11">
+          {%- capture purchase_history_link -%}
+            <span class="link-text font-bold">
+              <span>{{ 'customer.purchase_history.title' | t }}</span>
+              <span class="block font-medium">{{ 'customer.purchase_history.order_track' | t }}</span>
+              <span aria-hidden="true" class="icon arrow-right" data-icon="right-thin" data-testid="icon"></span>
+            </span>
+          {%- endcapture -%}
+
+          {%- capture account_settings_link -%}
+            <span class="link-text font-bold">
+              <span>{{ 'customer.account.acc_settings' | t }}</span>
+              <span class="block font-medium">{{ 'customer.account.acc_settings_subtext' | t }}</span>
+              <span aria-hidden="true" class="icon arrow-right" data-icon="right-thin" data-testid="icon"></span>
+            </span>
+          {%- endcapture -%}
+
+          <li class="list-item mb-11 relative">
+            {% if customer %}
+              <a class="nav-link" href="{{ routes.account_url }}">
+                {{ purchase_history_link }}
+              </a>
+            {% else %}
+              <modal-opener data-modal="#LoginModal">
+                <button class="nav-link w-full text-left">
+                  {{ purchase_history_link }}
+                </button>
+              </modal-opener>
+            {% endif %}
+          </li>
+
+          <li class="list-item mb-11 relative">
+            <a class="nav-link" href="/pages/my-list">
+              <span class="link-text font-bold">
+                <span>{{ 'customer.my_list_page.title' | t }}</span>
+                <span class="block font-medium">{{ 'customer.my_list_page.save_item_list' | t }}</span>
+                <span aria-hidden="true" class="icon arrow-right" data-icon="right-thin" data-testid="icon"></span>
+              </span>
+            </a>
+          </li>
+
+          <li class="list-item mb-11 relative">
+            {% if customer %}
+              <a class="nav-link" href="/pages/account">
+                {{ account_settings_link }}
+              </a>
+            {% else %}
+              <modal-opener data-modal="#LoginModal">
+                <button class="nav-link w-full text-left">
+                  {{ account_settings_link }}
+                </button>
+              </modal-opener>
+            {% endif %}
+          </li>
+        </ul>
+
+        <hr class="divider-line height-0.1 my-25 bg-divider border-0 dark:bg-divider">
+      </div>
+      <div class="link-section">
+        <ul class="link-list pt-11">
+          <li class="list-item mb-11 relative">
+            <a href="/pages/store-map-locator" class="nav-link block cursor-pointer">
+              <span class="link-text font-bold">
+                <span class="">{{ 'customer.account.store' | t }}</span>
+                <span aria-hidden="true" class="icon arrow-right-text" data-icon="right-thin" data-testid="icon"></span>
+              </span>
+            </a>
+          </li>
+
+          <li class="list-item mb-11 relative">
+            <a href="/pages/help-page" class="nav-link block cursor-pointer">
+              <span class="link-text font-bold">
+                <span class="">{{ 'customer.account.customer_service' | t }}</span>
+                <span aria-hidden="true" class="icon arrow-right-text" data-icon="right-thin" data-testid="icon"></span>
+              </span>
+            </a>
+          </li>
+        </ul>
+        <hr class="divider-line height-0.1 my-25 bg-gray border-0 dark:bg-gray">
+        {% if customer %}
+          <div class="logout-section mt-2rem">
+            <a
+              href="{{ routes.account_logout_url }}"
+              class="logout-btn w-full py-2 font-semibold border border-gray pb-3 pt-3 text-dark-blue hover:bg-gray-dark hover:border-gray-dark hover:text-white"
+            >
+              <span class="">{{ 'customer.log_out' | t }}</span>
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div> 
+
+{% schema %}
+{
+  "name": "Mobile Account Section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Mobile Account Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %} 
+<style>
+ /* Center the main container */
+.account-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Style the top spacing section */
+.account-spacing-top {
+  text-align: center;
+  padding: 5px 0;
+}
+
+/* Style the heading */
+.heading-primary {
+  color: #253746;
+  font-family: "garamond-premier-pro", serif;
+  font-size: 2.8rem;
+  font-weight: normal;
+  line-height: 1.2857142857;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+/* Style the subtext when no customer is logged in */
+.subtext-gray {
+  color: #5E5E5E;
+  font-size: 13px;
+  font-family: "DS_Trade_Gothic", sans-serif;
+  display: block;
+  margin-top: 5px;
+}
+
+/* Style the middle spacing section with buttons */
+.account-spacing-middle {
+  padding: 10px 0;
+  text-align: center;
+}
+
+/* Style the button row */
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 0 auto;
+  max-width: 350px;
+}
+
+/* Style the login and join buttons */
+.action-button {
+  padding: 0 15px;
+  height: 50px;
+  font-weight: normal;
+  border: none;
+  cursor: pointer;
+}
+.login-btn {
+  background-color: #253746;
+  color: white;
+  text-align: center;
+  min-width: 120px;
+}
+.join-btn {
+  background-color: transparent;
+  color: #000;
+  border: 1px solid #000;
+  font-weight: 600;
+  min-width: 120px;
+  margin-left: 0;
+}
+
+/* Style the bottom spacing section */
+.account-spacing-bottom {
+  padding: 10px 0;
+  max-width: 400px;
+  margin: 0 auto;
+}
+.list-item mb-11 relative
+{
+  text-align: left;
+  font-family: DS Trade Gothic, Trade Gothic, sans-serif;
+  font-size: 1.3rem;
+  font-stretch: 100%;
+  font-weight: 400;
+  letter-spacing: 0.6px;
+  line-height: 1.5384615385;
+  cursor: pointer;
+  background-color: transparent;
+  color: #5e5e5e;
+  padding: 7px 30px 8px 0;
+}
+/* Style the link list */
+.link-list {
+  list-style-type: none;
+  padding: 0;
+  text-align: left;
+}
+
+/* Style list items */
+.list-item {
+  margin-bottom: 11px;
+  position: relative;
+}
+
+/* Style navigation links */
+.nav-link {
+  display: block;
+  color: #253746;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 5px 0;
+}
+.nav-link:hover {
+  color: #4b4b4b;
+}
+
+/* Style the link text */
+.link-text {
+  font-weight: bold;
+}
+.link-text .block {
+  font-weight: 500;
+  color: #666;
+}
+
+/* Style the arrow icons */
+{% comment %} .icon.arrow-right,
+.icon.arrow-right-text {
+  display: inline-block;
+  margin-left: 5px;
+  vertical-align: middle;
+} {% endcomment %}
+
+.arrow-right{
+ position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15.6px;
+  height: 24px;
+  font-size: 3.3rem; /* Clean arrow size */
+  line-height: 0.5;
+  color: #9ca3af; /* Tailwind's text-gray-400 */
+  font-weight: normal; /* Light weight, not bold */
+  font-family: "Arial", sans-serif;
+}
+.arrow-right-text{
+ position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15.6px;
+  height: 24px;
+  font-size: 3.3rem; /* Clean arrow size */
+  line-height: 0.5;
+  color: #9ca3af; /* Tailwind's text-gray-400 */
+  font-weight: normal; /* Light weight, not bold */
+  font-family: "Arial", sans-serif;
+}
+
+/* Style the divider lines */
+.divider-line {
+  height: 0.1px;
+  margin: 25px auto;
+  background-color: #c6c6c6;
+  border: 0;
+  width: 100%;
+}
+
+/* Style the logout section */
+.logout-section {
+  text-align: center;
+  margin-top: 2rem;
+}
+.logout-btn {
+  width: 100%;
+  max-width: 300px;
+  padding: 3px 0;
+  border: 1px solid #c6c6c6;
+  color: #253746;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+}
+.logout-btn:hover {
+  background-color: #4b4b4b;
+  border-color: #4b4b4b;
+  color: white;
+}
+</style>
