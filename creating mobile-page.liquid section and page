@@ -1,0 +1,842 @@
+{% comment %} {%- style -%}
+  /* Section-specific CSS */
+  .account-section {
+    padding: 5px 0;
+  }
+  .account-section h2 {
+    color: #253746;
+    font-family: 'Garamond Premier Pro', serif;
+    font-size: 2.8rem;
+    font-weight: normal;
+    line-height: 1.2857142857;
+    letter-spacing: 0;
+  }
+  .account-section .subtitle {
+    color: #5E5E5E;
+    font-family: 'DS Trade Gothic', sans-serif;
+    font-size: 13px;
+  }
+  .account-section .btn-login {
+    background-color: #253746;
+    color: white;
+    padding: 0 15px;
+    height: 50px;
+    text-align: center;
+    border: none;
+  }
+  .account-section .join-btn {
+    height: 50px;
+    border: 1px solid black;
+    padding: 8px;
+    font-weight: 600;
+    flex: 1;
+    margin-left: 8px;
+  }
+  .account-section .link-button {
+    display: block;
+    text-align: left;
+    color: #000;
+    text-decoration: none;
+  }
+  .account-section .icon-link-text {
+    font-weight: bold;
+  }
+  .account-section .icon-link-text .block {
+    display: block;
+    font-weight: medium;
+    color: #5E5E5E;
+  }
+  .account-section .link-arrow {
+    display: inline-block;
+    margin-left: 5px;
+  }
+  .account-section hr {
+    height: 0.1px;
+    margin: 25px 0;
+    background-color: #c6c6c6;
+    border: none;
+  }
+  .account-section .flex {
+    display: flex;
+    gap: 15px;
+  }
+  .account-section ul {
+    padding-top: 11px;
+    list-style: none;
+  }
+  .account-section li {
+    margin-bottom: 11px;
+  }
+{%- endstyle -%}
+
+<div class="account-section">
+  <div class="px-0 transition-opacity duration-500">
+    <h2>{{ section.settings.title }}</h2>
+    <span class="subtitle">{{ section.settings.subtitle }}</span>
+  </div>
+
+  <div class="py-[10px] px-0 transition-opacity duration-500">
+    <div class="flex">
+      <button class="button btn-login" onclick="openAccountModal()" data-action="open-login" data-variant="secondary">
+        <span>{{ section.settings.sign_in_text }}</span>
+      </button>
+      <button class="button join-btn" onclick="openAccountModal()" data-action="open-join" data-variant="tertiary-dark">
+        <span>{{ section.settings.join_text }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="py-[10px] px-0">
+    <div>
+      <ul>
+        <li>
+          {% if customer %}
+            <a href="{{ routes.account_url }}" class="link-button">
+              <span class="icon-link-text">
+                <span>{{ section.settings.purchase_history_text }}</span>
+                <span class="block">{{ section.settings.purchase_history_subtext }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% else %}
+            <button class="link-button w-full text-left" onclick="openAccountModal()">
+              <span class="icon-link-text">
+                <span>{{ section.settings.purchase_history_text }}</span>
+                <span class="block">{{ section.settings.purchase_history_subtext }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </button>
+          {% endif %}
+        </li>
+        <li>
+          <a href="{{ section.settings.my_list_link | default: '/pages/my-list' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.my_list_text }}</span>
+              <span class="block">{{ section.settings.my_list_subtext }}</span>
+              <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          {% if customer %}
+            <a href="{{ section.settings.account_settings_link | default: '/account' }}" class="link-button">
+              <span class="icon-link-text">
+                <span>{{ section.settings.account_settings_text }}</span>
+                <span class="block">{{ section.settings.account_settings_subtext }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% else %}
+            <button class="link-button w-full text-left" onclick="openAccountModal()">
+              <span class="icon-link-text">
+                <span>{{ section.settings.account_settings_text }}</span>
+                <span class="block">{{ section.settings.account_settings_subtext }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </button>
+          {% endif %}
+        </li>
+      </ul>
+      <hr>
+    </div>
+    <div>
+      <ul>
+        <li>
+          <a href="{{ section.settings.find_store_link | default: '/pages/store-map-locator' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.find_store_text }}</span>
+              <span aria-hidden="true" class="icon link-arrow-text" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ section.settings.customer_service_link | default: '/pages/help-page' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.customer_service_text }}</span>
+              <span aria-hidden="true" class="icon link-arrow-text" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+      <hr>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Account Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Your Account"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Sign in for rewards, easy order tracking and more."
+    },
+    {
+      "type": "text",
+      "id": "sign_in_text",
+      "label": "Sign In Button Text",
+      "default": "Sign In"
+    },
+    {
+      "type": "text",
+      "id": "join_text",
+      "label": "Join Button Text",
+      "default": "Join"
+    },
+    
+    {
+      "type": "text",
+      "id": "purchase_history_text",
+      "label": "Purchase History Text",
+      "default": "Purchase history"
+    },
+    {
+      "type": "text",
+      "id": "purchase_history_subtext",
+      "label": "Purchase History Subtext",
+      "default": "Track an order, start a return or exchange"
+    },
+    
+    {
+      "type": "text",
+      "id": "my_list_text",
+      "label": "My List Text",
+      "default": "My List"
+    },
+    {
+      "type": "text",
+      "id": "my_list_subtext",
+      "label": "My List Subtext",
+      "default": "Your saved items"
+    },
+   
+    {
+      "type": "text",
+      "id": "account_settings_text",
+      "label": "Account Settings Text",
+      "default": "Account settings"
+    },
+    {
+      "type": "text",
+      "id": "account_settings_subtext",
+      "label": "Account Settings Subtext",
+      "default": "Updated info, payment, addresses, email preferences"
+    },
+    
+    {
+      "type": "text",
+      "id": "find_store_text",
+      "label": "Find My Store Text",
+      "default": "Find My Store"
+    },
+   
+    {
+      "type": "text",
+      "id": "customer_service_text",
+      "label": "Customer Service Text",
+      "default": "Customer Service"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Account Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}
+
+
+
+
+ {% comment %} {%- style -%}
+  /* Section-specific CSS */
+  .account-section {
+    padding: 5px 0;
+  }
+  .account-section h2 {
+    color: #253746;
+    font-family: 'Garamond Premier Pro', serif;
+    font-size: 2.8rem;
+    font-weight: normal;
+    line-height: 1.2857142857;
+    letter-spacing: 0;
+  }
+  .account-section .subtitle {
+    color: #5E5E5E;
+    font-family: 'DS Trade Gothic', sans-serif;
+    font-size: 13px;
+  }
+  .account-section .btn-login {
+    background-color: #253746;
+    color: white;
+    padding: 0 15px;
+    height: 50px;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+  }
+  .account-section .join-btn {
+    height: 50px;
+    border: 1px solid black;
+    padding: 8px;
+    font-weight: 600;
+    flex: 1;
+    margin-left: 8px;
+    cursor: pointer;
+  }
+  .account-section .link-button {
+    display: block;
+    text-align: left;
+    color: #000;
+    text-decoration: none;
+  }
+  .account-section .icon-link-text {
+    font-weight: bold;
+  }
+  .account-section .icon-link-text .block {
+    display: block;
+    font-weight: medium;
+    color: #5E5E5E;
+  }
+  .account-section .link-arrow {
+    display: inline-block;
+    margin-left: 5px;
+  }
+  .account-section hr {
+    height: 0.1px;
+    margin: 25px 0;
+    background-color: #c6c6c6;
+    border: none;
+  }
+  .account-section .flex {
+    display: flex;
+    gap: 15px;
+  }
+  .account-section ul {
+    padding-top: 11px;
+    list-style: none;
+  }
+  .account-section li {
+    margin-bottom: 11px;
+  }
+  /* Fallback for missing fonts */
+  @font-face {
+    font-family: 'Garamond Premier Pro';
+    src: url('https://fonts.cdnfonts.com/s/22527/GaramondPremierPro-It.woff') format('woff');
+  }
+  @font-face {
+    font-family: 'DS Trade Gothic';
+    src: url('https://fonts.cdnfonts.com/s/22527/TradeGothicLTStd-BdCn20.woff') format('woff');
+  }
+{%- endstyle -%}
+
+<div class="account-section">
+  <div class="px-0 transition-opacity duration-500">
+    <h2>{{ section.settings.title | default: 'Your Account' }}</h2>
+    <span class="subtitle">{{ section.settings.subtitle | default: 'Sign in for rewards, easy order tracking and more.' }}</span>
+  </div>
+
+  <div class="py-[10px] px-0 transition-opacity duration-500">
+    <div class="flex">
+      <button class="button btn-login" onclick="openAccountModal()" data-action="open-login" data-variant="secondary">
+        <span>{{ section.settings.sign_in_text | default: 'Sign In' }}</span>
+      </button>
+      <button class="button join-btn" onclick="openAccountModal()" data-action="open-join" data-variant="tertiary-dark">
+        <span>{{ section.settings.join_text | default: 'Join' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="py-[10px] px-0">
+    <div>
+      <ul>
+        <li>
+          {% if customer %}
+            <a href="{{ section.settings.purchase_history_link | default: routes.account_url }}" class="link-button">
+              <span class="icon-link-text">
+                <span>{{ section.settings.purchase_history_text | default: 'Purchase history' }}</span>
+                <span class="block">{{ section.settings.purchase_history_subtext | default: 'Track an order, start a return or exchange' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% else %}
+            <a href="{{ routes.account_login_url }}" class="link-button w-full text-left">
+              <span class="icon-link-text">
+                <span>{{ section.settings.purchase_history_text | default: 'Purchase history' }}</span>
+                <span class="block">{{ section.settings.purchase_history_subtext | default: 'Track an order, start a return or exchange' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% endif %}
+        </li>
+        <li>
+          <a href="{{ section.settings.my_list_link | default: '/pages/my-list' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.my_list_text | default: 'My List' }}</span>
+              <span class="block">{{ section.settings.my_list_subtext | default: 'Your saved items' }}</span>
+              <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          {% if customer %}
+            <a href="{{ section.settings.account_settings_link | default: '/account' }}" class="link-button">
+              <span class="icon-link-text">
+                <span>{{ section.settings.account_settings_text | default: 'Account settings' }}</span>
+                <span class="block">{{ section.settings.account_settings_subtext | default: 'Updated info, payment, addresses, email preferences' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% else %}
+            <a href="{{ routes.account_login_url }}" class="link-button w-full text-left">
+              <span class="icon-link-text">
+                <span>{{ section.settings.account_settings_text | default: 'Account settings' }}</span>
+                <span class="block">{{ section.settings.account_settings_subtext | default: 'Updated info, payment, addresses, email preferences' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% endif %}
+        </li>
+      </ul>
+      <hr>
+    </div>
+    <div>
+      <ul>
+        <li>
+          <a href="{{ section.settings.find_store_link | default: '/pages/store-map-locator' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.find_store_text | default: 'Find My Store' }}</span>
+              <span aria-hidden="true" class="icon link-arrow-text" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ section.settings.customer_service_link | default: '/pages/help-page' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.customer_service_text | default: 'Customer Service' }}</span>
+              <span aria-hidden="true" class="icon link-arrow-text" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+      <hr>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Account Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Your Account"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Sign in for rewards, easy order tracking and more."
+    },
+    {
+      "type": "text",
+      "id": "sign_in_text",
+      "label": "Sign In Button Text",
+      "default": "Sign In"
+    },
+    {
+      "type": "text",
+      "id": "join_text",
+      "label": "Join Button Text",
+      "default": "Join"
+    },
+    {
+      "type": "url",
+      "id": "purchase_history_link",
+      "label": "Purchase History Link"
+    },
+    {
+      "type": "text",
+      "id": "purchase_history_text",
+      "label": "Purchase History Text",
+      "default": "Purchase history"
+    },
+    {
+      "type": "text",
+      "id": "purchase_history_subtext",
+      "label": "Purchase History Subtext",
+      "default": "Track an order, start a return or exchange"
+    },
+    {
+      "type": "url",
+      "id": "my_list_link",
+      "label": "My List Link"
+    },
+    {
+      "type": "text",
+      "id": "my_list_text",
+      "label": "My List Text",
+      "default": "My List"
+    },
+    {
+      "type": "text",
+      "id": "my_list_subtext",
+      "label": "My List Subtext",
+      "default": "Your saved items"
+    },
+    {
+      "type": "url",
+      "id": "account_settings_link",
+      "label": "Account Settings Link"
+    },
+    {
+      "type": "text",
+      "id": "account_settings_text",
+      "label": "Account Settings Text",
+      "default": "Account settings"
+    },
+    {
+      "type": "text",
+      "id": "account_settings_subtext",
+      "label": "Account Settings Subtext",
+      "default": "Updated info, payment, addresses, email preferences"
+    },
+    {
+      "type": "url",
+      "id": "find_store_link",
+      "label": "Find My Store Link"
+    },
+    {
+      "type": "text",
+      "id": "find_store_text",
+      "label": "Find My Store Text",
+      "default": "Find My Store"
+    },
+    {
+      "type": "url",
+      "id": "customer_service_link",
+      "label": "Customer Service Link"
+    },
+    {
+      "type": "text",
+      "id": "customer_service_text",
+      "label": "Customer Service Text",
+      "default": "Customer Service"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Account Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}
+
+{%- style -%}
+  /* Section-specific CSS */
+  .account-section {
+    padding: 5px 0;
+  }
+  .account-section h2 {
+    color: #253746;
+    font-family: 'Garamond Premier Pro', serif;
+    font-size: 2.8rem;
+    font-weight: normal;
+    line-height: 1.2857142857;
+    letter-spacing: 0;
+  }
+  .account-section .subtitle {
+    color: #5E5E5E;
+    font-family: 'DS Trade Gothic', sans-serif;
+    font-size: 13px;
+  }
+  .account-section .btn-login {
+    background-color: #253746;
+    color: white;
+    padding: 0 15px;
+    height: 50px;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+  }
+  .account-section .join-btn {
+    height: 50px;
+    border: 1px solid black;
+    padding: 8px;
+    font-weight: 600;
+    flex: 1;
+    margin-left: 8px;
+    cursor: pointer;
+  }
+  .account-section .link-button {
+    display: block;
+    text-align: left;
+    color: #000;
+    text-decoration: none;
+  }
+  .account-section .icon-link-text {
+    font-weight: bold;
+  }
+  .account-section .icon-link-text .block {
+    display: block;
+    font-weight: medium;
+    color: #5E5E5E;
+  }
+  .account-section .link-arrow {
+    display: inline-block;
+    margin-left: 5px;
+  }
+  .account-section hr {
+    height: 0.1px;
+    margin: 25px 0;
+    background-color: #c6c6c6;
+    border: none;
+  }
+  .account-section .flex {
+    display: flex;
+    gap: 15px;
+  }
+  .account-section ul {
+    padding-top: 11px;
+    list-style: none;
+  }
+  .account-section li {
+    margin-bottom: 11px;
+  }
+  /* Fallback for missing fonts */
+  @font-face {
+    font-family: 'Garamond Premier Pro';
+    src: url('https://fonts.cdnfonts.com/s/22527/GaramondPremierPro-It.woff') format('woff');
+  }
+  @font-face {
+    font-family: 'DS Trade Gothic';
+    src: url('https://fonts.cdnfonts.com/s/22527/TradeGothicLTStd-BdCn20.woff') format('woff');
+  }
+{%- endstyle -%}
+
+<div class="account-section">
+  <div class="px-0 transition-opacity duration-500">
+    <h2>{{ section.settings.title | default: 'Your Account' }}</h2>
+    <span class="subtitle">{{ section.settings.subtitle | default: 'Sign in for rewards, easy order tracking and more.' }}</span>
+  </div>
+
+  <div class="py-[10px] px-0 transition-opacity duration-500">
+    <div class="flex">
+      <a href="{{ section.settings.sign_in_url | default: routes.account_login_url }}" class="button btn-login" data-action="open-login" data-variant="secondary">
+        <span>{{ section.settings.sign_in_text | default: 'Sign In' }}</span>
+      </a>
+      <a href="{{ section.settings.join_url | default: routes.account_register_url }}" class="button join-btn" data-action="open-join" data-variant="tertiary-dark">
+        <span>{{ section.settings.join_text | default: 'Join' }}</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="py-[10px] px-0">
+    <div>
+      <ul>
+        <li>
+          {% if customer %}
+            <a href="{{ section.settings.purchase_history_link | default: routes.account_url }}" class="link-button">
+              <span class="icon-link-text">
+                <span>{{ section.settings.purchase_history_text | default: 'Purchase history' }}</span>
+                <span class="block">{{ section.settings.purchase_history_subtext | default: 'Track an order, start a return or exchange' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% else %}
+            <a href="{{ section.settings.sign_in_url | default: routes.account_login_url }}" class="link-button w-full text-left">
+              <span class="icon-link-text">
+                <span>{{ section.settings.purchase_history_text | default: 'Purchase history' }}</span>
+                <span class="block">{{ section.settings.purchase_history_subtext | default: 'Track an order, start a return or exchange' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% endif %}
+        </li>
+        <li>
+          <a href="{{ section.settings.my_list_link | default: '/pages/my-list' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.my_list_text | default: 'My List' }}</span>
+              <span class="block">{{ section.settings.my_list_subtext | default: 'Your saved items' }}</span>
+              <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          {% if customer %}
+            <a href="{{ section.settings.account_settings_link | default: '/account' }}" class="link-button">
+              <span class="icon-link-text">
+                <span>{{ section.settings.account_settings_text | default: 'Account settings' }}</span>
+                <span class="block">{{ section.settings.account_settings_subtext | default: 'Updated info, payment, addresses, email preferences' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% else %}
+            <a href="{{ section.settings.sign_in_url | default: routes.account_login_url }}" class="link-button w-full text-left">
+              <span class="icon-link-text">
+                <span>{{ section.settings.account_settings_text | default: 'Account settings' }}</span>
+                <span class="block">{{ section.settings.account_settings_subtext | default: 'Updated info, payment, addresses, email preferences' }}</span>
+                <span aria-hidden="true" class="icon link-arrow" data-icon="right-thin" data-testid="icon">→</span>
+              </span>
+            </a>
+          {% endif %}
+        </li>
+      </ul>
+      <hr>
+    </div>
+    <div>
+      <ul>
+        <li>
+          <a href="{{ section.settings.find_store_link | default: '/pages/store-map-locator' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.find_store_text | default: 'Find My Store' }}</span>
+              <span aria-hidden="true" class="icon link-arrow-text" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href="{{ section.settings.customer_service_link | default: '/pages/help-page' }}" class="link-button">
+            <span class="icon-link-text">
+              <span>{{ section.settings.customer_service_text | default: 'Customer Service' }}</span>
+              <span aria-hidden="true" class="icon link-arrow-text" data-icon="right-thin" data-testid="icon">→</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+      <hr>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Account Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Your Account"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Sign in for rewards, easy order tracking and more."
+    },
+    {
+      "type": "text",
+      "id": "sign_in_text",
+      "label": "Sign In Button Text",
+      "default": "Sign In"
+    },
+    {
+      "type": "url",
+      "id": "sign_in_url",
+      "label": "Sign In URL"
+    },
+    {
+      "type": "text",
+      "id": "join_text",
+      "label": "Join Button Text",
+      "default": "Join"
+    },
+    {
+      "type": "url",
+      "id": "join_url",
+      "label": "Join URL"
+    },
+    {
+      "type": "url",
+      "id": "purchase_history_link",
+      "label": "Purchase History Link"
+    },
+    {
+      "type": "text",
+      "id": "purchase_history_text",
+      "label": "Purchase History Text",
+      "default": "Purchase history"
+    },
+    {
+      "type": "text",
+      "id": "purchase_history_subtext",
+      "label": "Purchase History Subtext",
+      "default": "Track an order, start a return or exchange"
+    },
+    {
+      "type": "url",
+      "id": "my_list_link",
+      "label": "My List Link"
+    },
+    {
+      "type": "text",
+      "id": "my_list_text",
+      "label": "My List Text",
+      "default": "My List"
+    },
+    {
+      "type": "text",
+      "id": "my_list_subtext",
+      "label": "My List Subtext",
+      "default": "Your saved items"
+    },
+    {
+      "type": "url",
+      "id": "account_settings_link",
+      "label": "Account Settings Link"
+    },
+    {
+      "type": "text",
+      "id": "account_settings_text",
+      "label": "Account Settings Text",
+      "default": "Account settings"
+    },
+    {
+      "type": "text",
+      "id": "account_settings_subtext",
+      "label": "Account Settings Subtext",
+      "default": "Updated info, payment, addresses, email preferences"
+    },
+    {
+      "type": "url",
+      "id": "find_store_link",
+      "label": "Find My Store Link"
+    },
+    {
+      "type": "text",
+      "id": "find_store_text",
+      "label": "Find My Store Text",
+      "default": "Find My Store"
+    },
+    {
+      "type": "url",
+      "id": "customer_service_link",
+      "label": "Customer Service Link"
+    },
+    {
+      "type": "text",
+      "id": "customer_service_text",
+      "label": "Customer Service Text",
+      "default": "Customer Service"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Account Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
