@@ -1,0 +1,405 @@
+<div class="account-container">
+  <div class="account-spacing-top px-zero">
+    <div class="background-section">
+      <div class="px-zero fade-in">
+        <h2 class="heading-primary">
+          <span class="title-span">
+            {%- if customer %}Hi, {{ customer.first_name }}{% else %}{{ 'customer.account.account' | t }}{% endif -%}
+          </span>
+        </h2>
+        {% unless customer %}
+          <span class="subtext-gray">
+            {{- 'customer.account.sign_in_rewards' | t -}}
+          </span>
+        {% endunless %}
+      </div>
+
+      {% unless customer %}
+        <div class="account-spacing-middle px-zero fade-in">
+          <div class="button-row">
+            <modal-opener data-modal="#LoginModal">
+              <button class="action-button login-btn" data-action="open-login" data-variant="secondary">
+                <span class="btn-span">{{ 'customer.login_page.sign_in' | t }}</span>
+              </button>
+            </modal-opener>
+
+            <modal-opener data-modal="#CreateAccountModal">
+              <button class="action-button join-btn" data-action="open-join">
+                <span>{{ 'customer.login_page.join' | t }}</span>
+              </button>
+            </modal-opener>
+          </div>
+        </div>
+      {% endunless %}
+    </div>
+
+    <div class="account-spacing-bottom px-zero">
+      <div class="link-section">
+        <ul class="link-list">
+          {%- capture purchase_history_link -%}
+            <span class="link-text">
+              <span>{{ 'customer.purchase_history.title' | t }}</span>
+              <span class="block">{{ 'customer.purchase_history.order_track' | t }}</span>
+              <span aria-hidden="true" class="icon arrow-right" data-icon="right-thin"></span>
+            </span>
+          {%- endcapture -%}
+
+          {%- capture account_settings_link -%}
+            <span class="link-text">
+              <span>{{ 'customer.account.acc_settings' | t }}</span>
+              <span class="block">{{ 'customer.account.acc_settings_subtext' | t }}</span>
+              <span aria-hidden="true" class="icon arrow-right" data-icon="right-thin"></span>
+            </span>
+          {%- endcapture -%}
+
+          <li class="list-item">
+            {% if customer %}
+              <a class="nav-link" href="{{ routes.account_url }}">{{ purchase_history_link }}</a>
+            {% else %}
+              <modal-opener data-modal="#LoginModal">
+                <button class="nav-link">{{ purchase_history_link }}</button>
+              </modal-opener>
+            {% endif %}
+          </li>
+
+          <li class="list-item">
+            <a class="nav-link" href="/pages/my-list">
+              <span class="link-text">
+                <span>{{ 'customer.my_list_page.title' | t }}</span>
+                <span class="block">{{ 'customer.my_list_page.save_item_list' | t }}</span>
+                <span aria-hidden="true" class="icon arrow-right" data-icon="right-thin"></span>
+              </span>
+            </a>
+          </li>
+
+          <li class="list-item">
+            {% if customer %}
+              <a class="nav-link" href="/pages/account">{{ account_settings_link }}</a>
+            {% else %}
+              <modal-opener data-modal="#LoginModal">
+                <button class="nav-link">{{ account_settings_link }}</button>
+              </modal-opener>
+            {% endif %}
+          </li>
+        </ul>
+
+        <hr class="divider-line">
+      </div>
+
+      <div class="link-section">
+        <ul class="link-list">
+          <li class="list-item">
+            <a href="/pages/store-map-locator" class="nav-link">
+              <span class="link-text">
+                <span>{{ 'customer.account.store' | t }}</span>
+                <span aria-hidden="true" class="icon arrow-right-text" data-icon="right-thin"></span>
+              </span>
+            </a>
+          </li>
+
+          <li class="list-item">
+            <a href="/pages/help-page" class="nav-link">
+              <span class="link-text">
+                <span>{{ 'customer.account.customer_service' | t }}</span>
+                <span aria-hidden="true" class="icon arrow-right-text" data-icon="right-thin"></span>
+              </span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="divider-line">
+
+        {% if customer %}
+          <div class="logout-section">
+            <a href="{{ routes.account_logout_url }}" class="logout-btn">
+              <span>{{ 'customer.log_out' | t }}</span>
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Mobile Account Section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Mobile Account Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  /* Reset & Base */
+  body { margin: 0; min-height: 100vh; }
+
+  /* Main Container with Full Background */
+  .account-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    background-image: url('https://images.pexels.com/photos/259915/pexels-photo-259915.jpeg?_gl=1*erayxr*_ga*MTUwNjcyNjI1NC4xNzU1MDg2MDc0*_ga_8JE65Q40S6*czE3NjE1NzkwNjYkbzQkZzEkdDE3NjE1ODAxMzQkajYwJGwwJGgw'); /* Replace with your image */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  /* Dark Overlay for Entire Container */
+  .account-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1;
+  }
+
+  /* Ensure all content is above overlay */
+  .account-container > * { position: relative; z-index: 2; }
+
+  /* Top Section */
+  .account-spacing-top { text-align: center; padding: 20px 15px; width: 100%; }
+
+  .heading-primary {
+    color: #fff;
+    font-family: "garamond-premier-pro", serif;
+    font-size: 2.8rem;
+    font-weight: normal;
+    line-height: 1.28;
+    margin: 0;
+  }
+
+  .subtext-gray {
+    color: #fff;
+    font-size: 13px;
+    font-family: "DS_Trade_Gothic", sans-serif;
+    display: block;
+    margin-top: 8px;
+  }
+
+  /* Buttons Section */
+  .account-spacing-middle { padding: 15px 0; text-align: center; width: 100%; }
+
+  .button-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    max-width: 350px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .action-button {
+    height: 50px;
+    padding: 0 20px;
+    font-family: "DS_Trade_Gothic", sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1; /* Ensures buttons take equal space */
+  }
+
+  .login-btn {
+    background-color: #253746;
+    color: white;
+    min-width: 120px;
+  }
+
+  .join-btn {
+    background-color: transparent;
+    color: white;
+    min-width: 120px;
+  }
+
+  /* Bottom Section - No Background */
+  .account-spacing-bottom {
+    background-color: #fff;
+    width: 100%;
+    padding: 20px 15px;
+  }
+
+  .link-list { list-style: none; padding: 0; margin: 0; }
+
+  .list-item { margin-bottom: 12px; position: relative; }
+
+  .nav-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    color: #5e5e5e;
+    font-family: "DS_Trade_Gothic", sans-serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    letter-spacing: 0.6px;
+    line-height: 1.54;
+    text-decoration: none;
+    padding: 7px 30px 8px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .nav-link:hover { color: #253746; }
+
+  .link-text {
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .link-text .block {
+    display: block;
+    font-weight: 500;
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+  .icon.arrow-right,
+  .icon.arrow-right-text {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2.8rem;
+    color: #9ca3af;
+    width: 16px;
+    height: 24px;
+    line-height: 0.5;
+  }
+
+  .divider-line {
+    height: 0.1px;
+    background-color: #c6c6c6;
+    border: 0;
+    margin: 25px 0;
+  }
+
+  .logout-section { text-align: center; margin-top: 2rem; }
+
+  .logout-btn {
+    display: inline-block;
+    width: 100%;
+    max-width: 300px;
+    padding: 10px 0;
+    border: 1px solid #c6c6c6;
+    color: #253746;
+    font-weight: 600;
+    font-family: "DS_Trade_Gothic", sans-serif;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+
+  .logout-btn:hover {
+    background-color: #4b4b4b;
+    border-color: #4b4b4b;
+    color: white;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 600px) {
+    .account-container {
+      max-width: 100%;
+      padding: 0 10px; /* Added padding for edge spacing */
+    }
+
+    .heading-primary {
+      font-size: 2rem; /* Reduced for mobile */
+    }
+
+    .subtext-gray {
+      font-size: 12px; /* Reduced for mobile */
+    }
+
+    .account-spacing-top {
+      padding: 15px 0; /* Reduced padding */
+    }
+
+    .button-row {
+      flex-direction: column; /* Stack buttons vertically */
+      gap: 10px; /* Reduced gap */
+      max-width: 100%; /* Full width */
+      padding: 0 10px; /* Added padding for better spacing */
+    }
+
+    .action-button {
+      width: 100%; /* Full width buttons */
+      min-width: 0; /* Remove min-width constraint */
+      height: 45px; /* Slightly reduced height */
+      font-size: 1rem; /* Reduced font size */
+      padding: 0 15px; /* Adjusted padding */
+    }
+
+    .account-spacing-middle {
+      padding: 10px 0; /* Reduced padding */
+    }
+
+    .account-spacing-bottom {
+      padding: 15px 10px; /* Adjusted padding */
+    }
+
+    .nav-link {
+      font-size: 1.1rem; /* Slightly reduced */
+      padding-right: 25px; /* Adjusted for arrow */
+    }
+
+    .icon.arrow-right,
+    .icon.arrow-right-text {
+      font-size: 2.2rem; /* Reduced arrow size */
+      width: 12px;
+      height: 18px;
+    }
+
+    .divider-line {
+      margin: 18px 0; /* Reduced margin */
+    }
+
+    .logout-section {
+      margin-top: 1.5rem; /* Reduced margin */
+    }
+
+    .logout-btn {
+      max-width: 240px; /* Reduced width */
+      padding: 8px 0; /* Adjusted padding */
+    }
+  }
+
+  /* Extra Small Screens (e.g., 480px and below) */
+  @media (max-width: 480px) {
+    .heading-primary {
+      font-size: 1.8rem; /* Further reduced */
+    }
+
+    .action-button {
+      height: 40px; /* Further reduced height */
+      font-size: 0.9rem; /* Further reduced font size */
+    }
+
+    .nav-link {
+      font-size: 1rem; /* Further reduced */
+      padding-right: 20px; /* Adjusted for smaller screens */
+    }
+
+    .icon.arrow-right,
+    .icon.arrow-right-text {
+      font-size: 2rem; /* Further reduced arrow size */
+    }
+
+    .logout-btn {
+      max-width: 200px; /* Further reduced width */
+    }
+  }
+</style>
