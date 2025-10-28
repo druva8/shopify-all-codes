@@ -1,0 +1,73 @@
+<button
+  type="submit"
+  id="custom-checkout"
+  class="button checkout-btn w-full h-[7vh] !text-white font-semibold bg-checkout-e bg-checkout disabled:bg-checkout-d disabled:opacity-100 mt-5 hover:bg-green-hover relative overflow-hidden"
+  name="checkout"
+  form="cart"
+  {% if cart.item_count == 0 %}
+    disabled
+  {% endif %}
+>
+  <span class="checkout-text transition-opacity duration-300">{{ 'sections.cart.checkout' | t }}</span>
+  <span class="checkout-spinner hidden absolute inset-0 flex items-center justify-center">
+    <svg
+      class="animate-spin h-6 w-6 text-white"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        class="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        stroke-width="4"
+      ></circle>
+      <path
+        class="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+      ></path>
+    </svg>
+    <span class="ml-3 text-[15px]">Processing...</span>
+  </span>
+</button>
+  document.addEventListener('DOMContentLoaded', function () {
+  const checkoutBtn = document.querySelector('#custom-checkout');
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', function (e) {
+      const spinner = this.querySelector('.checkout-spinner');
+      const text = this.querySelector('.checkout-text');
+
+      // Hide text and show spinner
+      text.classList.add('opacity-0');
+      spinner.classList.remove('hidden');
+      this.classList.add('pointer-events-none');
+
+      // Optional: delay to simulate processing before submitting
+      setTimeout(() => {
+        const form = document.getElementById('cart');
+        if (form) form.submit();
+      }, 800); // reduced seconds here
+    });
+  }
+});
+ .animate-spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Hide the button text smoothly */
+.checkout-text {
+  transition: opacity 0.3s ease;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+  opacity: 0.9;
+}
