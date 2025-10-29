@@ -1,0 +1,265 @@
+<button
+                    type="button"
+                    class="wishlist-btn button w-[50%]"
+                    data-product-id="{{ product.id }}"
+                    data-product-title="{{ product.title }}"
+                    data-product-handle="{{ product.handle }}"
+                    data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                    data-variant="tertiary-light"
+                    aria-busy="false"
+                  >
+                    <span
+                      aria-hidden="true"
+                      class="icon pr-2"
+                      data-icon="heart-anf"
+                      data-icon-size="m"
+                      data-testid="icon"
+                    ></span>
+                    <span class="spinner hidden" aria-hidden="true">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="animate-spin inline-block"
+                        style="width: 2.5rem; height: 2.5rem;"
+                        viewBox="0 0 256 256"
+                      >
+                        <path d="M128 63.04c-5.104 0-9.28-4.176-9.28-9.28V16.64c0-5.104 4.176-9.28 9.28-9.28s9.28 4.176 9.28 9.28v37.12c0 5.104-4.176 9.28-9.28 9.28zm52.548 21.692c-2.32 0-4.756-.928-6.612-2.668-3.596-3.596-3.596-9.512 0-13.108l26.216-26.216c3.596-3.596 9.512-3.596 13.108 0s3.596 9.512 0 13.108l-26.216 26.216c-1.856 1.856-4.176 2.668-6.496 2.668zm58.812 52.548h-37.12c-5.104 0-9.28-4.176-9.28-9.28s4.176-9.28 9.28-9.28h37.12c5.104 0 9.28 4.176 9.28 9.28s-4.176 9.28-9.28 9.28zm-32.596 78.764c-2.32 0-4.756-.928-6.612-2.668l-26.216-26.216c-3.596-3.596-3.596-9.512 0-13.108s9.512-3.596 13.108 0l26.216 26.216c3.596 3.596 3.596 9.512 0 13.108-1.74 1.74-4.176 2.668-6.496 2.668zM128 248.64c-5.104 0-9.28-4.176-9.28-9.28v-37.12c0-5.104 4.176-9.28 9.28-9.28s9.28 4.176 9.28 9.28v37.12c0 5.104-4.176 9.28-9.28 9.28zm-78.764-32.596c-2.32 0-4.756-.928-6.612-2.668-3.596-3.596-3.596-9.512 0-13.108l26.216-26.216c3.596-3.596 9.512-3.596 13.108 0s3.596 9.512 0 13.108l-26.216 26.216c-1.74 1.74-4.06 2.668-6.496 2.668zm4.524-78.764H16.64c-5.104 0-9.28-4.176-9.28-9.28s4.176-9.28 9.28-9.28h37.12c5.104 0 9.28 4.176 9.28 9.28s-4.176 9.28-9.28 9.28zm21.692-52.548c-2.32 0-4.756-.928-6.612-2.668l-26.1-26.216c-3.596-3.596-3.596-9.512 0-13.108s9.512-3.596 13.108 0l26.216 26.216c3.596 3.596 3.596 9.512 0 13.108-1.856 1.856-4.176 2.668-6.612 2.668z" fill="currentColor" />
+                      </svg>
+                    </span>
+                    <span class="wishlist-text">&nbsp;&nbsp;{{ block.settings.wishlist_label }}</span>
+                  </button>
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+  // Handle multiple wishlist buttons
+  const wishlistButtons = document.querySelectorAll('.wishlist-btn');
+  const removeButtons = document.querySelectorAll('.remove-list');
+  if (!wishlistButtons.length || !removeButtons.length) {
+    console.warn('No wishlist or remove buttons found');
+    return;
+  }
+
+  wishlistButtons.forEach((wishlistBtn, index) => {
+    const addedBtn = removeButtons[index] || document.querySelector('.remove-list');
+    if (!addedBtn) {
+      console.warn('No corresponding remove button found for wishlist button', wishlistBtn);
+      return;
+    }
+
+    // Store original text
+    const buttonText = wishlistBtn.querySelector('.wishlist-text');
+    if (!buttonText) {
+      console.error('No .wishlist-text found in button', wishlistBtn);
+      return;
+    }
+    wishlistBtn.dataset.originalText = buttonText.textContent.trim().replace(/^\s+/, '');
+
+    const productId = wishlistBtn.dataset.productId;
+    let variantId = wishlistBtn.dataset.variantId;
+    let wishlist = JSON.parse(localStorage.getItem('myWishlist')) || [];
+    let colorcode = '';
+
+    // Get color code from checked radio input
+    const wrappers = document.querySelectorAll('.swtg-input-inner-wrapper');
+    wrappers.forEach((wrapper) => {
+      const checkedRadio = wrapper.querySelector('input[type="radio"]:checked');
+      if (checkedRadio) {
+        colorcode = checkedRadio.value;
+      }
+    });
+
+    // Show correct button on load
+    if (wishlist.some((item) => item.variantId === variantId && item.variantColor === colorcode)) {
+      wishlistBtn.classList.add('!hidden');
+      addedBtn.classList.remove('!hidden');
+    } else {
+      wishlistBtn.classList.remove('!hidden');
+      addedBtn.classList.add('!hidden');
+    }
+
+    // Add to wishlist
+    wishlistBtn.addEventListener('click', async function () {
+      // Show spinner immediately
+      wishlistBtn.classList.add('loading');
+      wishlistBtn.setAttribute('aria-busy', 'true');
+      buttonText.textContent = 'Adding to List';
+      console.log('Spinner should be visible now'); // Debug
+
+      try {
+        // Get variant ID from URL or dataset
+        const urlParams = new URLSearchParams(window.location.search);
+        variantId = urlParams.get('variant') || wishlistBtn.dataset.variantId;
+
+        // Get color code again in case it changed
+        wrappers.forEach((wrapper) => {
+          const checkedRadio = wrapper.querySelector('input[type="radio"]:checked');
+          if (checkedRadio) {
+            colorcode = checkedRadio.value;
+          }
+        });
+
+        const product = {
+          id: productId,
+          variantId: variantId,
+          title: wishlistBtn.dataset.productTitle,
+          handle: wishlistBtn.dataset.productHandle,
+          variantColor: colorcode,
+        };
+
+        // Simulate delay to ensure spinner is visible (remove in production if API is used)
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Add to wishlist
+        wishlist.push(product);
+        localStorage.setItem('myWishlist', JSON.stringify(wishlist));
+
+        // Hide spinner and update text
+        wishlistBtn.classList.remove('loading');
+        buttonText.textContent = 'Added to Wishlist';
+
+        // Show "Added to List!" button and hide "Add to List" button
+        wishlistBtn.classList.add('!hidden');
+        addedBtn.classList.remove('!hidden');
+
+        // If flyout already exists, remove it
+        const existingFlyout = document.querySelector('[data-testid="my-list-flyout"]');
+        if (existingFlyout) existingFlyout.remove();
+
+        // Determine if customer is logged in
+        const isLoggedIn = {% if customer %}true{% else %}false{% endif %};
+        let flyoutClasses = '';
+        let smallMessageHTML = '';
+        if (!isLoggedIn) {
+          smallMessageHTML = `
+            <div>
+              <p class="catalog-MyListNotifications-module__bigMessage" data-property="GLB_GUEST_ITEM_SAVED">
+                <span class="catalog-MyListNotifications-module__heart">
+                  <span aria-hidden="true" class="icon" data-icon="heart-filled-anf"></span>
+                </span>
+                {{ 'products.product.add_to_wishlist' | t }}
+              </p>
+              <div class="catalog-MyListNotifications-module__smallMessage">
+                <p>
+                  <span data-property="GLB_SIGNIN_HEARTS">
+                    <modal-opener data-modal="#LoginModal">
+                      <button class="login-trigger signIn" data-variant="tertiary-light" data-redirect="/account">
+                        <span class="underline">{{ 'customer.login_page.sign_in' | t }}</span>
+                      </button>
+                    </modal-opener>{{ 'customer.my_list_page.list_subtext' | t }}
+                  </span>
+                </p>
+                <p>
+                  <span data-property="GLB_CREATEACCOUNTLINK">
+                    <modal-opener data-modal="#LoginModal">
+                      <button class="login-trigger signIn" data-variant="tertiary-light" data-redirect="/account">
+                        <span class="underline">{{ 'customer.account.create_acc' | t }}</span>
+                      </button>
+                    </modal-opener>
+                  </span>
+                </p>
+              </div>
+            </div>
+          `;
+          flyoutClasses = 'catalog-MyListNotifications-module__flyout catalog-MyListNotifications-module__firstTime catalog-MyListNotifications-module__loggedOut';
+        } else {
+          smallMessageHTML = `
+            <div class="catalog-MyListNotifications-module__smallMessage">
+              <p>{{ 'customer.my_list_page.item_save_login' | t }}</p>
+            </div>
+          `;
+          flyoutClasses = 'catalog-MyListNotifications-module__flyout catalog-MyListNotifications-module__firstTime';
+        }
+
+        // Create flyout HTML
+        const flyoutHTML = `
+          <div data-testid="my-list-flyout">
+            <div class="${flyoutClasses}">
+              <div>
+                ${smallMessageHTML}
+                <p class="catalog-MyListNotifications-module__myListButton block">
+                  <a class="button" data-full-width="true" data-theme="inverse" data-variant="secondary" href="{{ pages['my-list'].url }}">{{ 'customer.my_list_page.view_list' | t }}</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Insert into header
+        const header = document.querySelector('header');
+        if (header) {
+          header.insertAdjacentHTML('beforeend', flyoutHTML);
+        }
+
+        // Auto-hide flyout after 3 seconds
+        setTimeout(() => {
+          const flyout = document.querySelector('[data-testid="my-list-flyout"]');
+          if (flyout) flyout.remove();
+        }, 3000);
+      } catch (error) {
+        // On error, revert to original text and hide spinner
+        wishlistBtn.classList.remove('loading');
+        buttonText.textContent = `\xa0\xa0${wishlistBtn.dataset.originalText}`;
+        console.error('Error adding to wishlist:', error);
+      } finally {
+        wishlistBtn.setAttribute('aria-busy', 'false');
+      }
+    });
+
+    // Remove from wishlist
+    addedBtn.addEventListener('click', function () {
+      wishlist = wishlist.filter((item) => item.variantColor !== colorcode);
+      localStorage.setItem('myWishlist', JSON.stringify(wishlist));
+      addedBtn.classList.add('!hidden');
+      wishlistBtn.classList.remove('!hidden');
+      buttonText.textContent = `\xa0\xa0${wishlistBtn.dataset.originalText}`;
+    });
+  });
+});
+
+
+ /* Ensure spinner is hidden by default */
+.wishlist-btn .spinner {
+  display: none !important;
+}
+
+/* Hide heart icon during loading */
+.wishlist-btn.loading .icon {
+  display: none !important;
+}
+
+/* Show spinner and text during loading */
+.wishlist-btn.loading .spinner {
+  display: inline-block !important;
+}
+.wishlist-btn.loading .wishlist-text {
+  display: inline-block !important;
+  color: #000 !important; /* Black text for "Adding to List" */
+}
+
+/* Center spinner and text during loading, icon and text otherwise */
+.wishlist-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem; /* Ensure enough space for larger spinner */
+}
+
+/* Ensure icon is visible in non-loading state */
+.wishlist-btn .icon {
+  display: inline-block;
+}
+
+/* Style spinner */
+.spinner {
+  width: 2.5rem !important; /* 40px, equivalent to w-10 */
+  height: 2.5rem !important; /* 40px, equivalent to h-10 */
+  color:rgb(196, 187, 187) !important; 
+}
+
+/* Animation for spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
