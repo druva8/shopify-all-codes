@@ -1,0 +1,88 @@
+{{ 'component-sidebarCs.css' | asset_url | stylesheet_tag }}
+{{ 'customer.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{% if customer %}
+  <aside class="cust-name Sidebar-Cs w-full lg:w-1/6 !bg-white py-0 lg:py-28">
+    <h2 class="text-title text-custom-2.8 text-primary text-center place-self-center pb-0 lg:pb-8">
+      {{ 'customer.account.greeting_hi' | t }}, {{ customer.first_name }}
+    </h2>
+    <div class="Wrapper">
+      <nav>
+        <a
+          href="{{ '/account' | url }}"
+          class="sidebar-CS-link {% if request.path ==  '/account' and request.path != '/pages/account' %}active{% endif %} h-"
+          data-section="purchase-history"
+        >
+          {{ 'customer.purchase_history.title' | t }}
+        </a>
+
+        <a
+          href="{{ '/pages/customer-service' | url }}"
+          class="sidebar-CS-link {% if request.path ==  '/pages/customer-service' %}active{% endif %}"
+          data-section="customer-service"
+        >
+          {{ 'customer.account.customer_service' | t }}
+        </a>
+
+        <a
+          href="{{ '/pages/account' | url }}"
+          class="sidebar-CS-link {% if request.path == '/pages/account' or request.path == '/account/addresses' %}active{% endif %}"
+          data-section="account-settings"
+        >
+          {{ 'customer.account.acc_settings' | t }}
+        </a>
+      </nav>
+    </div>
+  </aside>
+{% else %}
+  <aside class="Sidebar-Cs sidebar-guest">
+    <div class="sidebar-help-icon">
+      <a class="sidebar-help-nav" href="/pages/customer-service">
+        <div class="sidebar-help-icon-inner">
+          <div class="help-icon-block">
+            <span
+              aria-hidden="true"
+              class="icon"
+              data-icon="question-outline-large"
+              data-testid="icon"
+            ></span>
+          </div>
+        </div>
+        <h1 class="text-custom-2.8 text-primary text-center font-garamond place-self-center sidebar-guest-title">
+          {{ 'general.sidebar-CS.help' | t }}
+        </h1>
+      </a>
+    </div>
+
+    <div class="px-[30px] md:py-[20px]">
+      <hr class="sidebar-guest-divide" style="margin: 0;">
+    </div>
+
+    <div class="sidebar-help-icon">
+      <p class="sidebar-guest-text ">
+        {% comment %} Sign In to manage your<br>
+        orders. {% endcomment %}
+        {{'general.sidebar-CS.sidebar_text' | t }}
+      </p>
+      <modal-opener data-modal="#LoginModal">
+        <button class="button w-full" data-variant="tertiary-light">
+          <span>{{ 'general.sidebar-CS.sidebar_button' | t }}</span>
+        </button>
+      </modal-opener>
+    </div>
+  </aside>
+{% endif %}
