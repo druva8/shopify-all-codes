@@ -1,0 +1,201 @@
+{% style %}
+  .image-ribbon-section {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    background-color: {{ section.settings.background_color }};
+    text-align: center;
+    z-index: 9;
+  }
+
+  .ribbon-buttons .btn-container {
+    padding: 15px 10px;
+    display: flex;
+    gap: 20px;
+  }
+
+  .ribbon-buttons {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Ribbon animation container */
+  .image-ribbon-container {
+    display: flex;
+    align-items: center;
+    will-change: transform;
+    animation-name: ribbonScroll;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-duration: {{ section.settings.scroll_speed | default: 31 }}s;
+  }
+
+  /* Image styling */
+  .image-ribbon-container img {
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: {{ section.settings.image_radius }}px;
+    height: auto;
+    width:30%,
+  }
+
+  @media (min-width: 768px) {
+    .image-ribbon-container img {
+      width: 563px;
+    }
+  }
+
+  @media (min-width: 540px) {
+    .ribbon-buttons .btn-container {
+      padding: 40px;
+    }
+  }
+
+  @keyframes ribbonScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-3941px); }
+  }
+
+  .btn-container button.a:hover{
+    background: #253746;
+    border-color: #253746;
+    color: #fff;
+  }
+
+  /* .btn-container a{
+    width: 190px !important;
+  } */
+{% endstyle %}
+
+<section class="image-ribbon-section relative container" id="ribbon-{{ section.id }}">
+  {% comment %}
+    BACKGROUND HANDLING
+  {% endcomment %}
+  {% if section.settings.background_type == 'image' and section.settings.desktop_background_image != blank %}
+     <img
+      src="{{ section.settings.desktop_background_image | image_url: width: 2000 }}"
+      alt=""
+      loading="lazy"
+    >
+    {% if section.settings.desktop_background_video != blank %}
+      <!-- Show video on mobile instead of image -->
+      <video
+        class="mobile-video"
+        autoplay
+        muted
+        loop
+        playsinline
+      >
+        <source src="{{ section.settings.desktop_background_video }}" type="video/mp4">
+      </video>
+    {% endif %}
+  {% elsif section.settings.background_type == 'text' %}
+    <div class="absolute inset-0 flex justify-center items-center z-0">
+      <h2 class="text-3xl font-bold text-[#253846]">{{ section.settings.text_heading }}</h2>
+    </div>
+  {% endif %}
+
+  {% if section.settings.background_type == 'scroll' %}
+    <div class="image-ribbon-container relative z-10">
+      {% for block in section.blocks %}
+        {% if block.settings.image != blank %}
+          <img
+            src="{{ block.settings.image | image_url: width: 1000 }}"
+            alt="{{ block.settings.image.alt | escape }}"
+            loading="lazy"
+          >
+        {% endif %}
+      {% endfor %}
+
+      <!-- duplicate for seamless loop -->
+      {% for block in section.blocks %}
+        {% if block.settings.image != blank %}
+          <img
+            src="{{ block.settings.image | image_url: width: 1000 }}"
+            alt="{{ block.settings.image.alt | escape }}"
+            loading="lazy"
+          >
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="ribbon-buttons">
+    <div class="btn-container">
+      {% if section.settings.button_1_text != blank %}
+        <a
+          href="{{ section.settings.button_1_link }}"
+          class="button inline-block px-6 py-2 mt-4 font-bold text-center max-md:hidden min-w-60 contrast-high"
+          data-variant="tertiary-dark"
+        >
+          {{ section.settings.button_1_text }}
+        </a>
+      {% endif %}
+
+      {% if section.settings.button_2_text != blank %}
+        <a
+          href="{{ section.settings.button_2_link }}"
+          class="button inline-block px-6 py-2 mt-4 font-normal text-center max-md:hidden min-w-60 contrast-high"
+          data-variant="tertiary-dark"
+        >
+          {{ section.settings.button_2_text }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Image Ribbon",
+  "settings": [
+    { "type": "color", "id": "background_color", "label": "Background color", "default": "#ffffff" },
+    {
+      "type": "select",
+      "id": "background_type",
+      "label": "Background type",
+      "options": [
+        { "value": "scroll", "label": "Scrolling ribbon" },
+        { "value": "image", "label": "Static image" },
+        { "value": "text", "label": "Text background" }
+      ],
+      "default": "scroll"
+    },
+    { "type": "image_picker", "id": "desktop_background_image", "label": "Background image" },
+    { "type": "url", "id": "desktop_background_video", "label": "Background video URL" },
+    { "type": "text", "id": "text_heading", "label": "Text heading", "default": "Your text goes here" },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Image border radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "label": "Scroll speed (seconds)",
+      "min": 5,
+      "max": 120,
+      "step": 5,
+      "default": 45,
+      "unit": "s"
+    },
+    { "type": "text", "id": "button_1_text", "label": "Button 1 text", "default": "Shop now" },
+    { "type": "url", "id": "button_1_link", "label": "Button 1 link" },
+    { "type": "text", "id": "button_2_text", "label": "Button 2 text", "default": "Learn more" },
+    { "type": "url", "id": "button_2_link", "label": "Button 2 link" }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Ribbon Image",
+      "settings": [{ "type": "image_picker", "id": "image", "label": "Upload image" }]
+    }
+  ],
+  "presets": [{ "name": "Image Ribbon" }]
+}
+{% endschema %}
