@@ -1,0 +1,541 @@
+{% style %}
+  /* 🌟 MAIN BANNER CONTAINER */
+  .unique-fit-banner {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    background-color: {{ section.settings.background_color }};
+  }
+
+  /* ✅ Dynamic Margins: Top, Bottom, Left, Right */
+  .unique-fit-banner-wrapper {
+    margin-left: {{ section.settings.section_margin_left }}px !important;
+    margin-right: {{ section.settings.section_margin_right }}px !important;
+    margin-top: {{ section.settings.section_margin_top }}px !important;
+    margin-bottom: {{ section.settings.section_margin_bottom }}px !important;
+    padding-bottom: 20px;
+  }
+
+  .jeans-fit-container {
+    width: calc(100% - {{ section.settings.section_margin_left | plus: section.settings.section_margin_right }}px);
+    margin: 0 auto;
+  }
+
+  /* 🔹 Header */
+  .unique-fit-banner-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+
+
+
+
+  /* 🧩 Grid Layout */
+  .unique-fit-banner-container .unique-fit-banner-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: {{ section.settings.grid_gap }}px;
+    width: 100%;
+    padding-top: 0;
+  }
+
+  /* 🖼️ Image Cards */
+  .unique-fit-banner-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: {{ section.settings.card_border_radius }}px;
+  }
+
+  .unique-fit-banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ✨ Overlay */
+  .unique-fit-banner-overlay {
+    position: absolute;
+    inset: 0;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+
+    /* 🎯 Dynamic alignment from theme settings */
+    justify-content: {{ section.settings.vertical_alignment }};
+    align-items: {{ section.settings.horizontal_alignment }};
+
+    /* 📝 Text alignment also adapts automatically */
+    text-align: {% if section.settings.horizontal_alignment == 'center' %}center{% elsif section.settings.horizontal_alignment == 'flex-end' %}right{% else %}left{% endif %};
+  }
+
+  /* 🌟 Custom White Outline Button */
+  .unique-banner-btn {
+    display: inline-block !important;
+    border: 2px solid #ffffff !important;
+    color: #ffffff !important;
+    background-color: transparent !important;
+    border-radius: {{ section.settings.button_border_radius }}px !important;
+    font-size: {{ section.settings.button_font_size }}px !important;
+    font-family: "DS Trade Gothic", "Trade Gothic", sans-serif !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    padding: 0.6rem 1.5rem !important;
+    transition: all 0.3s ease !important;
+    text-decoration: none !important;
+    text-align: center !important;
+  }
+
+  /* 💫 Hover Effect — White background + Black text */
+  .unique-banner-btn:hover {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-color: #ffffff !important;
+  }
+
+  /* 🔤 Text inside Overlay */
+  .unique-fit-banner-card-title {
+    font-size: {{ section.settings.card_title_size }}px;
+    color: #fcfcfa;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .unique-fit-banner-card-description {
+    margin-top: 20px!important;
+    font-size: 17px!important;
+    margin-bottom: 20px!important;
+    max-width: 70%!important;
+    color: #fcfcfa!important;
+    
+    font-family: DS PF DIN Max, PF DIN Max, sans-serif !important ;
+    letter-spacing: 0!important;
+    font-weight: 400!important;
+    line-height: 1.2!important;
+    text-transform: none!important;
+    font-stretch: 75%!important;
+  }
+
+  /* 📸 Ribbon Images */
+  .unique-fit-image-ribbon img {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .unique-fit-banner-btn-container {
+    padding-top: 20px;
+  }
+
+  /* ✅ Mobile Responsive Fixes */
+  @media screen and (max-width: 749px) {
+    .unique-fit-banner-section {
+      padding: 40px 16px;
+    }
+
+    .unique-fit-banner-container .unique-fit-banner-grid {
+      grid-template-columns: 1fr;
+      gap: {{ section.settings.mobile_grid_gap }}px;
+    }
+
+    .unique-fit-banner-overlay {
+      justify-content: center;
+    }
+
+    .unique-fit-banner-card-description {
+      max-width: 50%;
+      font-size: 11px;
+    }
+
+    .unique-fit-banner-headline {
+      font-size: 24px;
+    }
+
+    .unique-fit-banner-card-title {
+      font-size: 17px;
+    }
+
+    .unique-fit-image-ribbon img {
+      width: 85% !important;
+      margin: 20px auto !important; /* 📱 Adds spacing on mobile */
+    }
+
+    .unique-fit-banner-overlay a {
+      all: revert !important;
+      color: rgb(126, 168, 201) !important;
+      text-decoration: underline;
+      font-size: 13px !important;
+      font-family: "DS Trade Gothic", "Trade Gothic", sans-serif !important;
+    }
+
+    /* 📱 Reduce wrapper margins on mobile for tighter spacing */
+    .unique-fit-banner-wrapper {
+      margin: 20px 16px !important;
+    }
+  }
+{% endstyle %}
+
+<!-- 🟢 NEW MARGIN WRAPPER -->
+<div class="unique-fit-banner-wrapper">
+  
+    <div class="unique-fit-banner-container">
+      {% comment %}
+        <div class="unique-fit-banner-header">
+          {% if section.settings.headline != blank %}
+            <h2 class="unique-fit-banner-headline">{{ section.settings.headline }}</h2>
+          {% endif %}
+          {% if section.settings.subheadline != blank %}
+            <p class="unique-fit-banner-subheadline">{{ section.settings.subheadline }}</p>
+          {% endif %}
+        </div>
+      {% endcomment %}
+
+      <div class="unique-fit-banner-grid">
+        <!-- First Card -->
+        <div class="unique-fit-banner-card">
+          {% if section.settings.first_image %}
+            <img
+              src="{{ section.settings.first_image | image_url: width: 800 }}"
+              alt="{{ section.settings.first_image.alt | escape }}"
+              class="unique-fit-banner-image"
+              loading="lazy"
+              width=""
+              height=""
+            >
+          {% endif %}
+          <div class="unique-fit-banner-overlay">
+            <h3 class="unique-fit-banner-card-title">{{ section.settings.first_title }}</h3>
+            <img
+              class="picture-default"
+              alt="denim reboot"
+              src="https://img.hollisterco.com/is/image/anf/hco2025-fall1-Womens-Denim-lockup-digital-white.svg"
+              style="width: 55%;margin:0 auto"
+              width=""
+              height=""
+            >
+
+            <p class="unique-fit-banner-card-description">{{ section.settings.first_description }}</p>
+            {% if section.settings.first_button_text != blank %}
+              <a
+                href="{{ section.settings.first_button_link }}"
+                class="unique-banner-btn inline-block px-6 py-2 mt-4 font-normal text-center max-md:hidden min-w-60 contrast-high"
+              >
+                {{ section.settings.first_button_text }}
+              </a>
+
+              {% comment %}
+                <a
+                  href="{{ section.settings.first_button_link }}"
+                  class="button inline-block px-6 py-2 mt-4 font-normal text-center max-md:hidden min-w-60 contrast-high"
+                  data-variant="tertiary-dark"
+                >
+                  {{ section.settings.first_button_text }}
+                </a>
+              {% endcomment %}
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Second Card -->
+        <div class="unique-fit-banner-card">
+          {% if section.settings.second_image %}
+            <img
+              src="{{ section.settings.second_image | image_url: width: 800 }}"
+              alt="{{ section.settings.second_image.alt | escape }}"
+              class="unique-fit-banner-image"
+              loading="lazy"
+              width=""
+              height=""
+            >
+          {% endif %}
+          <div class="unique-fit-banner-overlay">
+            <h3 class="unique-fit-banner-card-title">{{ section.settings.second_title }}</h3>
+            <img
+              class="picture-default"
+              alt="skater baggy 360"
+              src="https://img.hollisterco.com/is/image/anf/hco2025-fall1-Mens-Denim-Lockup-Digital-White.svg"
+              style="width:55%;margin:0 auto"
+              width=""
+              height=""
+            >
+            <p class="unique-fit-banner-card-description">{{ section.settings.second_description }}</p>
+            {% if section.settings.second_button_text != blank %}
+              <a
+                href="{{ section.settings.second_button_link }}"
+                class="unique-banner-btn inline-block px-6 py-2 mt-4 font-normal text-center max-md:hidden min-w-60 contrast-high"
+              >
+                {{ section.settings.second_button_text }}
+              </a>
+
+              {% comment %}
+                <a
+                  href="{{ section.settings.second_button_link }}"
+                  class="button inline-block px-6 py-2 mt-4 font-normal text-center max-md:hidden min-w-60 contrast-high"
+                  data-variant="tertiary-dark"
+                >
+                  {{ section.settings.second_button_text }}
+                </a>
+              {% endcomment %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  
+</div>
+{% schema %}
+{
+  "name": "Unique Two Image Banner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Headline",
+      "default": "Find Your Perfect Pair"
+    },
+    {
+      "type": "text",
+      "id": "subheadline",
+      "label": "Subheadline",
+      "default": "Explore our latest collection."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Gap between images (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_grid_gap",
+      "label": "Gap between images (mobile)",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "section_margin_left",
+      "label": "Left margin",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "section_margin_right",
+      "label": "Right margin",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "section_margin_top",
+      "label": "Top margin",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "section_margin_bottom",
+      "label": "Bottom margin",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "image_picker",
+      "id": "first_image",
+      "label": "First Image"
+    },
+    {
+      "type": "text",
+      "id": "first_title",
+      "label": "First Image Title",
+      "default": "First Banner Title"
+    },
+    {
+      "type": "textarea",
+      "id": "first_description",
+      "label": "First Image Description",
+      "default": "Description for the first image banner."
+    },
+    {
+      "type": "text",
+      "id": "first_button_text",
+      "label": "First Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "first_button_link",
+      "label": "First Button Link"
+    },
+    {
+      "type": "image_picker",
+      "id": "second_image",
+      "label": "Second Image"
+    },
+    {
+      "type": "text",
+      "id": "second_title",
+      "label": "Second Image Title",
+      "default": "Second Banner Title"
+    },
+    {
+      "type": "textarea",
+      "id": "second_description",
+      "label": "Second Image Description",
+      "default": "Description for the second image banner."
+    },
+    {
+      "type": "text",
+      "id": "second_button_text",
+      "label": "Second Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "second_button_link",
+      "label": "Second Button Link"
+    },
+    {
+      "type": "range",
+      "id": "headline_size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Headline font size",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "subheadline_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Subheadline font size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "card_title_size",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Card title size",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "card_description_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Card description size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Card border radius",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay gradient color",
+      "default": "rgba(0, 0, 0, 0.4)"
+    },
+    {
+      "type": "color",
+      "id": "overlay_text_color",
+      "label": "Overlay text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Button font size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Vertical content alignment",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "Horizontal content alignment",
+      "options": [
+        { "value": "flex-start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Right" }
+      ],
+      "default": "center"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Unique Two Image Banner"
+    }
+  ]
+}
+{% endschema %}
