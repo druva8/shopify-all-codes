@@ -1,0 +1,882 @@
+
+ {% comment %} {% stylesheet %}
+.custom-section-link-with-description {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  text-align: var(--align, left);
+}
+.custom-section-link-with-description .custom-section-icon {
+  margin-bottom: var(--icon-gap);
+  line-height: 0;
+  display: flex;
+  justify-content: var(--btn-align, flex-start);
+}
+.custom-section-link-with-description .custom-section-icon img {
+  width: var(--icon-size);
+  height: var(--icon-size);
+  object-fit: contain;
+}
+.custom-section-link-with-description .custom-section-heading {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.custom-section-link-with-description .custom-section-desc {
+  margin: 0;
+  font-size: 1rem;
+}
+.custom-section-link-with-description a {
+  align-self: var(--btn-align, flex-start);
+}
+{% endstylesheet %}
+
+{% for block in section.blocks %}
+  {% case block.type %}
+    {% when 'text' %}
+      <div style="text-align: {{ block.settings.alignment }};" {{ block.shopify_attributes }}>
+        {{ block.settings.text }}
+      </div>
+
+    {% when 'button' %}
+      {% if block.settings.link and block.settings.label %}
+        <a href="{{ block.settings.link }}"
+           class="{{ block.settings.style }}"
+           {% if block.settings.open_new_tab %}target="_blank" rel="noopener"{% endif %}
+           {{ block.shopify_attributes }}>
+          {{ block.settings.label }}
+        </a>
+      {% endif %}
+
+    {% when 'link_with_description' %}
+      <div class="custom-section-link-with-description"
+           {{ block.shopify_attributes }}
+           style="
+             --gap: {{ block.settings.gap }}px;
+             --align: {{ block.settings.text_alignment }};
+             --btn-align: {% if block.settings.text_alignment == 'center' %}center{% elsif block.settings.text_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+             --icon-gap: {{ block.settings.icon_gap }}px;
+             --icon-size: {{ block.settings.icon_size }}px;
+           ">
+           <div class="custom-section-icon">
+          <span aria-hidden="true" class="icon p-2" data-icon="hco-logo-stacked" data-testid="icon"></span>
+          <span aria-hidden="true" class="icon p-2" data-icon="gilly-hicks-stacked-small" data-testid="icon"></span>
+          </div>
+        {% comment %}--- ICON (Image Picker → SVG → Class) ---{% endcomment %}
+        {% comment %} {% if block.settings.icon_image != blank %}
+          <div class="custom-section-icon">
+            <img src="{{ block.settings.icon_image | img_url: 'master' }}"
+                 alt="{{ block.settings.heading | escape }}"
+                 loading="lazy">
+          </div>
+        {% elsif block.settings.icon_svg != blank %}
+          <div class="custom-section-icon">
+            {{ block.settings.icon_svg }}
+          </div>
+        {% elsif block.settings.icon_class != blank %}
+          <div class="custom-section-icon">
+            <i class="{{ block.settings.icon_class }}"></i>
+          </div>
+        {% endif %} {% endcomment %}
+
+        {% comment %}--- HEADING ---{% endcomment %}
+        {% if block.settings.heading != blank %}
+          <h3 class="custom-section-heading">{{ block.settings.heading }}</h3>
+        {% endif %}
+
+        {% comment %}--- DESCRIPTION ---{% endcomment %}
+        {% if block.settings.description != blank %}
+          <p class="custom-section-desc">{{ block.settings.description }}</p>
+        {% endif %}
+
+        {% comment %}--- BUTTON ---{% endcomment %}
+        {% if block.settings.button_link and block.settings.button_label %}
+          <a href="{{ block.settings.button_link }}"
+             class="{{ block.settings.style_class }}"
+             {% if block.settings.open_new_tab %}target="_blank" rel="noopener"{% endif %}>
+            {{ block.settings.button_label }}
+          </a>
+        {% endif %}
+      </div>
+  {% endcase %}
+{% endfor %}
+
+{% schema %}
+{
+  "name": "Custom Section with Icon ",
+  "class": "custom-section-wrapper",
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Add your text here</p>"
+        },
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Alignment",
+          "options": [
+            { "value": "left",   "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right",  "label": "Right" }
+          ],
+          "default": "left"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "Button",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Button Label",
+          "default": "Click Me"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Button Link"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_new_tab",
+          "label": "Open in new tab",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            { "value": "custom-section-button",          "label": "Primary" },
+            { "value": "custom-section-button--secondary","label": "Secondary" },
+            { "value": "custom-section-link",            "label": "Link" }
+          ],
+          "default": "custom-section-button"
+        }
+      ]
+    },
+    {
+      "type": "link_with_description",
+      "name": "Link with Icon & Heading",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon (Select from Files)",
+          "info": "Upload PNG, SVG, or any image. Size controlled below."
+        },
+        {
+          "type": "range",
+          "id": "icon_size",
+          "label": "Icon Size",
+          "min": 16,
+          "max": 80,
+          "step": 2,
+          "unit": "px",
+          "default": 32
+        },
+        {
+          "type": "range",
+          "id": "icon_gap",
+          "label": "Gap between icon & heading",
+          "min": 0,
+          "max": 40,
+          "step": 2,
+          "unit": "px",
+          "default": 12
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Our Story"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "default": "We believe in quality, care, and purpose."
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button Label",
+          "default": "Read More"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link",
+          "default": "/"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_in_new_tab",
+          "label": "Open in new tab",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "style_class",
+          "label": "Button Style",
+          "options": [
+            { "value": "custom-section-button",          "label": "Primary Button" },
+            { "value": "custom-section-button--secondary","label": "Secondary Button" },
+            { "value": "custom-section-link",            "label": "Text Link" }
+          ],
+          "default": "custom-section-button"
+        },
+        {
+          "type": "select",
+          "id": "text_alignment",
+          "label": "Text Alignment",
+          "options": [
+            { "value": "left",   "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right",  "label": "Right" }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "range",
+          "id": "gap",
+          "label": "Overall gap",
+          "min": 0,
+          "max": 40,
+          "step": 2,
+          "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "html",
+          "id": "icon_svg",
+          "label": "SVG Code (Alternative)",
+          "info": "Only used if no image is selected."
+        },
+        {
+          "type": "text",
+          "id": "icon_class",
+          "label": "Icon Class (Alternative)",
+          "info": "e.g. 'fa fa-star' – only if no image/SVG."
+        }
+      ]
+    }
+  ],
+  "settings": [],
+  "presets": [
+    {
+      "name": "Custom Section with Icon",
+      "blocks": [
+        {
+          "type": "link_with_description",
+          "settings": {
+            "heading": "Our Story",
+            "description": "We believe in quality, care, and purpose.",
+            "button_label": "Learn More",
+            "button_link": "/pages/about",
+            "style_class": "custom-section-button",
+            "text_alignment": "center",
+            "gap": 16,
+            "icon_size": 40,
+            "icon_gap": 12
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+{% style %}
+.custom-section-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 0.95rem;
+}
+.custom-section-button--secondary {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-block;
+}
+.custom-section-link {
+  color: #007bff;
+  text-decoration: underline;
+  font-size: 0.95rem;
+}
+{% endstyle %} {% endcomment %}
+
+
+
+{% comment %} {% layout none %}
+
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 - Page Not Found | {{ shop.name }}</title>
+  {{ 'theme.scss.css' | asset_url | stylesheet_tag }}
+  {{ content_for_header }}
+
+  <style>
+    .error-404--clefariy {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      padding: 40px 20px;
+      text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .logo-flex {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 30px;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .font-icon {
+      font-size: 3rem;
+      color: #292a33;
+      margin: 0;
+    }
+
+    .font-icon[data-icon="hco-logo-stacked"] {
+      font-size: 3.5rem;
+    }
+
+    .headline1 {
+      color: #2c2a27;
+      font-family: DS PF DIN Max, PF DIN Max, sans-serif;
+    font-stretch: 50% !important;
+    font-weight: 400 !important;
+    letter-spacing: .03em !important;
+      display: block;
+      margin: 0;
+      
+    }
+
+    .high-contrast1 {
+      color: #292a33;
+    }
+
+    [data-variant="lead-in"] {
+      font-size: 1.75rem;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    [data-variant="subcopy"] {
+      color: #2c2a27;
+    font-stretch: 75%;
+    letter-spacing: .03em;
+    line-height: 1;
+    }
+
+    [data-padding-top="20"] {
+      margin-top: 20px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 16px;
+    }
+
+    .button-group a {
+      padding: 12px 30px;
+      background: transparent;
+      color: #292a33;
+      border: 2px solid #292a33;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .button-group a:hover {
+      background:rgb(109, 110, 120);
+      color: white;
+    }
+
+    .legal-text1 {
+      margin-top: 30px;
+      font-size: 0.875rem;
+      color: #666;
+      max-width: 600px;
+    }
+
+    .legal-text1 a {
+      color: #007bff;
+      text-decoration: underline !important;
+      text-underline-offset: 2px;
+    }
+
+    .legal-text1 a:hover {
+      color: #0056b3;
+    }
+
+    /* Mobile: Stack buttons */
+    @media (max-width: 480px) {
+      .dtbreak { display: none; }
+      .mobreak .button-group {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    @media (min-width: 481px) {
+      .mobreak { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<main class="content-wrap scope-1892 error-404 error-404--clefariy" role="main">
+
+  <div id="contentRecommendationWidget_HTTPError_404" class="contentRecommendationWidget genericESpot" data-espot-contents="1:1" data-espotname="HTTPError_404">
+    
+    <div class="hco-content scope-1892">
+      <div id="error-page-404">
+
+        <!-- LOGO FLEX -->
+        <div class="logo-flex">
+          <span aria-hidden="true" class="icon p-2" data-icon="hco-logo-stacked" data-testid="icon"></span>
+          <span aria-hidden="true" class="icon p-2" data-icon="gilly-hicks-stacked-small" data-testid="icon"></span>
+        </div>
+
+        <!-- TEXT -->
+        <p>
+          <span class="headline1 high-contrast1" data-variant="lead-in" data-size="25">
+            I THINK WE’RE LOST
+          </span>
+          <span class="headline1 high-contrast1" data-variant="subcopy" data-size="15" data-padding-top="20">
+            The bad news: This page doesn't exist.
+          </span>
+          <span class="headline1 high-contrast1" data-variant="subcopy" data-size="15">
+            The good news: We have a lot of other ones that do.
+          </span>
+        </p>
+
+        <!-- DESKTOP BUTTON -->
+        <div class="dtbreak">
+          <div class="button-group" data-variant="horizontal-spaced">
+            <a href="https://admin.shopify.com/store/hollister-staging/themes/179512312123/editor"
+               class="button ds-override"
+               data-variant="tertiary-light">
+              <span>Shop Hollister</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- MOBILE BUTTON -->
+        <div class="mobreak">
+          <div class="button-group" data-variant="vertical-spaced">
+            <a href=""
+               class="button ds-override"
+               data-variant="tertiary-light">
+              <span>Shop Hollister</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- LEGAL TEXT -->
+        <span class="legal-text1">
+          If you continue to have problems, please visit our 
+          <a href="https://www.hollisterco.com/shop/wd/help?originalStore=us&icmp=ICT%3AEVERGREEN%3AD-H%3ALP%3AH%3ALP-H%3AK%3Ax%3AHelp404&pagefm=navigation+-+account+flyout">Help page</a> 
+          for the best way to reach us.
+        </span>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+
+{{ content_for_footer }}
+</body>
+</html>  {% endcomment %}
+{% comment %} 
+{% comment %}
+  Custom 404 Section – Full Match + Free Shipping + Exact Help URL
+{% endcomment %}
+{% comment %}
+  Custom 404 Section – Valid Schema + Exact URLs + Free Shipping
+{% endcomment %}
+
+<style>
+  .custom-404-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 60px 20px;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  .free-shipping-banner {
+    background: #000;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 999px;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+
+  .logo-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+
+  .font-icon {
+    font-size: 3rem;
+    color: #292a33;
+    margin: 0;
+    line-height: 1;
+  }
+
+  .font-icon[data-icon="hco-logo-stacked"] {
+    font-size: 3.5rem;
+  }
+
+  .headline {
+    display: block;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .high-contrast {
+    color: #292a33;
+  }
+
+  [data-variant="lead-in"] {
+    font-size: 1.75rem;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  [data-variant="subcopy"] {
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #555;
+  }
+
+  [data-padding-top="20"] {
+    margin-top: 20px;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 16px;
+  }
+
+  .button-group a {
+    padding: 12px 30px;
+    background: transparent;
+    color: #292a33;
+    border: 2px solid #292a33;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    display: inline-block;
+  }
+
+  .button-group a:hover {
+    background: #292a33;
+    color: white;
+  }
+
+  .legal-text1 {
+    margin-top: 30px;
+    font-size: 0.875rem;
+    color: #666;
+    max-width: 600px;
+    line-height: 1.5;
+  }
+
+  .legal-text1 a {
+    color: #007bff;
+    text-decoration: underline !important;
+    text-underline-offset: 2px;
+  }
+
+  .legal-text1 a:hover {
+    color: #0056b3;
+  }
+
+  @media (max-width: 480px) {
+    .dtbreak { display: none; }
+    .mobreak .button-group {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+
+  @media (min-width: 481px) {
+    .mobreak { display: none; }
+  }
+</style>
+
+<div class="custom-404-wrapper">
+
+  <!-- FREE SHIPPING BANNER -->
+ 
+
+  <!-- LOGO FLEX -->
+  <div class="logo-flex">
+    <span aria-hidden="true" class="icon p-2" data-icon="hco-logo-stacked" data-testid="icon"></span>
+    <span aria-hidden="true" class="icon p-2" data-icon="gilly-hicks-stacked-small" data-testid="icon"></span>
+  </div>
+
+  <!-- TEXT -->
+  <p>
+    <h4><span class="headline high-contrast" data-variant="lead-in">
+      I THINK WE'RE LOST
+    </span></h4>
+
+  </p>
+
+  <!-- DESKTOP BUTTON -->
+  <div class="dtbreak">
+    <div class="button-group" data-variant="horizontal-spaced">
+      <a href="https://www.hollisterco.com/shop/wd?icmp=ICT:EVERGREEN:D-H:LP:H:HP-H:K:x:HCo404"
+         class="button ds-override"
+         data-variant="tertiary-light">
+        <span>Shop Hollister</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- MOBILE BUTTON -->
+  <div class="mobreak">
+    <div class="button-group" data-variant="vertical-spaced">
+      <a href="https://www.hollisterco.com/shop/wd?icmp=ICT:EVERGREEN:D-H:LP:H:HP-H:K:x:HCo404"
+         class="button ds-override"
+         data-variant="tertiary-light">
+        <span>Shop Hollister</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- LEGAL TEXT -->
+  <span class="legal-text1">
+     
+    If you continue to have problems, please visit our 
+    <a href="https://www.hollisterco.com/shop/wd/help?originalStore=us&icmp=ICT%3AEVERGREEN%3AD-H%3ALP%3AH%3ALP-H%3AK%3Ax%3AHelp404&pagefm=navigation+-+account+flyout">
+      Help page
+    </a> 
+    for the best way to reach us.
+  </span>
+
+</div>
+
+{% schema %}
+{
+  "name": "Custom 404 Page"
+}
+{% endschema %} {% endcomment %}
+
+
+{% layout none %}
+
+{{ 'theme.scss.css' | asset_url | stylesheet_tag }}
+{{ content_for_header }}
+
+<style>
+  .error-404--clefariy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    padding: 40px 20px;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .logo-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+  .font-icon { font-size: 3rem; color: #292a33; margin: 0; }
+  .font-icon[data-icon="hco-logo-stacked"] { font-size: 3.5rem; }
+
+  .headline1 {
+    color: #2c2a27;
+    font-family: DS PF DIN Max, PF DIN Max, sans-serif;
+    font-stretch: 50% !important;
+    font-weight: 400 !important;
+    letter-spacing: .03em !important;
+    display: block;
+    margin: 0;
+  }
+  .high-contrast1 { color: #292a33; }
+  [data-variant="lead-in"]   { font-size: 1.75rem; line-height: 1.2; margin-bottom: 16px; }
+  [data-variant="subcopy"]   { color: #2c2a27; font-stretch: 75%; letter-spacing: .03em; line-height: 1; }
+  [data-padding-top="20"]    { margin-top: 20px; }
+
+  .button-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .button-group a {
+    padding: 12px 30px;
+    background: transparent;
+    color: #292a33;
+    border: 2px solid #292a33;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all .2s ease;
+    white-space: nowrap;
+  }
+  .button-group a:hover { background: rgb(109,110,120); color: #fff; }
+
+  .legal-text1 {
+    margin-top: 30px;
+    font-size: .875rem;
+    color: #666;
+    max-width: 600px;
+    line-height: 1.5;
+  }
+  .legal-text1 a { color: #007bff; text-decoration: underline !important; text-underline-offset: 2px; }
+  .legal-text1 a:hover { color: #0056b3; }
+
+  @media (max-width: 480px) {
+    .button-group { flex-direction: column; align-items: center; gap: 12px; }
+    .button-group a { width: 100%; max-width: 280px; }
+  }
+</style>
+
+<div class="content-wrap scope-1892 error-404 error-404--clefariy">
+  <div id="contentRecommendationWidget_HTTPError_404" class="contentRecommendationWidget genericESpot" data-espot-contents="1:1" data-espotname="HTTPError_404">
+    <div class="hco-content scope-1892">
+      <div id="error-page-404">
+
+        <!-- LOGO -->
+        <div class="logo-flex">
+             <span aria-hidden="true" class="icon p-2" data-icon="hco-logo-stacked" data-testid="icon"></span>
+             <span aria-hidden="true" class="icon p-2" data-icon="gilly-hicks-stacked-small" data-testid="icon"></span>
+
+        </div>
+
+        <!-- TEXT WRAPPER -->
+        <div>
+          <div class="headline1 high-contrast1" data-variant="lead-in" data-size="25">
+            {{ settings.error_404_headline | default: "I THINK WE’RE LOST" }}
+          </div>
+
+          <div class="headline1 high-contrast1" data-variant="subcopy" data-size="15" data-padding-top="20">
+            {{ settings.error_404_subcopy_1 | default: "The bad news: This page doesn't exist." }}
+          </div>
+
+          <div class="headline1 high-contrast1" data-variant="subcopy" data-size="15">
+            {{ settings.error_404_subcopy_2 | default: "The good news: We have a lot of other ones that do." }}
+          </div>
+        </div>
+
+        <!-- BUTTON -->
+        {% assign button_label = settings.error_404_button_label | default: "Shop Hollister" %}
+        {% assign button_url   = settings.error_404_button_url | default: "/" %}
+
+        <div class="button-group">
+          <a href="{{ button_url }}" class="button ds-override" data-variant="tertiary-light">
+            <div>{{ button_label }}</div>
+          </a>
+        </div>
+
+        <!-- LEGAL TEXT -->
+        <div class="legal-text1">
+          {{ settings.error_404_legal_text | default: "If you continue to have problems, please visit our Help page for the best way to reach us." }}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ content_for_footer }}
+
+{% schema %}
+{
+  "name": "404 Page Settings",
+  "settings": [
+    {
+      "type": "text",
+      "id": "error_404_headline",
+      "label": "Main Headline",
+      "default": "I THINK WE’RE LOST"
+    },
+    {
+      "type": "text",
+      "id": "error_404_subcopy_1",
+      "label": "Subcopy Line 1",
+      "default": "The bad news: This page doesn't exist."
+    },
+    {
+      "type": "text",
+      "id": "error_404_subcopy_2",
+      "label": "Subcopy Line 2",
+      "default": "The good news: We have a lot of other ones that do."
+    },
+    {
+      "type": "text",
+      "id": "error_404_button_label",
+      "label": "Button Text",
+      "default": "Shop Hollister"
+    },
+    {
+      "type": "url",
+      "id": "error_404_button_url",
+      "label": "Button URL",
+      "default": "/"
+    },
+    {
+      "type": "textarea",
+      "id": "error_404_legal_text",
+      "label": "Legal / Help Text (HTML allowed)",
+      "default": "If you continue to have problems, please visit our Help page for the best way to reach us.",
+      "info": "You can add links like: <a href=\"/pages/help\">Help page</a>"
+    }
+  ]
+}
+{% endschema %}
