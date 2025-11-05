@@ -1,0 +1,153 @@
+{% comment %}
+  Renders a megamenu for the header.
+
+  Usage:
+  {% render 'header-mega-menu' %}
+{% endcomment %}
+
+<nav class="header__inline-menu">
+  <ul class="items-center list-menu list-menu--inline" role="list">
+    {%- for link in section.settings.menu.links -%}
+      <li class="hover:border-b-2 hover:border-black menu-item">
+        {% assign menu_title = link.title | downcase %}
+        {%- if link.links != blank -%}
+          <header-menu>
+            <details id="Details-HeaderMenu-{{ forloop.index }}" class="mega-menu ddd">
+              <summary
+                id="HeaderMenu-{{ link.handle }}"
+                class="!text-2xl h-32 font-bold header__menu-item list-menu__item !no-underline link focus-inset !text-primary"
+              >
+                <span
+                  class="!no-underline {%- if link.child_active %}header__active-menu-item{% endif %}"
+                >
+                  {{- link.title | escape -}}
+                </span>
+                {% comment %}{{- 'icon-caret.svg' | inline_asset_content -}}{% endcomment %}
+              </summary>
+              <div
+                id="MegaMenu-Content-{{ forloop.index }}"
+                class="mega-menu__content color-{{ section.settings.menu_color_scheme }} gradient motion-reduce global-settings-popup"
+                tabindex="-1"
+              >
+                <ul
+                  class="mega-menu__list page-width{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}"
+                  role="list"
+                  style="gap: 0"
+                  ;
+                >
+                  {%- for childlink in link.links -%}
+                    <li class="sub-menu-item">
+                      <a
+                        id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
+                        href="{{ childlink.url }}"
+                        class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}"
+                        {% if childlink.current %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        {{ childlink.title | escape }}
+                      </a>
+                      {%- if childlink.links != blank -%}
+                        <ul class="list-unstyled" role="list">
+                          {%- for grandchildlink in childlink.links -%}
+                            {% assign raw_title = grandchildlink.title %}
+                            {% assign color_code = '' %}
+                            {% assign display_title = raw_title %}
+
+                            {% if raw_title contains '[' and raw_title contains ']' %}
+                              {% assign color_code = raw_title | split: '[' | last | replace: ']', '' | strip %}
+                              {% assign display_title = raw_title | split: '[' | first | strip %}
+                            {% endif %}
+                            <li>
+                              <a
+                                id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
+                                href="{{ grandchildlink.url }}"
+                                style="{% if color_code != '' %}color: {{ color_code }};{% endif %}"
+                                class="mega-menu__link mega-menu-link__item link{% if grandchildlink.current %} mega-menu__link--active{% endif %}"
+                                {% if grandchildlink.current %}
+                                  aria-current="page"
+                                {% endif %}
+                              >
+                                {{ display_title }}
+                              </a>
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      {%- endif -%}
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </div>
+            </details>
+          </header-menu>
+        {% elsif menu_title contains 'purpose' or menu_title contains 'tujuan' %}
+          <header-menu>
+            <details id="Details-HeaderMenu-{{ forloop.index }}" class="mega-menu ddd">
+              <summary
+                id="HeaderMenu-{{ link.handle }}"
+                class="!text-2xl h-32 font-bold header__menu-item list-menu__item !no-underline link focus-inset !text-primary"
+              >
+                <a
+                  href="{{ link.url }}"
+                  onclick="event.stopPropagation()"
+                  class="!no-underline {%- if link.child_active %}header__active-menu-item{% endif %}"
+                >
+                  {{- link.title | escape -}}
+                </a>
+                {% comment %}{{- 'icon-caret.svg' | inline_asset_content -}}{% endcomment %}
+              </summary>
+              <div
+                id="MegaMenu-Content-{{ forloop.index }}"
+                class="mega-menu__content color-{{ section.settings.menu_color_scheme }} gradient motion-reduce global-settings-popup"
+                tabindex="-1"
+              >
+                <div
+                  class="mega-menu__list_block page-width"
+                  role="list"
+                >
+                  {% for block in section.blocks %}
+                    {% case block.type %}
+                      {% when 'purpose_block' %}
+                        {% comment %} <div class="purpose-block"> {% endcomment %}
+                        <div
+                          class="purpose-block relative bg-cover bg-center"
+                          style="{% if block.settings.bg_image %}background-image: url('{{ block.settings.bg_image | image_url }}');{% endif %}"
+                        >
+                          {% if block.settings.image != blank %}
+                            <img src="{{ block.settings.image | image_url }}" alt="{{ block.settings.title }}">
+                          {% endif %}
+                          <h3 class="headline">{{ block.settings.title | newline_to_br }}</h3>
+                          <p>{{ block.settings.description | newline_to_br }}</p>
+                          {% if block.settings.button_text != blank %}
+                            <a href="{{ block.settings.button_link }}" class="button" data-variant="tertiary-dark">
+                              {{- block.settings.button_text -}}
+                            </a>
+                          {% endif %}
+                        </div>
+                    {% endcase %}
+                  {% endfor %}
+                </div>
+              </div>
+            </details>
+          </header-menu>
+        {%- else -%}
+          <a
+            id="HeaderMenu-{{ link.handle }}"
+            href="{{ link.url }}"
+            class="h-32 header__menu-item list-menu__item link link--text focus-inset"
+            {% if link.current %}
+              aria-current="page"
+            {% endif %}
+          >
+            <span
+              class="!no-underline {%- if link.current %}header__active-menu-item{% endif %}"
+            >
+              {{- link.title | escape -}}
+              {{ menu_title }}
+            </span>
+          </a>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</nav>
