@@ -1,0 +1,63 @@
+<div class="mb-8 card-swatch-list" data-product-id="{{ card_product.id }}">
+                {%- assign rendered_swatch_values = '' -%}
+                {%- assign color_index = card_product.options | find_index: 'Color' | plus: 1 -%}
+                {%- for value in card_product.options_by_name.Color.values -%}
+                  {%- liquid
+                    # Prevent duplicates
+                    assign swatch_key = ''
+                    if value.swatch.image
+                      assign swatch_key = value.swatch.image | image_url: width: 50
+                    elsif value.swatch.color
+                      assign swatch_key = value.swatch.color.rgb
+                    endif
+                  -%}
+                  {%- unless rendered_swatch_values contains swatch_key -%}
+                    {%- assign variant = null -%}
+
+                    {%- case color_index -%}
+                      {%- when 1 -%}
+                        {%- assign variant = card_product.variants
+                          | where: 'option1', value
+                          | where: 'available', true
+                          | first
+                        -%}
+                      {%- when 2 -%}
+                        {%- assign variant = card_product.variants
+                          | where: 'option2', value
+                          | where: 'available', true
+                          | first
+                        -%}
+                      {%- when 3 -%}
+                        {%- assign variant = card_product.variants
+                          | where: 'option3', value
+                          | where: 'available', true
+                          | first
+                        -%}
+                    {%- endcase -%}
+
+                    {%- assign swatch_value = '' -%}
+                    {%- if value.swatch.image -%}
+                      {%- assign image_url = value.swatch.image | image_url: width: 50 -%}
+                      {%- assign swatch_value = 'url(' | append: image_url | append: ')' -%}
+                    {%- elsif value.swatch.color -%}
+                      {%- assign swatch_value = 'rgb(' | append: value.swatch.color.rgb | append: ')' -%}
+                    {%- endif -%}
+
+                    {%- if variant -%}
+                      <div class="card-swatch--inner w-10 h-10 border rounded-full flex justify-center items-center border-[#919191]">
+                        <a
+                          href="{{ variant.url }}"
+                          class="card-swatch !block !w-[1.9rem] !h-[1.9rem]"
+                          style="background: {{ swatch_value }};"
+                          data-variant-title="{{ variant.title }}"
+                          data-media-src="{% if variant.featured_media %}{{ variant.featured_media | image_url: width: 600 }}{% endif %}"
+                          aria-label="{{ value }}"
+                        >
+                        </a>
+                      </div>
+                    {%- endif -%}
+
+                    {%- assign rendered_swatch_values = rendered_swatch_values | append: swatch_key | append: ',' -%}
+                  {%- endunless -%}
+                {%- endfor -%}
+              </div>
