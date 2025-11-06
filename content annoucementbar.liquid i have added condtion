@@ -1,0 +1,81 @@
+<div class="w-full " style="background-color: {{ section.settings.background_color }};">
+  <div class="container flex max-md:justify-between max-md:flex-col leading-normal max-md:gap-0 max-md:w-fit items-center gap-6 px-6 py-4 mx-auto text-[1.3rem] justify-left md:flex-row min-h-20" style="color: {{ section.settings.text_color }};">
+    <span class="tracking-normal announement-text md:mb-0">{{ section.settings.announcement_text }}</span>
+    <div class="flex space-x-6 underline max-md:w-full max-md:justify-between">
+       {% comment %} --- Link 1 Logic --- {% endcomment %}
+      {% if section.settings.link_1_url != blank %}
+        <a href="{{ section.settings.link_1_url }}" class="button-link">
+          {{ section.settings.link_1_label }}
+        </a>
+      {% else %}
+        <a href="/collections/mens-tops" class="button-link">
+          {{ section.settings.link_1_label }}
+        </a>
+      {% endif %}
+
+      {% comment %} --- Link 2 Logic --- {% endcomment %}
+      {% if section.settings.link_2_url != blank %}
+        <a href="{{ section.settings.link_2_url }}" class="button-link">
+          {{ section.settings.link_2_label }}
+        </a>
+      {% else %}
+        <a href="/collections/mens-tops" class="button-link">
+          {{ section.settings.link_2_label }}
+        </a>
+      {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+    "name": "Content Announcement Bar",
+    "tag": "section",
+    "settings": [
+    {
+        "type": "text",
+        "id": "announcement_text",
+        "label": "Announcement text",
+        "default": "Free Shipping on Orders Over US$150"
+    },
+    {
+        "type": "text",
+        "id": "link_1_label",
+        "label": "Link 1 label",
+        "default": "SHOP MEN'S"
+    },
+    {
+        "type": "url",
+        "id": "link_1_url",
+        "label": "Link 1 URL"
+    },
+    {
+        "type": "text",
+        "id": "link_2_label",
+        "label": "Link 2 label",
+        "default": "SHOP WOMEN'S"
+    },
+    {
+        "type": "url",
+        "id": "link_2_url",
+        "label": "Link 2 URL"
+    },
+    {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background color",
+        "default": "#4e6f84"
+    },
+    {
+        "type": "color",
+        "id": "text_color",
+        "label": "Text color",
+        "default": "#ffffff"
+    }
+    ],
+    "presets": [
+    {
+        "name": "Content Announcement Bar"
+    }
+    ]
+}
+{% endschema %}
