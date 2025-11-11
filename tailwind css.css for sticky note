@@ -1,0 +1,24 @@
+.sticky-note
+{
+  position: sticky;
+  bottom: 0.5px;
+  background-color:white;
+  display: flex;
+  place-self: anchor-center;
+  font-family: DS PF DIN Max, PF DIN Max, sans-serif;
+  max-width: 300px;
+  margin:20px auto; 
+  font-stretch: 75%;
+}
+ .show-measurement {
+  display: flex;
+  justify-content: center;
+}
+.overlay-measurement {
+  border: 1px solid #c6c6c6;
+  height: 50px;
+  padding: 16px 20px ;
+  text-align: center; 
+  
+
+}
