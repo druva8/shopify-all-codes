@@ -1,0 +1,373 @@
+<!--
+  =======================
+    Mobile Category Tab Menu
+  =======================
+-->
+<style>
+  .shop-tab-menu {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+    padding: 0 0.5rem;
+  }
+  .shop-tab-menu::-webkit-scrollbar {
+    display: none;
+  }
+  .shop-tab-menu a {
+    flex: 0 0 auto;
+    padding: 1rem 0.75rem 0.75rem;
+    text-decoration: none;
+    color: #253746;;
+    font-weight: 600;
+    font-size: 15px;
+    text-transform: capitalize;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    font-family: DS Trade Gothic, Trade Gothic, sans-serif;
+  }
+  .shop-tab-menu a.active {
+    color: #12263a;
+    border-color: #12263a;
+  }
+</style>
+
+{% comment %}
+  <div class="shop-tab-menu">
+    {% assign current_handle = request.path | split: '/' | last %}
+    {% assign tabs = 'men:mens-2,women:womens-collection,boys:boys-collection,girls:girls-collection' | split: ',' %}
+
+    {% for tab in tabs %}
+      {% assign parts = tab | split: ':' %}
+      {% assign label = parts[0] %}
+      {% assign handle = parts[1] %}
+      {% assign collection = collections[handle] %}
+      <a
+        href="{{ collection.url }}"
+        class="{% if current_handle == collection.handle %}active{% endif %}">
+        {{ label | capitalize }}
+      </a>
+    {% endfor %}
+  </div>
+{% endcomment %}
+
+<div class="shop-tab-menu">
+  {% assign current_handle = request.path | split: '/' | last %}
+  {% assign men_collection = collections[section.settings.tab_men_collection] %}
+  {% assign women_collection = collections[section.settings.tab_women_collection] %}
+  {% assign boys_collection = collections[section.settings.tab_boys_collection] %}
+  {% assign girls_collection = collections[section.settings.tab_girls_collection] %}
+
+  {% if men_collection %}
+    <a href="{{ men_collection.url }}" class="{% if current_handle == men_collection.handle %}active{% endif %}">
+      {{ section.settings.tab_men_label }}
+    </a>
+  {% endif %}
+  {% if women_collection %}
+    <a href="{{ women_collection.url }}" class="{% if current_handle == women_collection.handle %}active{% endif %}">
+      {{ section.settings.tab_women_label }}
+    </a>
+  {% endif %}
+  {% if boys_collection %}
+    <a href="{{ boys_collection.url }}" class="{% if current_handle == boys_collection.handle %}active{% endif %}">
+      {{ section.settings.tab_boys_label }}
+    </a>
+  {% endif %}
+  {% if girls_collection %}
+    <a href="{{ girls_collection.url }}" class="{% if current_handle == girls_collection.handle %}active{% endif %}">
+      {{ section.settings.tab_girls_label }}
+    </a>
+  {% endif %}
+</div>
+<!--
+  =======================
+    Section: Mobile Collection Carousel
+  =======================
+-->
+<style>
+  .mobile-carousel-section {
+    background-color: #f9f9f9;
+  }
+  .carousel-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  .carousel-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+  .carousel-items {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 6px;
+    scroll-behavior: smooth;
+  }
+  .carousel-item {
+    flex: 0 0 auto;
+    width: 160px;
+    scroll-snap-align: start;
+    overflow: hidden;
+  }
+  .carousel-item img {
+    width: 100%;
+    object-fit: cover;
+  }
+  .btn-view-all {
+    background-color: #12263a;
+    color: #fff;
+    font-weight: 600;
+    padding: 10px 18px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 14px;
+    transition: background 0.3s;
+    font-family: DS Trade Gothic, Trade Gothic, sans-serif;
+  }
+  .btn-view-all:hover {
+    background-color: #1d3c5a;
+  }
+  .float-btn {
+    position: absolute;
+    right: 0;
+    top: 34rem;
+  }
+</style>
+
+<div class="mobile-carousel-section px-4 py-8">
+  {% if section.settings.carousel_heading != blank %}
+    <h2 class="text-2xl font-garamond text-primary mb-4 p-2">
+      {{ section.settings.carousel_heading }}
+    </h2>
+  {% endif %}
+
+  {% assign selected_collection = collections[section.settings.carousel_collection] %}
+  {% if selected_collection and selected_collection.products_count > 0 %}
+    <div class="carousel-wrapper">
+      <div class="carousel-items">
+        {% for product in selected_collection.products limit: section.settings.carousel_product_limit %}
+          <a href="{{ product.url }}" class="carousel-item">
+            <img
+              src="{{ product.featured_image | img_url: '600x600' }}"
+              alt="{{ product.title | escape }}"
+              loading="lazy"
+            >
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if section.settings.carousel_view_all_label != blank %}
+      <div class="mt-6 flex float-btn">
+        <a href="{{ section.settings.carousel_view_all_link }}" class="btn-view-all">
+          {{ section.settings.carousel_view_all_label }}
+        </a>
+      </div>
+    {% endif %}
+  {% else %}
+    <p class="text-gray-500">No products found in this collection.</p>
+  {% endif %}
+</div>
+
+<!--
+  =======================
+    Section: Mobile Collection Blocks
+  =======================
+-->
+<section class="mobile-collection-blocks">
+  <div class="container">
+    {% assign menu = linklists[section.settings.block_menu] %}
+    {% if menu and menu.links.size > 0 %}
+      <div class="collection-blocks-wrapper">
+        {% for link in menu.links %}
+          {% assign collection = collections[link.object.handle] %}
+          {% if collection %}
+            <a href="{{ collection.url }}" class="collection-block">
+              <div class="collection-block-image">
+                {% if collection.image %}
+                  <img src="{{ collection.image | img_url: '600x' }}" alt="{{ collection.title }}">
+                {% elsif collection.products.first.featured_image %}
+                  <img
+                    src="{{ collection.products.first.featured_image | img_url: '600x' }}"
+                    alt="{{ collection.title }}"
+                  >
+                {% else %}
+                  <div class="no-image">No image</div>
+                {% endif %}
+              </div>
+              <div class="collection-block-title">{{ collection.title }}</div>
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No menu or collections found.</p>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .mobile-collection-blocks {
+    padding: 1rem 0;
+    background-color: #f9f9f9;
+  }
+  .collection-blocks-heading {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: left;
+    font-family: DS Trade Gothic, Trade Gothic, sans-serif;
+  }
+  .collection-blocks-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .collection-block {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+  }
+  .collection-block-image img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+  }
+  .collection-block-title {
+    font-size: 1rem;
+    color: #222;
+    padding-left: 1rem;
+    font-weight: 500;
+  }
+  .no-image {
+    width: 120px;
+    height: 120px;
+    background: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+  }
+  @media (min-width: 768px) {
+    .collection-blocks-wrapper {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .collection-block {
+      width: calc(33.33% - 1rem);
+    }
+  }
+</style>
+
+<!--
+  =======================
+    Section: Collection Grid
+  =======================
+-->
+<section class="collection-grid-section">
+  {% if section.settings.grid_heading != blank %}
+    <h2 class="collection-grid-heading">{{ section.settings.grid_heading }}</h2>
+  {% endif %}
+
+  <div
+    class="collection-grid"
+    style="
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat({{ section.settings.grid_columns_mobile }}, 1fr);
+    "
+  >
+    {% for block in section.blocks %}
+      {% assign collection = collections[block.settings.collection] %}
+      {% if collection %}
+        <a href="{{ collection.url }}" class="collection-item" style="text-decoration: none; color: inherit;">
+          <div class="collection-image-wrapper" style="overflow: hidden; border-radius: 6px;">
+            {% if collection.featured_image %}
+              <img
+                src="{{ collection.featured_image | img_url: '600x' }}"
+                alt="{{ collection.title }}"
+                loading="lazy"
+                style="width: 100%; display: block;"
+              >
+            {% endif %}
+          </div>
+          <p class="collection-title" style="margin-top: 0.5rem; font-size: 1rem; text-align: center;">
+            {{ collection.title }}
+          </p>
+        </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <style>
+    @media (min-width: 768px) {
+      .collection-grid {
+        grid-template-columns: repeat({{ section.settings.grid_columns_desktop }}, 1fr);
+      }
+    }
+  </style>
+</section>
+
+<!--
+  =======================
+    Unified Schema
+  =======================
+-->
+{% schema %}
+{
+  "name": "Mobile Collection Combo",
+  "settings": [
+    {
+      "type": "header",
+      "content": "📱 Mobile Tabs"
+    },
+    { "type": "text", "id": "tab_men_label", "label": "Men Tab Label", "default": "Men" },
+    { "type": "collection", "id": "tab_men_collection", "label": "Men Collection",},
+    { "type": "text", "id": "tab_women_label", "label": "Women Tab Label", "default": "Women" },
+    { "type": "collection", "id": "tab_women_collection", "label": "Women Collection" },
+    { "type": "text", "id": "tab_boys_label", "label": "Boys Tab Label", "default": "Boys" },
+    { "type": "collection", "id": "tab_boys_collection", "label": "Boys Collection"},
+    { "type": "text", "id": "tab_girls_label", "label": "Girls Tab Label", "default": "Girls" },
+    { "type": "collection", "id": "tab_girls_collection", "label": "Girls Collection"},
+
+    {
+      "type": "header",
+      "content": "🛍️ Mobile Collection Carousel Settings"
+    },
+    { "type": "text", "id": "carousel_heading", "label": "Carousel Heading", "default": "New Arrivals" },
+    { "type": "collection", "id": "carousel_collection", "label": "Carousel Collection" },
+    { "type": "range", "id": "carousel_product_limit", "label": "Products to Show", "min": 2, "max": 10, "default": 6 },
+    { "type": "text", "id": "carousel_view_all_label", "label": "View All Label", "default": "View All →" },
+    { "type": "url", "id": "carousel_view_all_link", "label": "View All Link" },
+
+    {
+      "type": "header",
+      "content": "📚 Mobile Collection Blocks Settings"
+    },
+    { "type": "text", "id": "block_heading", "label": "Blocks Heading", "default": "Shop by Category" },
+    { "type": "link_list", "id": "block_menu", "label": "Menu (Collections Menu)" },
+
+    {
+      "type": "header",
+      "content": "🧱 Collection Grid Settings"
+    },
+    { "type": "text", "id": "grid_heading", "label": "Grid Heading", "default": "Collections" },
+    { "type": "range", "id": "grid_columns_mobile", "label": "Columns on Mobile", "min": 1, "max": 3, "default": 2 },
+    { "type": "range", "id": "grid_columns_desktop", "label": "Columns on Desktop", "min": 2, "max": 4, "default": 4 }
+  ],
+  "blocks": [
+    {
+      "type": "collection_block",
+      "name": "Collection Item",
+      "settings": [{ "type": "collection", "id": "collection", "label": "Select Collection" }]
+    }
+  ],
+  "presets": [{ "name": "Mobile Collection Combo", "category": "Custom" }]
+}
+{% endschema %}
