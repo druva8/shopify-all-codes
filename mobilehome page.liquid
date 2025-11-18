@@ -1,0 +1,853 @@
+<section
+  class="container clickable-banner"
+  style="
+        margin-top: {{ section.settings.margin_top }}px;
+    margin-bottom: {{ section.settings.margin_bottom }}px;
+  "
+  data-mobile-link="{{ section.settings.mobile_redirect_link }}"
+>
+  <div class="desktop-view">
+    {%- render 'custom-desktop-banner', settings: section.settings -%}
+  </div>
+  <div class="mobile-view">
+    {%- render 'custom-mobile-banner', settings: section.settings -%}
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.clickable-banner').forEach((banner) => {
+      banner.addEventListener('click', (e) => {
+        const mobileLink = banner.dataset.mobileLink;
+        if (window.innerWidth <= 1024 && mobileLink) {
+          window.location.href = mobileLink;
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Custom Banner",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Desktop Section"
+    },
+    {
+      "type": "select",
+      "id": "desktop_background_type",
+      "label": "Desktop Background Type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_background_image",
+      "label": "Desktop Background Image",
+      "info": "Shown if type is Image",
+      "visible_if": "{{ section.settings.desktop_background_type == 'image' }}"
+    },
+    {
+      "type": "url",
+      "id": "desktop_background_video",
+      "label": "Desktop Background Video",
+      "info": "Shown if type is Video",
+      "visible_if": "{{ section.settings.desktop_background_type == 'video' }}"
+    },
+    {
+      "type": "select",
+      "id": "heading_type",
+      "options": [
+        {
+          "value": "heading_text",
+          "label": "Add Heading text"
+        },
+        {
+          "value": "heading_image",
+          "label": "Heading as Image"
+        }
+      ],
+      "default": "heading_text",
+      "label": "Heading Type"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop Summer\nEssentials",
+      "visible_if": "{{ section.settings.heading_type == 'heading_text' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "headline_image",
+      "label": "Headline Image",
+      "visible_if": "{{ section.settings.heading_type == 'heading_image' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#ffffff",
+      "visible_if": "{{ section.settings.heading_type == 'heading_text' }}"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Font Size (px)",
+      "min": 14,
+      "max": 72,
+      "step": 1,
+      "default": 42,
+      "visible_if": "{{ section.settings.heading_type == 'heading_text' }}"
+    },
+    {
+      "type": "range",
+      "id": "heading_image_size",
+      "label": "Heading image Size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 32,
+      "visible_if": "{{ section.settings.heading_type == 'heading_image' }}"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover lightweight layers\nperfect for summer days"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading Font Size (px)",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "default": 20
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "description",
+      "default": "Discover lightweight layers\nperfect for summer days"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "description Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "description Font Size (px)",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "default": 20
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop Men's"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "range",
+      "id": "button_size",
+      "label": "Button Font Size (px)",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "text",
+      "id": "button_text_second",
+      "label": "Button Text Second"
+    },
+    {
+      "type": "url",
+      "id": "button_link_second",
+      "label": "Button Link_second"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content Position",
+      "default": "overlay-text-center",
+      "options": [
+        {
+          "value": "overlay-text-top-left",
+          "label": "Top Left"
+        },
+        {
+          "value": "overlay-text-top-center",
+          "label": "Top Center"
+        },
+        {
+          "value": "overlay-text-top-right",
+          "label": "Top Right"
+        },
+        {
+          "value": "overlay-text-center-left-center",
+          "label": "Center Left Text Center"
+        },
+        {
+          "value": "overlay-text-center-left",
+          "label": "Center Left"
+        },
+        {
+          "value": "overlay-text-center",
+          "label": "Center"
+        },
+        {
+          "value": "overlay-text-center-right",
+          "label": "Center Right"
+        },
+        {
+          "value": "overlay-text-center-right-center",
+          "label": "Center Right Text Center"
+        },
+        {
+          "value": "overlay-text-bottom-left",
+          "label": "Bottom Left"
+        },
+
+        {
+          "value": "overlay-text-bottom-center",
+          "label": "Bottom Center"
+        },
+        {
+          "value": "overlay-text-bottom-right",
+          "label": "Bottom Right"
+        },
+        {
+          "value": "before-image-left",
+          "label": "Before Image Left"
+        },
+        {
+          "value": "before-image-center",
+          "label": "Before Image Center"
+        },
+        {
+          "value": "before-image-right",
+          "label": "Before Image Right"
+        },
+        {
+          "value": "after-image-left",
+          "label": "After Image Left"
+        },
+        {
+          "value": "after-image-center",
+          "label": "After Image Center"
+        },
+        {
+          "value": "after-image-right",
+          "label": "After Image Right"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "overlay_width",
+      "label": "Overlay Width",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Font Settings"
+    },
+    {
+      "type": "select",
+      "id": "heading_font_family",
+      "label": "Heading Font Family",
+      "default": "font-mono",
+      "options": [
+        { "value": "Times New Roman", "label": "Times New Roman" },
+        { "value": "Arial, sans-serif;", "label": "Arial" },
+        { "value": "DS Neue Haas Grotesk, Neue Haas Grotesk", "label": "DS Neue Haas Grotesk, Neue Haas Grotesk" },
+        { "value": "font-mono", "label": "Monospace" },
+        { "value": "font-custom-1", "label": "Custom Font 1" },
+        { "value": "font-custom-2", "label": "Custom Font 2" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "heading_font_weight",
+      "label": "Heading Font Weight",
+      "default": "400",
+      "options": [
+        { "value": "400", "label": "400 - Normal" },
+        { "value": "500", "label": "500 - Medium" },
+        { "value": "600", "label": "600 - Semi Bold" },
+        { "value": "700", "label": "700 - Bold" },
+        { "value": "800", "label": "800 - Extra Bold" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "subheading_font_family",
+      "label": "Subheading Font Family",
+      "default": "font-mono",
+      "options": [
+        { "value": "Times New Roman", "label": "Garamond Premier Pro" },
+        { "value": "Arial, sans-serif;", "label": "Arial" },
+        { "value": "DS Neue Haas Grotesk, Neue Haas Grotesk", "label": "DS Neue Haas Grotesk, Neue Haas Grotesk" },
+        { "value": "font-mono", "label": "Monospace" },
+        { "value": "font-custom-1", "label": "Custom Font 1" },
+        { "value": "font-custom-2", "label": "Custom Font 2" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "subheading_font_weight",
+      "label": "Subheading Font Weight",
+      "default": "400",
+      "options": [
+        { "value": "400", "label": "400 - Normal" },
+        { "value": "500", "label": "500 - Medium" },
+        { "value": "600", "label": "600 - Semi Bold" },
+        { "value": "700", "label": "700 - Bold" },
+        { "value": "800", "label": "800 - Extra Bold" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "description_font_family",
+      "label": "Description Font Family",
+      "default": "font-mono",
+      "options": [
+        { "value": "Times New Roman", "label": "Garamond Premier Pro" },
+        { "value": "Arial, sans-serif;", "label": "Arial" },
+        { "value": "DS Neue Haas Grotesk, Neue Haas Grotesk", "label": "DS Neue Haas Grotesk, Neue Haas Grotesk" },
+        { "value": "font-mono", "label": "Monospace" },
+        { "value": "font-custom-1", "label": "Custom Font 1" },
+        { "value": "font-custom-2", "label": "Custom Font 2" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "description_font_weight",
+      "label": "Description Font Weight",
+      "default": "400",
+      "options": [
+        { "value": "400", "label": "400 - Normal" },
+        { "value": "500", "label": "500 - Medium" },
+        { "value": "600", "label": "600 - Semi Bold" },
+        { "value": "700", "label": "700 - Bold" },
+        { "value": "800", "label": "800 - Extra Bold" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Button Styles"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_color",
+      "label": "Button Hover Background Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button Hover Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "button_position",
+      "label": "Button Position",
+      "options": [
+        {
+          "value": "center-left",
+          "label": "Center Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "center-right",
+          "label": "Center Right"
+        },
+        {
+          "value": "bottom-left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "bottom-center",
+          "label": "Bottom Center"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Bottom Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Section"
+    },
+    {
+      "type": "select",
+      "id": "mobile_background_type",
+      "label": "Mobile Background Type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_background_image",
+      "label": "Mobile Background Image",
+      "info": "Shown if type is Image",
+      "visible_if": "{{ section.settings.mobile_background_type == 'image' }}"
+    },
+    {
+      "type": "url",
+      "id": "mobile_background_video",
+      "label": "Mobile Background Video",
+      "info": "Shown if type is Video",
+      "visible_if": "{{ section.settings.mobile_background_type == 'video' }}"
+    },
+    {
+      "type": "select",
+      "id": "mob_heading_type",
+      "options": [
+        {
+          "value": "mob_heading_text",
+          "label": "Add Mobile Heading text"
+        },
+        {
+          "value": "mob_heading_image",
+          "label": "Mobile Heading as Image"
+        }
+      ],
+      "default": "mob_heading_text",
+      "label": "Mobile Heading Type"
+    },
+    {
+      "type": "textarea",
+      "id": "mob_heading",
+      "label": "Mobile Heading",
+      "default": "Shop Summer\nEssentials",
+      "visible_if": "{{ section.settings.mob_heading_type == 'mob_heading_text' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "mob_headline_image",
+      "label": "Headline Image",
+      "visible_if": "{{ section.settings.mob_heading_type == 'mob_heading_image' }}"
+    },
+    {
+      "type": "color",
+      "id": "mobile_heading_color",
+      "label": "Mobile Heading Color",
+      "default": "#ffffff",
+      "visible_if": "{{ section.settings.mob_heading_type == 'mob_heading_text' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "label": "Mobile Heading Font Size (px)",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "default": 28,
+      "visible_if": "{{ section.settings.mob_heading_type == 'mob_heading_text' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_image_size",
+      "label": "Mobile Heading Image Size",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "visible_if": "{{ section.settings.mob_heading_type == 'mob_heading_image' }}"
+    },
+    {
+      "type": "textarea",
+      "id": "mobile_subheading",
+      "label": "Mobile Subheading",
+      "default": "Discover lightweight layers\nperfect for summer days"
+    },
+    {
+      "type": "color",
+      "id": "mobile_subheading_color",
+      "label": "Mobile Subheading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "mobile_subheading_size",
+      "label": "Mobile Subheading Font Size (px)",
+      "min": 12,
+      "max": 36,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "textarea",
+      "id": "mobile_description",
+      "label": "Mobile Description",
+      "default": "Discover lightweight layers perfect for mobile"
+    },
+    {
+      "type": "color",
+      "id": "mobile_description_color",
+      "label": "Mobile Description Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_size",
+      "label": "Mobile Description Font Size (px)",
+      "min": 12,
+      "max": 36,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "text",
+      "id": "mobile_button_text",
+      "label": "Mobile Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "mobile_button_link",
+      "label": "Mobile Button Link"
+    },
+    {
+      "type": "range",
+      "id": "mobile_button_size",
+      "label": "Mobile Button Font Size (px)",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "text",
+      "id": "mobile_button_text_second",
+      "label": "Mobile Button Text Second"
+    },
+    {
+      "type": "url",
+      "id": "mobile_button_link_second",
+      "label": "Mobile Button Link Second"
+    },
+    {
+      "type": "select",
+      "id": "mobile_content_position",
+      "label": "Content Position (Mobile)",
+      "default": "overlay-text-bottom-center",
+      "options": [
+        { "value": "overlay-text-top-left", "label": "Top Left" },
+        { "value": "overlay-text-top-center", "label": "Top Center" },
+        { "value": "overlay-text-top-right", "label": "Top Right" },
+        { "value": "overlay-text-center-left", "label": "Center Left" },
+        { "value": "overlay-text-center", "label": "Center" },
+        { "value": "overlay-text-center-right", "label": "Center Right" },
+        { "value": "overlay-text-bottom-left", "label": "Bottom Left" },
+        { "value": "overlay-text-bottom-center", "label": "Bottom Center" },
+        { "value": "overlay-text-bottom-right", "label": "Bottom Right" },
+        { "value": "before-image-left", "label": "Before Image Left" },
+        { "value": "before-image-center", "label": "Before Image Center" },
+        { "value": "before-image-right", "label": "Before Image Right" },
+        { "value": "after-image-left", "label": "After Image Left" },
+        { "value": "after-image-center", "label": "After Image Center" },
+        { "value": "after-image-right", "label": "After Image Right" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_description_position",
+      "label": "Content Description (Mobile)",
+      "default": "overlay-text-bottom-center",
+      "options": [
+        { "value": "overlay-text-top-left", "label": "Top Left" },
+        { "value": "overlay-text-top-center", "label": "Top Center" },
+        { "value": "overlay-text-top-right", "label": "Top Right" },
+        { "value": "overlay-text-center-left", "label": "Center Left" },
+        { "value": "overlay-text-center", "label": "Center" },
+        { "value": "overlay-text-center-right", "label": "Center Right" },
+        { "value": "overlay-text-bottom-left", "label": "Bottom Left" },
+        { "value": "overlay-text-bottom-center", "label": "Bottom Center" },
+        { "value": "overlay-text-bottom-right", "label": "Bottom Right" },
+        { "value": "before-image-left", "label": "Before Image Left" },
+        { "value": "before-image-center", "label": "Before Image Center" },
+        { "value": "before-image-right", "label": "Before Image Right" },
+        { "value": "after-image-left", "label": "After Image Left" },
+        { "value": "after-image-center", "label": "After Image Center" },
+        { "value": "after-image-right", "label": "After Image Right" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Font Settings (Mobile)"
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_font_family",
+      "label": "Mobile Heading Font Family",
+      "default": "font-mono",
+      "options": [
+        { "value": "Times New Roman", "label": "Garamond Premier Pro" },
+        { "value": "Arial, sans-serif", "label": "sans-serif" },
+        { "value": "DS Neue Haas Grotesk, Neue Haas Grotesk", "label": "DS Neue Haas Grotesk, Neue Haas Grotesk" },
+        { "value": "font-mono", "label": "Monospace" },
+        { "value": "font-custom-1", "label": "Custom Font 1" },
+        { "value": "font-custom-2", "label": "Custom Font 2" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_heading_font_weight",
+      "label": "Mobile Heading Font Weight",
+      "default": "400",
+      "options": [
+        { "value": "400", "label": "400 - Normal" },
+        { "value": "500", "label": "500 - Medium" },
+        { "value": "600", "label": "600 - Semi Bold" },
+        { "value": "700", "label": "700 - Bold" },
+        { "value": "800", "label": "800 - Extra Bold" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_subheading_font_family",
+      "label": "Mobile Subheading Font Family",
+      "default": "font-mono",
+      "options": [
+        { "value": "Times New Roman", "label": "Garamond Premier Pro" },
+        { "value": "Arial, sans-serif", "label": "Arial" },
+        { "value": "DS Neue Haas Grotesk, Neue Haas Grotesk", "label": "DS Neue Haas Grotesk, Neue Haas Grotesk" },
+        { "value": "font-mono", "label": "Monospace" },
+        { "value": "font-custom-1", "label": "Custom Font 1" },
+        { "value": "font-custom-2", "label": "Custom Font 2" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_subheading_font_weight",
+      "label": "Mobile Subheading Font Weight",
+      "default": "400",
+      "options": [
+        { "value": "400", "label": "400 - Normal" },
+        { "value": "500", "label": "500 - Medium" },
+        { "value": "600", "label": "600 - Semi Bold" },
+        { "value": "700", "label": "700 - Bold" },
+        { "value": "800", "label": "800 - Extra Bold" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_description_font_family",
+      "label": "Mobile Description Font Family",
+      "default": "font-mono",
+      "options": [
+        { "value": "Times New Roman", "label": "Garamond Premier Pro" },
+        { "value": "Arial, sans-serif;", "label": "Arial" },
+        { "value": "DS Neue Haas Grotesk, Neue Haas Grotesk", "label": "DS Neue Haas Grotesk, Neue Haas Grotesk" },
+        { "value": "font-mono", "label": "Monospace" },
+        { "value": "font-custom-1", "label": "Custom Font 1" },
+        { "value": "font-custom-2", "label": "Custom Font 2" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_description_font_weight",
+      "label": "Mobile Description Font Weight",
+      "default": "400",
+      "options": [
+        { "value": "400", "label": "400 - Normal" },
+        { "value": "500", "label": "500 - Medium" },
+        { "value": "600", "label": "600 - Semi Bold" },
+        { "value": "700", "label": "700 - Bold" },
+        { "value": "800", "label": "800 - Extra Bold" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Button Styles (Mobile)"
+    },
+    {
+      "type": "color",
+      "id": "mobile_button_bg_color",
+      "label": "Mobile Button Background Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "mobile_button_text_color",
+      "label": "Mobile Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "mobile_button_border_color",
+      "label": "Mobile Button Border Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "mobile_button_hover_bg_color",
+      "label": "Mobile Button Hover Background Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "mobile_button_hover_text_color",
+      "label": "Mobile Button Hover Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "mobile_button_position",
+      "label": "Mobile Button Position",
+      "options": [
+        {
+          "value": "center-left",
+          "label": "Center Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "center-right",
+          "label": "Center Right"
+        },
+        {
+          "value": "bottom-left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "bottom-center",
+          "label": "Bottom Center"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Bottom Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Common Section"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Padding (px)",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding (px)",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "Left Padding (px)",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "Right Padding (px)",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "default": 20
+    },
+
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin Top (px)",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin Bottom (px)",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "default": 20
+    },
+    {
+      "type": "url",
+      "id": "mobile_redirect_link",
+      "label": "Mobile Redirect Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Banner"
+    }
+  ]
+}
+{% endschema %}
