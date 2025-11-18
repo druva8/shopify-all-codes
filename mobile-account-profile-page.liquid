@@ -1,0 +1,1431 @@
+<div class="account-container">
+  <div class="account-spacing-top">
+    <div class="background-section">
+      <h2 class="heading-primary">
+        {%- if customer -%}
+          Hi, {{ customer.first_name -}}
+        {%- else %}
+          <a
+            href="{{ routes.root_url }}"
+            class="header__heading-link link link--text focus-inset logo-link mob-app anf-logo"
+          >
+            {%- if settings.logo != blank -%}
+              <div class="header__heading-logo-wrapper">
+                {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
+                {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
+                {% capture sizes %}(max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ settings.logo_width }}px{% endcapture %}
+                {% capture widths %}{{ settings.logo_width }}, {{ settings.logo_width | times: 1.5 | round }}, {{ settings.logo_width | times: 2 }}{% endcapture %}
+                {{
+                  settings.logo
+                  | image_url: width: 600
+                  | image_tag:
+                    class: 'header__heading-logo motion-reduce',
+                    widths: widths,
+                    height: logo_height,
+                    width: settings.logo_width,
+                    alt: logo_alt,
+                    sizes: sizes,
+                    preload: true
+                }}
+              </div>
+            {%- else -%}
+              {% comment %} <span class="h2">{{ shop.name }}</span> {% endcomment %}
+              <div class="logo" data-testid="logo">
+                <span
+                  aria-hidden="true"
+                  class="icon"
+                  data-icon="logo-horizontal"
+                  data-testid="icon"
+                ></span>
+              </div>
+            {%- endif -%}
+          </a>
+          <a
+            href="{{ section.settings.kids_page.url }}"
+            class="header__heading-link link link--text focus-inset logo-link mob-app"
+          >
+            {%- if settings.logo != blank -%}
+              <div class="header__heading-logo-wrapper">
+                {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
+                {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
+                {% capture sizes %}(max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ settings.logo_width }}px{% endcapture %}
+                {% capture widths %}{{ settings.logo_width }}, {{ settings.logo_width | times: 1.5 | round }}, {{ settings.logo_width | times: 2 }}{% endcapture %}
+                {{
+                  settings.logo
+                  | image_url: width: 600
+                  | image_tag:
+                    class: 'header__heading-logo motion-reduce',
+                    widths: widths,
+                    height: logo_height,
+                    width: settings.logo_width,
+                    alt: logo_alt,
+                    sizes: sizes,
+                    preload: true
+                }}
+              </div>
+            {%- else -%}
+              {% comment %} <span class="h2">{{ shop.name }}</span> {% endcomment %}
+              <div class="logo" data-testid="logo">
+                <span
+                  aria-hidden="true"
+                  class="icon"
+                  data-icon="kids-logo-header"
+                  data-testid="icon"
+                ></span>
+              </div>
+            {%- endif -%}
+          </a>
+        {% endif -%}
+      </h2>
+      {% unless customer %}
+        <div class="account-spacing-middle mob-log-btn">
+          <modal-opener class="mob-modal-opener" data-modal="#LoginModal">
+            <button class="action-button log-btn" data-action="open-login" data-variant="secondary">
+              <span class="btn-span">{{ 'customer.login_page.sign_in' | t }}</span>
+            </button>
+          </modal-opener>
+          <modal-opener class="mob-modal-opener" data-modal="#CreateAccountModal">
+            <button class="action-button create-acc-btn" data-action="open-join">
+              <span>{{ 'customer.login_page.create_account' | t }}</span>
+            </button>
+          </modal-opener>
+        </div>
+      {% endunless %}
+    </div>
+    <div class="account-spacing-bottom mob-app-menu">
+      {% assign in_section = false %}
+      {% for block in section.blocks %}
+        {% if block.type == 'divider' %}
+          {% if in_section %}
+            </ul>
+            </div>
+            <hr class="divider-line">
+          {% endif %}
+          {% assign in_section = false %}
+        {% elsif block.type == 'menu_item' %}
+          {% if block.settings.show_only_if_logged_in and customer == null %}
+            <!-- skip -->
+          {% else %}
+            {% unless in_section %}
+              <div class="link-section">
+                <ul class="link-list">
+                  {% assign in_section = true %}
+            {% endunless %}
+            <li class="mob-app-menu-li" {{ block.shopify_attributes }}>
+              {% if block.settings.link_type == 'snippet' %}
+                <div class="icon-link-text">
+                  <span>
+                    <span class="mob-app-title">{{ block.settings.title }}</span>
+                    {% if block.settings.subtitle != blank %}
+                      <span class="block font-medium mob-app-subtitle">{{ block.settings.subtitle }}</span>
+                    {% endif %}
+                  </span>
+                  <span aria-hidden="true" class="icon mob-app-icon" data-icon="right-thin" data-testid="icon"></span>
+                </div>
+                {% if block.settings.snippet != blank %}
+                  {% include block.settings.snippet %}
+                {% endif %}
+              {% else %}
+                <a
+                  href="{% case block.settings.link_type %}{% when 'page' %}{{ block.settings.page.url }}{% when 'url' %}{{ block.settings.url }}{% when 'phone' %}tel:{{ block.settings.value }}{% when 'whatsapp' %}https://wa.me/{{ block.settings.value }}{% when 'email' %}mailto:{{ block.settings.value }}{% endcase %}"
+                  class="icon-link-text"
+                >
+                  <span>
+                    <span class="mob-app-title">{{ block.settings.title }}</span>
+                    {% if block.settings.subtitle != blank %}
+                      <span class="block font-medium mob-app-subtitle">{{ block.settings.subtitle }}</span>
+                    {% endif %}
+                  </span>
+                  <span aria-hidden="true" class="icon mob-app-icon" data-icon="right-thin" data-testid="icon"></span>
+                </a>
+              {% endif %}
+            </li>
+          {% endif %}
+        {% elsif block.type == 'dropdown_menu' %}
+          {% unless in_section %}
+            <div class="link-section">
+              <ul class="link-list">
+                {% assign in_section = true %}
+          {% endunless %}
+          <li class="mob-app-menu-li" {{ block.shopify_attributes }}>
+            <details class="dropdown-title">
+              <summary class="icon-link-text">
+                <span>
+                  <span class="mob-app-title">{{ block.settings.title }}</span>
+                  {% if block.settings.subtitle != blank %}
+                    <span class="block font-medium mob-app-subtitle">{{ block.settings.subtitle }}</span>
+                  {% endif %}
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="icon mob-app-icon dropdown-icon"
+                  data-icon="right-thin"
+                  data-testid="icon"
+                ></span>
+              </summary>
+              <div class="submenu">
+                <ul class="link-list sub-list">
+                  {% for i in (1..20) %}
+                    {% assign sub_title = 'subitem_' | append: i | append: '_title' %}
+                    {% assign sub_subtitle = 'subitem_' | append: i | append: '_subtitle' %}
+                    {% assign sub_type = 'subitem_' | append: i | append: '_type' %}
+                    {% assign sub_page = 'subitem_' | append: i | append: '_page' %}
+                    {% assign sub_snippet = 'subitem_' | append: i | append: '_snippet' %}
+                    {% assign sub_url = 'subitem_' | append: i | append: '_url' %}
+                    {% if block.settings[sub_title] != blank %}
+                      <li class="mob-app-menu-li sub-item">
+                        {% if block.settings[sub_type] == 'snippet' %}
+                          <div class="icon-link-text">
+                            <span>
+                              <span class="mob-app-title">{{ block.settings[sub_title] }}</span>
+                              {% if block.settings[sub_subtitle] != blank %}
+                                <span class="block font-medium mob-app-subtitle">
+                                  {{- block.settings[sub_subtitle] -}}
+                                </span>
+                              {% endif %}
+                            </span>
+                            {% comment %} <span aria-hidden="true" class="icon mob-app-icon" data-icon="right-thin" data-testid="icon"></span> {% endcomment %}
+                          </div>
+                          {% if block.settings[sub_snippet] != blank %}
+                            {% include block.settings[sub_snippet] %}
+                          {% endif %}
+                        {% else %}
+                          <a
+                            href="{% if block.settings[sub_type] == 'page' %}{{ block.settings[sub_page].url }}{% else %}{{ block.settings[sub_url] }}{% endif %}"
+                            class="icon-link-text"
+                          >
+                            <span>
+                              <span class="mob-app-title">{{ block.settings[sub_title] }}</span>
+                              {% if block.settings[sub_subtitle] != blank %}
+                                <span class="block font-medium mob-app-subtitle">
+                                  {{- block.settings[sub_subtitle] -}}
+                                </span>
+                              {% endif %}
+                            </span>
+                            {% comment %} <span aria-hidden="true" class="icon mob-app-icon" data-icon="right-thin" data-testid="icon"></span> {% endcomment %}
+                          </a>
+                        {% endif %}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            </details>
+          </li>
+        {% elsif block.type == 'country_switch' %}
+          {% unless in_section %}
+            <div class="link-section">
+              <ul class="link-list">
+                {% assign in_section = true %}
+          {% endunless %}
+          <li class="mob-app-menu-li" {{ block.shopify_attributes }}>
+            <div
+              class="flex items-center gap-5 country_switch_model"
+              id="{{ block.settings.store_model_id }}"
+            >
+              <modal-opener class="content-center" data-modal="#{{ block.settings.regional_modal_id }}">
+                <button class="flex items-center gap-5">
+                  <span class="india-flag-svg w-[20px] h-[20px] flex items-center justify-center">
+                    {% if block.settings.country_flag != blank %}
+                      <img
+                        src="{{ block.settings.country_flag | image_url: width: 20 }}"
+                        alt="{{ block.settings.country_name }} flag"
+                        width="20"
+                        height="20"
+                      >
+                    {% else %}
+                      <span
+                        class="block w-8 h-8 bg-no-repeat bg-[length:auto_100%]"
+                        style="background-image: url('{{ 'country-flags.png' | asset_url }}'); background-position: {{ block.settings.flag_position }};"
+                      ></span>
+                    {% endif %}
+                  </span>
+                  <span
+                    class="text-xl underline text-primary country-footer"
+                    data-role="selected-country-display"
+                  >
+                    {{- block.settings.country_name -}}
+                  </span>
+                </button>
+              </modal-opener>
+            </div>
+          </li>
+        {% endif %}
+      {% endfor %}
+      {% if in_section %}
+        </ul>
+        </div>
+      {% endif %}
+      {% if customer %}
+        <div class="logout-section">
+          <a href="{{ routes.account_logout_url }}" class="logout-btn">
+            <span>{{ 'customer.account.sign_out' | t }}</span>
+          </a>
+        </div>
+      {% endif %}
+      <div class="terms_footer flex gap-2 py-8">
+        <a href="/pages/website-terms-of-use" class="!text-[1.1rem] underline contrast-high">
+          {{- 'customer.recover_password.website_terms' | t -}}
+        </a>
+        <a href="/pages/privacy-policy" class="!text-[1.1rem] underline contrast-high">
+          {{- 'customer.recover_password.privacy_policy' | t -}}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% if section.settings.background_type == 'video' and section.settings.background_video != blank %}
+  <div class="background-media">
+    <video autoplay loop muted playsinline class="background-video">
+      <source src="{{ section.settings.background_video }}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+{% endif %}
+{% schema %}
+{
+  "name": "Mobile Account Section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "select",
+      "id": "background_type",
+      "label": "Background Type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image",
+      "info": "Shown if type is Image"
+    },
+    {
+      "type": "url",
+      "id": "background_video",
+      "label": "Background Video",
+      "info": "Shown if type is Video"
+    },
+    {
+      "type": "header",
+      "content": "Kids Logo"
+    },
+    {
+      "type": "page",
+      "id": "kids_page",
+      "label": "Kids Page"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu_item",
+      "name": "Menu Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Menu Title"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Menu Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "link_type",
+          "label": "Link Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" },
+            { "value": "phone", "label": "Phone (tel:)" },
+            { "value": "whatsapp", "label": "WhatsApp (wa.me)" },
+            { "value": "email", "label": "Email (mailto:)" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "URL"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Value (for phone/whatsapp/email)",
+          "info": "Phone number or email"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_only_if_logged_in",
+          "label": "Show only if logged in",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "dropdown_menu",
+      "name": "Dropdown Menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Dropdown Title",
+          "default": "Dropdown Title"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Dropdown Subtitle",
+          "default": "Dropdown Subtitle"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 1"
+        },
+        {
+          "type": "text",
+          "id": "subitem_1_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_1_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_1_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_1_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_1_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_1_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 2"
+        },
+        {
+          "type": "text",
+          "id": "subitem_2_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_2_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_2_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_2_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_2_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_2_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 3"
+        },
+        {
+          "type": "text",
+          "id": "subitem_3_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_3_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_3_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_3_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_3_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_3_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 4"
+        },
+        {
+          "type": "text",
+          "id": "subitem_4_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_4_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_4_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_4_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_4_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_4_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 5"
+        },
+        {
+          "type": "text",
+          "id": "subitem_5_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_5_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_5_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_5_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_5_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_5_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 6"
+        },
+        {
+          "type": "text",
+          "id": "subitem_6_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_6_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_6_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_6_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_6_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_6_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 7"
+        },
+        {
+          "type": "text",
+          "id": "subitem_7_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_7_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_7_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_7_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_7_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_7_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 8"
+        },
+        {
+          "type": "text",
+          "id": "subitem_8_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_8_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_8_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_8_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_8_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_8_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 9"
+        },
+        {
+          "type": "text",
+          "id": "subitem_9_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_9_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_9_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_9_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_9_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_9_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 10"
+        },
+        {
+          "type": "text",
+          "id": "subitem_10_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_10_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_10_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_10_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_10_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_10_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 11"
+        },
+        {
+          "type": "text",
+          "id": "subitem_11_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_11_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_11_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_11_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_11_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_11_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 12"
+        },
+        {
+          "type": "text",
+          "id": "subitem_12_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_12_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_12_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_12_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_12_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_12_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 13"
+        },
+        {
+          "type": "text",
+          "id": "subitem_13_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_13_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_13_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_13_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_13_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_13_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 14"
+        },
+        {
+          "type": "text",
+          "id": "subitem_14_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_14_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_14_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_14_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_14_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_14_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 15"
+        },
+        {
+          "type": "text",
+          "id": "subitem_15_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_15_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_15_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_15_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_15_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_15_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 16"
+        },
+        {
+          "type": "text",
+          "id": "subitem_16_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_16_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_16_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_16_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_16_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_16_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 17"
+        },
+        {
+          "type": "text",
+          "id": "subitem_17_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_17_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_17_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_17_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_17_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_17_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 18"
+        },
+        {
+          "type": "text",
+          "id": "subitem_18_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_18_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_18_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_18_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_18_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_18_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 19"
+        },
+        {
+          "type": "text",
+          "id": "subitem_19_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_19_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_19_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_19_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_19_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_19_url",
+          "label": "URL"
+        },
+        {
+          "type": "header",
+          "content": "Subitem 20"
+        },
+        {
+          "type": "text",
+          "id": "subitem_20_title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subitem_20_subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "select",
+          "id": "subitem_20_type",
+          "label": "Type",
+          "options": [
+            { "value": "page", "label": "Page" },
+            { "value": "snippet", "label": "Snippet" },
+            { "value": "url", "label": "URL" }
+          ],
+          "default": "url"
+        },
+        {
+          "type": "page",
+          "id": "subitem_20_page",
+          "label": "Page"
+        },
+        {
+          "type": "text",
+          "id": "subitem_20_snippet",
+          "label": "Snippet Name"
+        },
+        {
+          "type": "url",
+          "id": "subitem_20_url",
+          "label": "URL"
+        }
+      ]
+    },
+    {
+      "type": "country_switch",
+      "name": "Country Switch",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "store_model_id",
+          "label": "Store Model ID"
+        },
+        {
+          "type": "text",
+          "id": "regional_modal_id",
+          "label": "Regional Modal ID",
+          "default": "regionalPreferencesModal"
+        },
+        {
+          "type": "image_picker",
+          "id": "country_flag",
+          "label": "Country Flag"
+        },
+        {
+          "type": "text",
+          "id": "flag_position",
+          "label": "Flag Background Position (if no image)",
+          "default": "-1060px 0"
+        },
+        {
+          "type": "text",
+          "id": "country_name",
+          "label": "Country Name",
+          "default": "Indonesia"
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "name": "Divider",
+      "settings": []
+    }
+  ],
+  "presets": [
+    {
+      "name": "Mobile Account Section",
+      "category": "Custom",
+      "blocks": [
+        {
+          "type": "menu_item",
+          "settings": {
+            "title": "Order History",
+            "subtitle": "View and track your orders",
+            "link_type": "url",
+            "url": "/account"
+          }
+        },
+        {
+          "type": "menu_item",
+          "settings": {
+            "title": "Address Book",
+            "subtitle": "Manage your shipping addresses",
+            "link_type": "url",
+            "url": "/account/addresses"
+          }
+        },
+        {
+          "type": "menu_item",
+          "settings": {
+            "title": "Personal Info",
+            "subtitle": "Update your account details",
+            "link_type": "url",
+            "url": "/pages/account",
+            "show_only_if_logged_in": true
+          }
+        },
+        {
+          "type": "menu_item",
+          "settings": {
+            "title": "Store Locator",
+            "subtitle": "Find stores near you",
+            "link_type": "url",
+            "url": "/pages/store-map-locator"
+          }
+        },
+        {
+          "type": "country_switch"
+        },
+        {
+          "type": "divider"
+        },
+        {
+          "type": "menu_item",
+          "settings": {
+            "title": "Customer Service",
+            "link_type": "url",
+            "url": "/pages/help-page"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+<style>
+  .account-container {
+    overflow: hidden;
+    background-image: {% if section.settings.background_type == 'image' and section.settings.background_image != blank %}url('{{ section.settings.background_image | image_url: width: 1920 }}'){% else %}none{% endif %};
+    background-size: cover;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+  .account-spacing-top {
+    text-align: center;
+    width: 100%;
+  }
+  .background-section{
+    margin: 6rem 0;
+  }
+  .logo-link.mob-app{
+    color: #fff;
+  }
+  .logo-link.mob-app .logo [data-icon="logo-horizontal"]::before {
+    font-size: 2rem;
+  }
+  .mob-log-btn {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: space-around;
+  }
+  .account-spacing-middle {
+    font-size: 1.2rem;
+    padding: 2rem 0;
+    color: #fff;
+    width: 90%;
+    justify-self: center;
+    letter-spacing: 0.2rem;
+  }
+  button.action-button {
+    background: #253746;
+    padding: 1rem;
+    text-transform: uppercase;
+    width: 100%;
+  }
+  .mob-modal-opener{
+    width: 50%;
+  }
+  .anf-logo{
+    margin: 1rem;
+  }
+  .account-spacing-bottom.mob-app-menu{
+    background: #fff;
+    padding: 2rem;
+    border-radius: 1rem 1rem 0 0;
+  }
+  .link-list {
+    text-align: left;
+    font-family: Arial, sans-serif;
+    letter-spacing: 0.6px;
+  }
+  .mob-app-menu-li{
+    padding: 1rem 0;
+  }
+  .mob-app-menu-li .icon-link-text{
+    display: flex;
+    color: #253746;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .mob-app-title{
+    font-size: 1.2rem;
+  }
+  .mob-app-subtitle {
+    font-size: 1rem;
+  }
+  .icon.mob-app-icon::before {
+    font-size: 1rem;
+    color: #253746;
+  }
+  .submenu {
+    padding-left: 1rem;
+  }
+  .sub-list .mob-app-menu-li {
+    padding: 0.5rem 0;
+  }
+  .sub-item .mob-app-title {
+    font-size: 1.1rem;
+  }
+  .sub-item .mob-app-subtitle {
+    font-size: 0.9rem;
+  }
+  hr{
+    margin: 2rem 0;
+  }
+  summary.icon-link-text{
+    padding-bottom: 1rem;
+  }
+  .mob-app-menu-li.sub-item a{
+    color: #5e5e5e;
+  }
+  .dropdown-title{
+    transition: transform 0.3s ease;
+  }
+  details[open] .dropdown-icon {
+  transform: rotate(90deg);
+  }
+  .heading-primary {
+    color: #fff;
+    font-family: "Times New Roman";
+    font-size: 2.8rem;
+    font-weight: normal;
+    line-height: 1.28;
+    margin: 0;
+  }
+  .logout-section{
+    background: #253846;
+    color: #fff;
+    padding: 1rem 0;
+    width: 80%;
+    justify-self: center;
+    margin: 3rem 0;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
+  }
+  .terms_footer{
+    color: #5e5e5e;
+    justify-self: center;
+  }
+</style>
