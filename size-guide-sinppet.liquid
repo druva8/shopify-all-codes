@@ -1,0 +1,369 @@
+<modal-opener class="product-popup-modal__opener quick-add-hidden" data-modal="#ProductPopup-popup_size_guide">
+  <button
+    id="ProductPopup-popup_sizeguide"
+    class="product-popup-modal__button btn-link mbl-size-guide-button"
+    type="button"
+    aria-haspopup="dialog"
+  >
+    {{ 'products.product.size_guide' | t }}
+  </button>
+</modal-opener>
+
+<modal-dialog
+  id="ProductPopup-popup_size_guide"
+  class="product-popup-modal inset-0 z-50 content-center hidden bg-black/50 justify-items-center max-h-auto overflow-y-auto"
+  data-section="template--16921315442763__main"
+  style="padding:5rem 1rem;"
+>
+  <div
+    role="dialog"
+    aria-label="Pop-up link text"
+    aria-modal="true"
+    class="product-popup-modal-sizeguide__content template-popup bg-white shadow-lg relative"
+    tabindex="-1"
+  >
+    <button
+      id="ModalClose-popup_size_guide"
+      type="button"
+      class="modal-close-button-icon product-popup-modal__toggle"
+      aria-label="Close"
+    >
+      <span
+        aria-hidden="true"
+        class="icon"
+        data-icon="close-anf"
+        data-testid="icon"
+      ></span>
+    </button>
+    <div class="size-guide-content" id="side-guide-modal-opener">
+      <div class="size-guide-images-wrapper">
+        <div class="size-guide-images">
+          {%- liquid
+            # Detect which option position is Color (dynamic detection)
+            assign color_option_position = 0
+            for option in product.options_with_values
+              assign option_name_lower = option.name | downcase
+              if option_name_lower == 'color' or option_name_lower == 'warna'
+                assign color_option_position = option.position
+                break
+              endif
+            endfor
+            
+            # Get selected color value based on detected position
+            if color_option_position == 1
+              assign selected_color = product.selected_or_first_available_variant.option1
+            elsif color_option_position == 2
+              assign selected_color = product.selected_or_first_available_variant.option2
+            elsif color_option_position == 3
+              assign selected_color = product.selected_or_first_available_variant.option3
+            else
+              assign selected_color = product.selected_or_first_available_variant.option1
+            endif
+          -%}
+          
+          {% assign count = 0 %}
+          {% for media in product.media %}
+            {% assign media_color = '' %}
+            {% for variant in product.variants %}
+              {% comment %} Get variant's color value based on detected position {% endcomment %}
+              {% if color_option_position == 1 %}
+                {% assign variant_color = variant.option1 %}
+              {% elsif color_option_position == 2 %}
+                {% assign variant_color = variant.option2 %}
+              {% elsif color_option_position == 3 %}
+                {% assign variant_color = variant.option3 %}
+              {% else %}
+                {% assign variant_color = variant.option1 %}
+              {% endif %}
+              
+              {% if variant_color == selected_color
+                and variant.featured_media
+                and variant.featured_media.id == media.id
+              %}
+                {% assign media_color = variant_color %}
+              {% endif %}
+            {% endfor %}
+            {% if media_color == selected_color %}
+              {% assign count = count | plus: 1 %}
+              <div class="size-guide-image" id="size-guide-image-{{ count }}">
+                <img
+                  src="{{ media | image_url: width: 400 }}"
+                  alt="{{ product.title }}"
+                  width="400"
+                  height="auto"
+                  class="rounded-lg border"
+                >
+              </div>
+            {% endif %}
+            {% if count >= 2 %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="size-guide-info-wrapper">
+          <div class="product-name product-name-font-size">
+            <h2 class="product-title-component product-title-main-header">{{ product.title | escape }}</h2>
+          </div>
+          <hr class="horizontal-line-separator" data-testid="horizontal-separator">
+
+          <div class="size-guide-section">
+            <h4>{{ 'products.product.garment_measurements' | t }}</h4>
+            <div class="size-guide__measurements">
+              <div class="size-guide__label-wrapper">
+                <p class="size-guide__measurement-text">{{ 'products.product.taken_size' | t }}</p>
+              </div>
+              <p class="size-guide__measurement-size">{{ product.metafields.custom.taken_from_size }}</p>
+            </div>
+            <div class="size-guide-section__measurements">
+              <div class="measurements">
+                {% if product.metafields.custom.garment_sleeve_length.value != blank %}
+                  <div class="flex justify-between body-length body-length--first">
+                    {% assign translated_title = 'tooltip.sleeve_length.title' | t %}
+                    {% assign translated_heading = 'tooltip.sleeve_length.heading' | t %}
+                    {% assign translated_text = 'tooltip.sleeve_length.text' | t %}
+                    <span class="size-guide-innertext">
+                      <p>{{ translated_title }}:</p>
+                      {%- render 'tooltip', title: translated_heading, text: translated_text -%}
+                    </span>
+                    <span class="items-center font-bold">
+                      {{ product.metafields.custom.garment_sleeve_length.value }}
+                    </span>
+                  </div>
+                {% endif %}
+
+                {% if product.metafields.custom.garment_inseam_reg.value != blank %}
+                  <div class="flex justify-between body-length">
+                    {% assign translated_title = 'tooltip.inseam_reg.title' | t %}
+                    {% assign translated_heading = 'tooltip.inseam_reg.heading' | t %}
+                    {% assign translated_text = 'tooltip.inseam_reg.text' | t %}
+                    <span class="size-guide-innertext">
+                      <p>{{ translated_title }}:</p>
+                      {%- render 'tooltip', title: translated_heading, text: translated_text -%}
+                    </span>
+                    <span class="items-center font-bold">
+                      {{ product.metafields.custom.garment_inseam_reg.value }}
+                    </span>
+                  </div>
+                {% endif %}
+
+                {% if product.metafields.custom.garment_front_rise.value != blank %}
+                  <div class="flex justify-between body-length">
+                    {% assign translated_title = 'tooltip.front_rise.title' | t %}
+                    {% assign translated_heading = 'tooltip.front_rise.heading' | t %}
+                    {% assign translated_text = 'tooltip.front_rise.text' | t %}
+                    <span class="size-guide-innertext">
+                      <p>{{ translated_title }}:</p>
+                      {%- render 'tooltip', title: translated_heading, text: translated_text -%}
+                    </span>
+                    <span class="items-center font-bold">
+                      {{ product.metafields.custom.garment_front_rise.value }}
+                    </span>
+                  </div>
+                {% endif %}
+
+                {% if product.metafields.custom.garment_leg_opening_circumference.value != blank %}
+                  <div class="flex justify-between body-length">
+                    {% assign translated_title = 'tooltip.leg_opening_circumference.title' | t %}
+                    {% assign translated_heading = 'tooltip.leg_opening_circumference.heading' | t %}
+                    {% assign translated_text = 'tooltip.leg_opening_circumference.text' | t %}
+                    <span class="size-guide-innertext">
+                      <p>{{ translated_title }}:</p>
+                      {%- render 'tooltip', title: translated_heading, text: translated_text -%}
+                    </span>
+                    <span class="items-center font-bold">
+                      {{ product.metafields.custom.garment_leg_opening_circumference.value }}
+                    </span>
+                  </div>
+                {% endif %}
+                
+                {% if product.metafields.custom.garment_inseam_xs.value != blank %}
+                  <div class="flex justify-between body-length">
+                    {% assign translated_title = 'tooltip.inseam_xs.title' | t %}
+                    {% assign translated_heading = 'tooltip.inseam_xs.heading' | t %}
+                    {% assign translated_text = 'tooltip.inseam_xs.text' | t %}
+                    <span class="size-guide-innertext">
+                      <p>{{ translated_title }}:</p>
+                      {%- render 'tooltip', title: translated_heading, text: translated_text -%}
+                    </span>
+                    <span class="items-center font-bold">
+                      {{ product.metafields.custom.garment_inseam_xs.value }}
+                    </span>
+                  </div>
+                {% endif %}
+
+                {% if product.metafields.custom.garment_inseam_short.value != blank %}
+                  <div class="flex justify-between body-length">
+                    {% assign translated_title = 'tooltip.inseam_short.title' | t %}
+                    {% assign translated_heading = 'tooltip.inseam_short.heading' | t %}
+                    {% assign translated_text = 'tooltip.inseam_short.text' | t %}
+                    <span class="size-guide-innertext">
+                      <p>{{ translated_title }}:</p>
+                      {%- render 'tooltip', title: translated_heading, text: translated_text -%}
+                    </span>
+                    <span class="items-center font-bold">
+                      {{ product.metafields.custom.garment_inseam_short.value }}
+                    </span>
+                  </div>
+                {% endif %}
+
+                {% if product.metafields.custom.garment_inseam_long.value != blank %}
+                  <div class="flex justify-between body-length">
+                    {% assign translated_title = 'tooltip.inseam_long.title' | t %}
+                    {% assign translated_heading = 'tooltip.inseam_long.heading' | t %}
+                    {% assign translated_text = 'tooltip.inseam_long.text' | t %}
+                    <span class="size-guide-innertext">
+                      <p>{{ translated_title }}:</p>
+                      {%- render 'tooltip', title: translated_heading, text: translated_text -%}
+                    </span>
+                    <span class="items-center font-bold">
+                      {{ product.metafields.custom.garment_inseam_long.value }}
+                    </span>
+                  </div>
+                {% endif %}
+                
+                {% if product.metafields.custom.garment_should_to_hem.value != blank %}
+                  <div class="flex justify-between body-length">
+                    {% assign translated_title = 'tooltip.should_to_hem.title' | t %}
+                    {% assign translated_heading = 'tooltip.should_to_hem.heading' | t %}
+                    {% assign translated_text = 'tooltip.should_to_hem.text' | t %}
+                    <span class="size-guide-innertext">
+                      <p>{{ translated_title }}:</p>
+                      {%- render 'tooltip', title: translated_heading, text: translated_text -%}
+                    </span>
+                    <span class="items-center font-bold">
+                      {{ product.metafields.custom.garment_should_to_hem.value }}
+                    </span>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+ 
+
+      <div class="tabs-wrapper">
+        <ul class="tabs-nav">
+          <li data-tab="tab-size" class="active">{{ 'products.product.size_fit' | t }}</li>
+          <li data-tab="how-to-measure">{{ 'products.product.how_to_measure' | t }}</li>
+        </ul>
+
+        <div class="tabs-content">
+          <div id="tab-size" class="tab-pane active">
+            <div class="region-and-measurement" style="display: flex; gap: 1rem; align-items: center; flex-direction: row !important;">
+              <div class="drop-down" data-testid="drop-down" id="region-dropdown-wrapper" style="flex: 0 0 auto;">
+                <select data-filled="true" id="sizepanel-region">
+                  <optgroup label="Region">
+                    <option value="EU">EU</option>
+                    <option value="UK">UK</option>
+                    {% comment %} <option value="USA" selected>USA</option> {% endcomment %}
+                  </optgroup>
+                </select>
+                <label class="placeholder" data-testid="placeholder" for="sizepanel-region">
+                  {{- 'products.product.region' | t -}}
+                </label>
+                <span class="float-label" data-testid="float-label">{{ 'products.product.region' | t }}</span>
+                <span aria-hidden="true" class="arrow-icon" data-testid="arrow-icon"></span>
+                <span aria-hidden="true" class="icon arrow-icon" data-icon="down-anf" data-testid="icon"></span>
+              </div>
+              <div aria-label="measurement" class="toggle measurement-toggle" role="radiogroup" style="flex-shrink: 0; margin-left: auto !important;">
+                <div class="toggle-block" data-testid="toggle-block-measurement-in">
+                  <input
+                    class="toggle-radio"
+                    id="measurement-in"
+                    name="sizepanel-measurement"
+                    type="radio"
+                    value="in"
+                  >
+                  <label class="toggle-label" for="measurement-in">
+                    <span class="toggle-text">in</span>
+                  </label>
+                </div>
+                <div class="toggle-block active" data-testid="toggle-block-measurement-cm">
+                  <input
+                    class="toggle-radio"
+                    id="measurement-cm"
+                    name="sizepanel-measurement"
+                    type="radio"
+                    value="cm"
+                    checked
+                  >
+                  <label class="toggle-label" for="measurement-cm">
+                    <span class="toggle-text">cm</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            {% assign current_lang = shop.locale %}
+
+            <div class="size-tables__container">
+              {% for collection in product.collections %}
+                {% if collection.metafields.custom.size_guide %}
+                  {% assign size_guide = collection.metafields.custom.size_guide.value %}
+                  <div class="size-guide">
+                    <div class="measurement-guide__above-image-text">
+                      <div
+                        id="product-info"
+                        data-json="{% if current_lang == 'id' %} {{ size_guide.tables_id | escape }} {% else %} {{ size_guide.tables | escape }}  {% endif %}"
+                      ></div>
+                    </div>
+                  </div>
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+              <div class="size-tables" id="size-guide-container"></div>
+            </div>
+          </div>
+          <div id="how-to-measure" class="tab-pane">
+            {% for collection in product.collections %}
+              {% if collection.metafields.custom.size_guide %}
+                {% assign size_guide = collection.metafields.custom.size_guide.value %}
+                <div class="size-guide">
+                  <div class="measurement-guide__above-image-text">
+                    <p>
+                      {% if current_lang == 'id' %}
+                        {{ size_guide.measurement_description_id }}
+                      {% else %}
+                        {{ size_guide.measurement_description }}
+                      {% endif %}
+                    </p>
+                  </div>
+                  {% if size_guide.measurement_image %}
+                    <div>
+                      <picture class="picture">
+                        <source
+                          srcset="{{ size_guide.measurement_image | image_url: width: 600 }}"
+                          media="(min-width: 1025px)"
+                        >
+                        {% if current_lang == 'id' %}
+                          <img
+                            class="background-image__aem-design main-tout-image"
+                            alt="{{ size_guide.measurement_title_id }}"
+                            src="{{ size_guide.measurement_image_id | image_url }}"
+                            width="600"
+                            height="auto"
+                            style="width: 100%"
+                          >
+                        {% else %}
+                          <img
+                            class="background-image__aem-design main-tout-image"
+                            alt="{{ size_guide.measurement_title }}"
+                            src="{{ size_guide.measurement_image | image_url }}"
+                            width="600"
+                            height="auto"
+                            style="width: 100%"
+                          >
+                        {% endif %}
+                      </picture>
+                    </div>
+                  {% endif %}
+                </div>
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</modal-dialog>
