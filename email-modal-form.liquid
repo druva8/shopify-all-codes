@@ -1,0 +1,238 @@
+<div
+  id="EmailUsModal"
+  class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50"
+>
+  <div class="absolute inset-0" data-close></div>
+
+  <div
+    class="emailUs_container bg-white w-full max-w-[600px] sm:max-w-[700px] md:max-w-[800px] relative z-10 animate-fadeIn mx-auto overflow-y-auto max-h-[90vh]"
+    style="animation: fadeIn 0.2s ease-in-out"
+  >
+    <div class="flex justify-between items-center bg-[#f6f6f6] pb-[18px] pl-[40px] pr-[25px] pt-[17px] rounded-t-lg">
+      <h2 class="emailUs_heading">
+        {{ 'customer.customer__service.email_us' | t }}
+      </h2>
+      <button
+        data-close
+        class="w-[4.5rem] h-[4.5rem] rounded-full bg-[#f6f6f6] text-xl flex items-center justify-center hover:bg-gray-200"
+      >
+        <span aria-hidden="true" class="icon pointer-events-none" data-icon="close-anf"></span>
+      </button>
+    </div>
+
+    <div class="email__content">
+      <!-- Step 1 -->
+      <div id="emailDropdownSection">
+        <div class="py-[5px]">
+          <div class="py-[10px]">
+            <h3 class="emailUs_heading emailUs_title">What do you need help with?</h3>
+          </div>
+
+          <div class="py-[10px]">
+            <select id="helpType" class="emailUs_select border border-gray-400 w-full focus:outline-none">
+              <option value="" disabled selected hidden>Select One*</option>
+              <option value="order_status">Order Status</option>
+              <option value="cancel_order">Cancel/Change Order</option>
+              <option value="returns">Returns/Exchanges</option>
+              <option value="issue_order">Issue with Existing Order</option>
+              <option value="issue_returns">Issue with Existing Returns/Exchanges</option>
+              <option value="something_else">Something Else</option>
+            </select>
+          </div>
+        </div>
+        <button
+          id="continueBtn"
+          data-variant="secondary"
+          class="button w-full mt-5 bg-[#253746] text-black font-semibold py-3 hover:bg-[#264d70] transition"
+        >
+          Continue
+        </button>
+      </div>
+
+      <!-- Step 2 -->
+      <div id="emailInfoSection" class="hidden text-start">
+        <div class="mb-4">
+          <label class="block font-semibold mb-2 text-gray-800">What do you need help with?</label>
+          <select id="helpTypeInfo" class="emailUs_select border border-gray-400 w-full p-3 focus:outline-none">
+            <option value="" disabled selected hidden>Select One*</option>
+            <option value="order_status">Order Status</option>
+            <option value="cancel_order">Cancel/Change Order</option>
+            <option value="returns">Returns/Exchanges</option>
+            <option value="issue_order">Issue with Existing Order</option>
+            <option value="issue_returns">Issue with Existing Returns/Exchanges</option>
+            <option value="something_else">Something Else</option>
+          </select>
+          <div id="dropdownError" class="hidden text-red-500 text-sm mt-1"></div>
+        </div>
+        <p id="infoText" class="text-gray-700 mb-5 leading-relaxed"></p>
+        <button
+          id="gotItBtn"
+          data-variant="secondary"
+          class="button w-full bg-[#1a324b] text-black font-semibold py-3 hover:bg-[#264d70] transition"
+        >
+          Got it!
+        </button>
+      </div>
+
+      <!-- Step 3 -->
+      <form id="emailFormSection" class="hidden">
+        <div class="flex flex-col sm:flex-row gap-4 name-group" data-error-group="fullname">
+          <div class="flex-1 input-container" data-error-group="firstname">
+            <input type="text" name="contact[first_name]" class="input_emailUs" placeholder=" ">
+            <label>{{ 'customer.addresses.first_name' | t }}*</label>
+          </div>
+          <div class="flex-1 input-container" data-error-group="lastname">
+            <input type="text" name="contact[last_name]" class="input_emailUs" placeholder=" ">
+            <label>{{ 'customer.addresses.last_name' | t }}*</label>
+          </div>
+        </div>
+
+        <div class="input-container" data-error-group="email">
+          <input type="email" name="contact[email]" class="input_emailUs" placeholder=" ">
+          <label>{{ 'newsletter.label' | t }}*</label>
+        </div>
+
+        <div class="input-container" data-error-group="order">
+          <input type="text" name="contact[order_number]" class="input_emailUs" placeholder=" ">
+          <label>{{ 'customer.orders.order_number_label' | t }}</label>
+        </div>
+
+        <div class="input-container" data-error-group="message">
+          <textarea name="contact[body]" placeholder=" " class="input_emailUs"></textarea>
+          <label>{{ 'customer.orders.details_label' | t }}*</label>
+        </div>
+
+        <p class="text-[13px] text-gray-500 mt-2 text-start">
+          {{ 'customer.orders.emailUs_subText' | t }}
+        </p>
+
+        <!-- Terms -->
+        <div class="flex gap-2 py-8">
+          <a href="/pages/website-terms-of-use" class="!text-[1.1rem] underline contrast-high">
+            {{- 'customer.recover_password.website_terms' | t -}}
+          </a>
+          <a href="/pages/privacy-policy" class="!text-[1.1rem] underline contrast-high">
+            {{- 'customer.recover_password.privacy_policy' | t -}}
+          </a>
+        </div>
+
+        <button type="submit" data-variant="primary" class="button w-full">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  .emailUs_container {
+    max-width: 580px;
+    scrollbar-width:none;
+  }
+
+  .emailUs_heading {
+    color: #253746;
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    font-size: 2rem;
+    line-height: 1.4;
+  }
+
+  .emailUs_title {
+    font-size: 1.5rem;
+    line-height: 1.4666666667;
+  }
+
+  .email__content {
+    padding: 40px 40px 50px;
+  }
+
+  .emailUs_select,
+  .emailUsForm_select {
+    padding: 15px;
+  }
+
+  .input-container {
+    position: relative;
+  }
+
+  .input-container label {
+    position: absolute;
+    top: 40px;
+    left: 10px;
+    font-size: 16px;
+    color: #555;
+    transition: all 0.3s ease;
+  }
+
+  .input-container input,
+  .input-container textarea {
+    border: 1px solid #bbb;
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    margin-top: 30px;
+  }
+
+  .input-container input:focus ~ label,
+  .input-container input:not(:placeholder-shown) ~ label,
+  .input-container textarea:focus ~ label,
+  .input-container textarea:not(:placeholder-shown) ~ label {
+    top: 33px;
+    font-size: 10px;
+  }
+
+  .error-message-field-emailUs,
+  .global-error-bar-emailUs {
+    background: #981420;
+    padding: 10px 12px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.3rem;
+  }
+
+  .input-container.field-login-error-emailUs input,
+  .input-container.field-login-error-emailUs textarea,
+  .name-group.field-login-error-emailUs input {
+    border-color: #a9001d !important;
+    border-width: 2px !important;
+  }
+
+  {% comment %} .name-group + .error-message-field-emailUs {
+    margin-top: 6px;
+  } {% endcomment %}
+
+  #helpType.field-login-error-emailUs {
+    border-color: #a9001d !important;
+    border-width: 2px !important;
+  }
+
+  {% comment %} #helpType + .error-message-field-emailUs {
+    margin-top: 8px;
+  } {% endcomment %}
+
+  form#emailFormSection > .global-error-bar-emailUs {
+    margin-bottom: 12px;
+  }
+
+  .input_emailUs:focus-visible{
+    outline: none; 
+    outline-offset:none;
+    box-shadow: none;
+  }
+
+  .emailUs_select:focus-visible{
+    outline: none; 
+    outline-offset:none;
+    box-shadow: none;
+  }
+
+  #helpTypeInfo:focus-visible{
+    outline: none; 
+    outline-offset:none;
+    box-shadow: none;
+  }
+</style>
+
+<script src="{{ 'emailUsForm.js' | asset_url }}" defer></script>
+
+
