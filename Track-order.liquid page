@@ -1,0 +1,477 @@
+<style>
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  @media screen and (min-width: 300px) {
+    .content-container-help {
+      padding: 40px 25px 30px;
+    }
+  }
+  @media screen and (min-width: 700px) {
+    .content-container-help {
+      padding: 40px 40px 70px;
+    }
+  }
+
+  @media screen and (min-width: 1200px) {
+    .content-container-help {
+      padding: 70px 7%;
+    }
+  }
+
+  .sidebar {
+    background-color: #fff;
+  }
+
+
+  .text-primary {
+    color: #yourPrimaryColor;
+    /* define your theme primary color */
+  }
+  .font-garamond {
+    font-family: "Times New Roman";
+  }
+  .place-self-center {
+    place-self: center;
+  }
+
+
+  .mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+
+  .block {
+    display: block;
+  }
+  {% comment %} .fieldset-inputs .field:before {
+    all: initial
+  } {% endcomment %}
+  .fieldset-inputs{
+    border: 1px solid #c6c6c6;
+  }
+  .field::after {
+    box-shadow: none !important;
+  }
+  .field {
+    flex-direction: column;
+  }
+  .field input.field__input.bottom-border {
+    border-bottom: none !important;
+  }
+  .field input.field__input.top-border {
+    border-top: none !important;
+  }
+  input.field__input {
+    height: 60px
+  }
+  input.field__input:focus {
+    box-shadow: 0 0 0 1px #253746 !important;
+  }
+
+  @media screen and (min-width: 1025) {
+    .sidebar-nav-outer {
+      min-width: 256px;
+      max-width: 256px;
+    }
+
+  }
+  .content-order-form {
+    background-color: #f6f6f6;
+    margin: 0 -25px;
+    padding: 20px;
+    width: auto;
+  }
+
+  @media screen and (min-width: 360px) {
+    .content-order-form {
+      padding: 25px
+    }
+  }
+
+  @media screen and (min-width: 700px) {
+    .content-order-form {
+      padding: 30px
+    }
+  }
+
+  .order-form {
+    background-color: #fff;
+    padding: 25px;
+    border: 1px solid #000;
+    margin-bottom: 22px;
+  }
+  @media only screen and (min-width: 700px) {
+    .order-form {
+      background-color: #fff;
+      margin: 5% 10%;
+      padding: 65px;
+    }
+  }
+  input::placeholder {
+    color: #888;
+    font-style: italic;
+    opacity: 0.8;
+  }
+  .field-divider{
+     border: 1px solid #c6c6c6;
+     display: block !important;
+     padding-right: 19px;
+     padding-left: 19px;
+     width:90%;
+     margin:auto;
+  }
+</style>
+<div class=" !max-w-full !p-0 account section-{{ section.id }}-padding">
+  <div class="lg:flex bg-bodycart min-h-screen sidebar-nav-outer">
+    {% render 'sidebar-CS',
+      purchase_history_link: section.settings.purchase_history_link,
+      customer_service_link: section.settings.customer_service_link,
+      account_settings_link: section.settings.account_settings_link,
+      help_redirect_link: section.settings.help_redirect_link
+    %}
+
+    <div class="bg-bodycart h-full  my-0 mx-auto font-garamond text-primary flex-1 py-18 px-8 lg:py-20 lg:px-20 content-container-help">
+      <div class="block mb-[30px]">
+        <div class="flex px-[30px] py-[14px] justify-start">
+          <h2
+            class="text-[28px] font-normal mb-6 font-garamond text-primary"
+            role="heading"
+            aria-level="2"
+          >
+            {{ section.settings.section_heading }}
+          </h2>
+        </div>
+        <div class="section-divider !block border-b border-gray-300 mx-5 sm:mx-6 md:mx-7"></div>
+        <div class="content-order-form">
+          <form
+            action="/account"
+            method="get"
+            class="form-border order-form"
+          >
+            <div class="font-bold mb-5 text-[20px]">From Order History</div>
+            <button class="block w-full bg-primary text-white py-3 px-[15px] text-center text-[13px] h-[50px] font-bold">
+              {% if customer %}
+                View Order History
+              {% else %}
+                Sign in to View Orders
+              {% endif %}
+            </button>
+          </form>
+          <div id="orderCheck" class="form-border order-form">
+            <div class="font-bold mb-4 text-[20px]">Find Your Order</div>
+            <fieldset class="fieldset-inputs">
+              <div class="field">
+                <input
+                  id="orderNumber"
+                  type="text"
+                  class="field__input bottom-border"
+                  placeholder="{{ section.settings.order_number_placeholder }}"
+                >
+                <label class="field__label" for="NewsletterForm--{{ section.id }}"> Order Number </label>
+
+                <div class="my-2 error-message hidden text-red-600" id="orderNumberError">
+                  <span>Please enter a valid order number.</span>
+                </div>
+              </div>
+              <div class="field-divider"></div>
+              <div class="field min-h-[60px] !block">
+                <input
+                  id="orderEmail"
+                  type="email"
+                  class="field__input top-border"
+                  placeholder="{{ section.settings.order_email_placeholder }}"
+                >
+                <label class="field__label" for="NewsletterForm--{{ section.id }}">
+                  {{ 'newsletter.label' | t }}
+                </label>
+                <div class="my-2 error-message hidden text-red-600" id="emailError">
+                  <span>Please enter a valid email address.</span>
+                </div>
+              </div>
+            </fieldset>
+            {% if customer %}
+              <button
+                id="checkOrderBtn"
+                class="button address-btn w-full !text-primary mt-6 hover:bg-secondary hover:!text-white"
+              >
+                {{ section.settings.submit_button_text }}
+              </button>
+            {% else %}
+              <modal-opener data-modal="#LoginModal">
+                <button class="button address-btn w-full !text-primary mt-6 hover:bg-secondary hover:!text-white login-redirect" data-redirect="{{ pages['track-my-order'].url }}">
+                  {{ section.settings.submit_button_text }}
+                </button>
+              </modal-opener>
+            {% endif %}
+
+            <div id="orderResult" class="mt-6"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  {% if customer and customer.orders.size > 0 %}
+    // Convert orders to a JS array at render time
+    const customerOrders = [
+      {% for order in customer.orders %}
+        {
+          number: "{{ order.name | remove: "#" }}",
+          email: "{{ order.email | downcase }}",
+          status: "{{ order.fulfillment_status | default: 'Unfulfilled' }}",
+          total: "{{ order.total_price | money }}",
+          date: "{{ order.created_at | date: '%B %d, %Y' }}",
+          items: [
+            {% for item in order.line_items %}
+              "{{ item.quantity }} × {{ item.title }}"{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ],
+          tracking: "{{ order.fulfillments.first.tracking_number | default: '' }}",
+          url: "{{ order.order_status_url }}"
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ];
+  
+    document.getElementById("checkOrderBtn").addEventListener("click", function (e) {
+      e.preventDefault();
+  
+      const inputNumber = document.getElementById("orderNumber").value.trim();
+      const inputEmail = document.getElementById("orderEmail").value.trim().toLowerCase();
+      const resultDiv = document.getElementById("orderResult");
+      const orderNumberError = document.getElementById("orderNumberError");
+      const emailError = document.getElementById("emailError");
+  
+      // Reset errors
+      orderNumberError.classList.add("hidden");
+      emailError.classList.add("hidden");
+      resultDiv.innerHTML = "";
+  
+      let valid = true;
+  
+      // Basic validation
+      if (!inputNumber) {
+        orderNumberError.classList.remove("hidden");
+        valid = false;
+      }
+  
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!inputEmail || !emailRegex.test(inputEmail)) {
+        emailError.classList.remove("hidden");
+        valid = false;
+      }
+  
+      if (!valid) return;
+  
+      // Business validation (search in preloaded orders)
+      const matched = customerOrders.find(order =>
+        order.number === inputNumber && order.email === inputEmail
+      );
+  
+      if (matched) {
+        resultDiv.innerHTML = `
+          <div class="order-details border p-4 rounded bg-gray-50">
+            <p><strong>Order #:</strong> ${matched.number}</p>
+            <p><strong>Status:</strong> ${matched.status}</p>
+            <p><strong>Total:</strong> ${matched.total}</p>
+            <p><strong>Date:</strong> ${matched.date}</p>
+            ${matched.items.length > 0 ? "<ul>" + matched.items.map(i => `<li>${i}</li>`).join("") + "</ul>" : ""}
+            ${matched.tracking ? `<p><strong>Tracking Number:</strong> ${matched.tracking}</p>` : ""}
+            ${matched.url ? `<a href="${matched.url}" target="_blank" class="text-blue-600 underline">View Order Status</a>` : ""}
+          </div>`;
+      } else {
+        emailError.classList.remove("hidden");
+        emailError.querySelector("span").textContent = "No order found for this number and email.";
+      }
+    });
+  {% endif %}
+</script>
+{% schema %}
+{
+  "name": "Order Details",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Section Heading",
+      "default": "How Can We Help?"
+    },
+    {
+      "type": "url",
+      "id": "purchase_history_link",
+      "label": "Purchase History Link",
+      "default": "/"
+    },
+    {
+      "type": "url",
+      "id": "customer_service_link",
+      "label": "Customer Service Link",
+      "default": "/"
+    },
+    {
+      "type": "url",
+      "id": "account_settings_link",
+      "label": "Account Settings Link",
+      "default": "/"
+    },
+    {
+      "type": "url",
+      "id": "help_redirect_link",
+      "label": "Redirected to login",
+      "default": "/"
+    },
+    {
+      "type": "text",
+      "id": "label_order_number",
+      "label": "Order Number Label",
+      "default": "Order Number"
+    },
+    {
+      "type": "text",
+      "id": "label_order_email",
+      "label": "Email Address Label",
+      "default": "Email Address (From Order)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_track_order",
+      "label": "Show Track Order Settings",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "submit_button_text",
+      "label": "Submit Button Label",
+      "default": "Track My Order",
+      "visible_if": "{{ section.settings.show_track_order }}"
+    },
+    {
+      "type": "url",
+      "id": "track_order_url",
+      "label": "Track Order Page URL",
+      "default": "/",
+      "visible_if": "{{ section.settings.show_track_order }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_start_return",
+      "label": "Show Start Return Settings",
+      "default": false
+    },
+    {
+      "type": "url",
+      "id": "start_return_url",
+      "label": "Start Return URL",
+      "default": "/",
+      "visible_if": "{{ section.settings.show_start_return }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_track_return",
+      "label": "Show Track Return Settings",
+      "default": false
+    },
+    {
+      "type": "url",
+      "id": "track_return_url",
+      "label": "Track Return URL",
+      "default": "/",
+      "visible_if": "{{ section.settings.show_track_return }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_lookup_order",
+      "label": "Show Lookup Order Settings",
+      "default": false
+    },
+    {
+      "type": "url",
+      "id": "lookup_order_url",
+      "label": "Lookup Order URL",
+      "default": "/",
+      "visible_if": "{{ section.settings.show_lookup_order }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_check_giftcard",
+      "label": "Show Check Gift Card Settings",
+      "default": false
+    },
+    {
+      "type": "url",
+      "id": "check_giftcard_url",
+      "label": "Check Gift Card URL",
+      "default": "/",
+      "visible_if": "{{ section.settings.show_check_giftcard }}"
+    },
+    {
+      "type": "text",
+      "id": "order_number_placeholder",
+      "label": "Order Number Placeholder",
+      "default": "Enter your order number"
+    },
+    {
+      "type": "text",
+      "id": "order_email_placeholder",
+      "label": "Email Address Placeholder",
+      "default": "Enter your email address"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "note",
+      "name": "Additional Information",
+      "settings": [
+        {
+          "type": "text",
+          "id": "note",
+          "label": "Note",
+          "default": "Your query will be responded shortly."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Customer Service Panel"
+    }
+  ]
+}
+{% endschema %}
