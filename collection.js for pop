@@ -1,0 +1,272 @@
+document.addEventListener("DOMContentLoaded", function () {
+  setTimeout(function () {
+    cardWishlist();
+    swatchImageChange();
+  }, 3000);
+});
+window.addEventListener("globoFilterRenderCompleted", function (event) {
+  setTimeout(function () {
+    cardWishlist();
+    swatchImageChange();
+  }, 3000);
+});
+
+function cardWishlist() {
+  let wishlist = JSON.parse(localStorage.getItem("myWishlist")) || [];
+  // Initialize all wishlist buttons in grid
+  document
+    .querySelectorAll(".wishlist-collection-icon")
+    .forEach((wishlistBtn) => {
+      const productId = wishlistBtn.dataset.productId;
+      const variantId = wishlistBtn.dataset.variantId;
+      // Find matching remove button (sibling or via data attribute)
+      const addedBtn = wishlistBtn
+        ?.closest(".card-wishlist-share-wrapper")
+        ?.querySelector(".remove-list");
+      if (!wishlistBtn || !addedBtn) return;
+
+      // ✅ Detect current color code (if swatches exist in this card)
+      let colorcode = "";
+      const cardContainer =
+        wishlistBtn
+          .closest(".product-card-wrapper")
+          ?.querySelector('[data-option-name="Color"]') ||
+        wishlistBtn
+          .closest(".product-card-wrapper")
+          ?.querySelector('[data-option-name="color"]');
+      const selectedColor = cardContainer?.querySelector(
+        ".spf-product__swatch.is-selected"
+      )?.dataset?.optionValue;
+      if (selectedColor) {
+        colorcode = selectedColor;
+      }
+
+      // Show correct button on load
+      if (wishlist.some((item) => item.variantColor === colorcode)) {
+        wishlistBtn.classList.add("!hidden");
+        addedBtn.classList.remove("!hidden");
+      } else {
+        wishlistBtn.classList.remove("!hidden");
+        addedBtn.classList.add("!hidden");
+      }
+
+      // Add to wishlist
+      wishlistBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        let colorcode = "";
+        const cardContainer =
+          e.target
+            .closest(".product-card-wrapper")
+            ?.querySelector('[data-option-name="Color"]') ||
+          e.target
+            .closest(".product-card-wrapper")
+            ?.querySelector('[data-option-name="color"]');
+        const selectedColor = cardContainer.querySelector(
+          ".spf-product__swatch.is-selected"
+        )?.dataset?.optionValue;
+        if (selectedColor) {
+          colorcode = selectedColor;
+        }
+
+        const product = {
+          id: productId,
+          variantId: variantId,
+          title: wishlistBtn.dataset.productTitle,
+          handle: wishlistBtn.dataset.productHandle,
+          variantColor: colorcode,
+        };
+
+        wishlist.push(product);
+        localStorage.setItem("myWishlist", JSON.stringify(wishlist));
+        syncWishlist();
+
+        wishlistBtn.classList.add("!hidden");
+        addedBtn.classList.remove("!hidden");
+        // If flyout already exists, remove it first
+        const existingFlyout = document.querySelector(
+          '[data-testid="my-list-flyout"]'
+        );
+        if (existingFlyout) existingFlyout.remove();
+
+        // Create flyout HTML
+        let flyoutClasses = "";
+
+        let smallMessageHTML = "";
+        if (!window.wishlistLabel.customerLoggedIn) {
+          smallMessageHTML = `
+        <div>
+         <p class="catalog-MyListNotifications-module__bigMessage" data-property="GLB_GUEST_ITEM_SAVED">
+                <span class="catalog-MyListNotifications-module__heart">
+                  <span aria-hidden="true" class="icon" data-icon="heart-filled-anf"></span>
+                </span>
+                ${window.wishlistLabel.addToWishlist}
+              </p>
+          <div class="catalog-MyListNotifications-module__smallMessage">
+            <p>
+              <span data-property="GLB_SIGNIN_HEARTS">
+ <modal-opener data-modal="#LoginModal">
+        <button class="login-trigger signIn" data-variant="tertiary-light" data-redirect="/account">
+          <span class="underline">${window.wishlistLabel.signIn}</span>
+        </button>
+      </modal-opener>${window.wishlistLabel.listSubtext}              </span>
+            </p>
+            <p>
+              <span data-property="GLB_CREATEACCOUNTLINK">
+ <modal-opener data-modal="#LoginModal">
+        <button class="login-trigger signIn" data-variant="tertiary-light" data-redirect="/account">
+          <span class="underline">${window.wishlistLabel.createAcc}</span>
+        </button>
+      </modal-opener>               </span>
+            </p>
+          </div>
+          </div>
+        `;
+          flyoutClasses =
+            "catalog-MyListNotifications-module__flyout catalog-MyListNotifications-module__firstTime catalog-MyListNotifications-module__loggedOut";
+        } else {
+          smallMessageHTML = `
+          <div class="catalog-MyListNotifications-module__smallMessage">
+            <p>${window.wishlistLabel.itemSaveLogin}</p>
+          </div>
+        `;
+          flyoutClasses =
+            "catalog-MyListNotifications-module__flyout catalog-MyListNotifications-module__firstTime";
+        }
+
+        // Create flyout HTML with conditional content
+        const flyoutHTML = `
+        <div data-testid="my-list-flyout" class="flyout-top-gap">
+          <div class="${flyoutClasses}">  
+          <div>
+              ${smallMessageHTML}
+              <p class="catalog-MyListNotifications-module__myListButton block">
+                <a class="button" data-full-width="true" data-theme="inverse" data-variant="secondary" href="/pages/my-list">${window.wishlistLabel.viewList}</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+
+        // // Insert into header
+        // const header = document.querySelector("header");
+        // if (header) {
+        //   header.insertAdjacentHTML("beforeend", flyoutHTML);
+        // }
+          
+
+
+        
+        // Detect app-view mode
+        const isAppView = window.location.search.includes("app-view=true");
+
+        if (isAppView) {
+          // Bottom fixed layout for app-view mode
+          const appViewFlyout = `
+    <div class="app-view-wishlist-flyout">
+      <p class="flyout-text">The item has been saved</p>
+      <a href="/pages/my-list" class="flyout-btn">My List</a>
+    </div>
+  `;
+          document.body.insertAdjacentHTML("beforeend", appViewFlyout);
+
+          //Auto-hide after 3 seconds
+          setTimeout(() => {
+            const flyout = document.querySelector(".app-view-wishlist-flyout");
+            if (flyout) flyout.remove();
+          }, 3000);
+        } else {
+          // Default header flyout (desktop/normal collection)
+          const header = document.querySelector("header");
+          if (header) header.insertAdjacentHTML("beforeend", flyoutHTML);
+          // Apply correct gap after flyout is inserted
+          toggleFlyoutGap();
+
+
+          setTimeout(() => {
+            const flyout = document.querySelector(
+              '[data-testid="my-list-flyout"]'
+            );
+            if (flyout) flyout.remove();
+          }, 3000);
+        }
+
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+          const flyout = document.querySelector(
+            '[data-testid="my-list-flyout"]'
+          );
+          if (flyout) flyout.remove();
+        }, 3000);
+      });
+
+      // Remove from wishlist
+      addedBtn.addEventListener("click", function () {
+        wishlist = wishlist.filter((item) => item.variantColor !== colorcode);
+        localStorage.setItem("myWishlist", JSON.stringify(wishlist));
+        syncWishlist();
+        addedBtn.classList.add("!hidden");
+        wishlistBtn.classList.remove("!hidden");
+      });
+    });
+}
+
+function swatchImageChange() {
+  document.querySelectorAll(".spf-card-swatch").forEach((swatch) => {
+    // Hover to change image
+    swatch.addEventListener("mouseenter", (e) => {
+      console.log(e);
+      e.preventDefault();
+      const mediaSrc = e.currentTarget.dataset.mediaSrc;
+      const card = e.currentTarget.closest(".card-wrapper");
+      if (!card || !mediaSrc) return;
+
+      const mediaContainer = card.querySelector(".card__media .media");
+      if (!mediaContainer) return;
+
+      // Remove any previously injected swatch preview image
+      const existing = mediaContainer.querySelector(".swatch-preview");
+      if (existing) existing.remove();
+
+      // Create a new image
+      const newImg = document.createElement("img");
+      newImg.src = mediaSrc;
+      newImg.className = "swatch-preview";
+      newImg.setAttribute("style", "opacity: 1; z-index: 1;");
+      newImg.setAttribute("alt", ""); // optional
+      newImg.setAttribute("loading", "lazy");
+      // Insert before all children (as the first child)
+      mediaContainer.insertBefore(newImg, mediaContainer.firstChild);
+    });
+
+    // Optional: reset to first image when mouse leaves swatch area
+    swatch.addEventListener("mouseleave", (e) => {
+      const card = e.currentTarget.closest(".card-wrapper");
+      if (!card) return;
+      const mediaContainer = card.querySelector(".card__media .media");
+      const existing = mediaContainer?.querySelector(".swatch-preview");
+      if (existing) existing.remove();
+    });
+  });
+}
+
+const headerFlyoutSelector = '[data-testid="my-list-flyout"]';
+
+function toggleFlyoutGap() {
+  const flyoutWrapper = document.querySelector(headerFlyoutSelector);
+  if (!flyoutWrapper) return;
+
+  const flyoutBox = flyoutWrapper.querySelector(
+    ".catalog-MyListNotifications-module__flyout"
+  );
+  if (!flyoutBox) return;
+
+  if (window.scrollY > 10) {
+    flyoutBox.classList.remove("flyout-top-gap");
+  } else {
+    flyoutBox.classList.add("flyout-top-gap");
+  }
+}
+
+window.addEventListener("scroll", toggleFlyoutGap);
+document.addEventListener("DOMContentLoaded", toggleFlyoutGap);
