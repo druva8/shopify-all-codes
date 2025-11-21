@@ -1,0 +1,202 @@
+// Only attach once
+if (!window.updateButtonListenerAttached) {
+  window.updateButtonListenerAttached = true;
+
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("[id^='ProductUpdateButton-']");
+    if (!btn) return;
+
+    const modal = btn.closest(".quick-add-modal[open]") || document;
+    const qtyInput = modal.querySelector("[name='quantity']");
+    const variantId = btn.dataset.variantId;
+    const quantity = qtyInput ? parseInt(qtyInput.value, 10) : 1;
+
+    btn.classList.add("loading");
+
+    // get old variant id from hidden div
+
+    let modalIsOpen = false;
+
+    let variID = document.getElementById("old-variant-id");
+    document.querySelectorAll(".quick-update-btn").forEach((radio) => {
+      if (radio.hasAttribute("open")) {
+        modalIsOpen = true;
+        variID = radio.querySelector("#old-variant-id");
+      }
+    });
+
+    const oldVariantDiv = modalIsOpen
+      ? variID
+      : document.getElementById("old-variant-id");
+
+    const oldVariantId = oldVariantDiv
+      ? oldVariantDiv.textContent.trim()
+      : null;
+
+    // helper function to update cart
+    async function updateCart(data) {
+      try {
+        // 1. Fetch the current cart
+        const cartRes = await fetch("/cart.js");
+        const cart = await cartRes.json();
+
+        // 2. Find the line of the variant you want to remove/update
+        const lineItemIndex = cart.items.findIndex(
+          (item) => item.variant_id == data.id
+        );
+
+        if (lineItemIndex === -1) {
+          console.warn("Variant not found in cart:", data.id);
+          return;
+        }
+
+        // Shopify line numbers start at 1
+        const line = lineItemIndex + 1;
+
+        // 3. Prepare payload with line number
+        const payload = {
+          line: line,
+          quantity: data.quantity, // e.g., 0 to remove
+        };
+
+        // 4. Call /cart/change.js
+        const res = await fetch("/cart/change.js", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const updatedCart = await res.json();
+        return updatedCart;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // 1. Remove old variant if exists
+    let removePromise = Promise.resolve();
+    if (oldVariantId) {
+      removePromise = updateCart({ id: oldVariantId, quantity: 0 });
+    }
+
+    // 2. Then add new variant as a new product
+    removePromise
+      .then(() =>
+        fetch("/cart/add.js", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ id: variantId, quantity: quantity }),
+        }).then((res) => res.json())
+      )
+      .then(async (cartItem) => {
+        await updateCustomerCartMetafield();
+        // refresh cart count
+        // fetch("/cart.js")
+        //   .then((res) => res.json())
+        //   .then((cart) => {
+        //     const cartCount = document.querySelector("[data-cart-count]");
+        //     if (cartCount) cartCount.textContent = cart.item_count;
+        //   });
+        // ✅ close the modal
+        if (modal && modal.classList.contains("quick-add-modal")) {
+          if (typeof modal.close === "function") {
+            modal.close(); // works if it's <dialog>
+            window.location.reload();
+          } else {
+            modal.removeAttribute("open"); // works if it's custom div
+            modal.classList.remove("open");
+          }
+        }
+
+        // ✅ open cart drawer (same as clicking cart bubble)
+        const cartBubble = document.getElementById("cart-icon-bubble");
+        if (cartBubble) cartBubble.click();
+
+        // ✅ refresh only <cart-drawer-items> content
+        fetch("/cart?section_id=cart-drawer")
+          .then((res) => res.text())
+          .then((html) => {
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = html;
+
+            const newCartItems = tempDiv.querySelector("cart-drawer-items");
+            const currentCartItems =
+              document.querySelector("cart-drawer-items");
+
+            if (newCartItems && currentCartItems) {
+              currentCartItems.innerHTML = newCartItems.innerHTML;
+            }
+
+            // ✅ ensure cart drawer is visible
+            const cartDrawer = document.querySelector("cart-drawer");
+            if (cartDrawer) {
+              cartDrawer.setAttribute("open", "");
+            }
+            window.location.reload();
+            //  if (window.location.href.includes("cart")) {
+            //   // Reload the page
+            //   window.location.reload();
+            // }
+          });
+
+        btn.classList.remove("loading");
+      })
+      .catch((err) => {
+        console.error("Update failed:", err);
+        btn.classList.remove("loading");
+      });
+  });
+
+  async function updateCustomerCartMetafield() {
+    if (!window?.customer?.id) return; // Only run for logged-in users
+    let currentCart = await fetch('/cart.js').then((res) => res.json());
+
+    let cartMetaData = window.customer?.metafields?.cart?.itemsdata ? JSON.parse(window.customer.metafields.cart.itemsdata): {};
+
+    if (currentCart?.items?.length === 0) return;
+
+    const cartData = {
+      items: currentCart?.items.map((item) => ({
+        variant_id: item?.variant_id,
+        quantity: item.quantity,
+        properties: item.properties || {}, // line-item attributes
+      })),
+      attributes: currentCart.attributes || {}, // cart-level attributes
+      note: currentCart.note || "",
+    };
+
+    const metaUpdateRes = await fetch('/apps/mapclub-1/customer-cart-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customerId: window.customer?.id,
+        cartData,
+      }),
+    });
+    const data = await metaUpdateRes.json();
+    if(data) {
+      // ✅ Safely extract new metafield value
+      const newItemsData = data?.metafield?.value
+        ? data.metafield.value
+        : window.customer?.metafields?.cart?.itemsdata;
+
+      // ✅ If you need it locally (for logic or display)
+      window.customer = {
+        ...window.customer,
+        metafields: {
+          ...window.customer?.metafields,
+          cart: {
+            ...window.customer?.metafields?.cart,
+            itemsdata: newItemsData,
+          },
+        },
+      };
+    }
+  }
+}
