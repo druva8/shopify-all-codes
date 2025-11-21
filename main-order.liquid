@@ -1,0 +1,741 @@
+{{ 'customer.css' | asset_url | stylesheet_tag }}
+{{ 'review.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'review.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }v
+  }
+{%- endstyle -%}
+
+<div class="customer order section-{{ section.id }}-padding bg-bodycart">
+  <!-- WRAPPER START -->
+  <div class="flex min-h-screen">
+    {% comment %}
+      <!-- Sidebar -->
+      <aside class="w-1/4 bg-white border-r p-6">
+        <h2 class="text-xl font-semibold mb-6">Hi, {{ customer.first_name }}</h2>
+        <nav class="space-y-4">
+          <a href="{{ routes.account_url }}" class="block font-medium text-gray-700 hover:text-black">
+            Back to Account
+          </a>
+        </nav>
+      </aside>
+    {% endcomment %}
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+      <div id="online" class="tab-content bg-white mt-16 py-8 px-12">
+        <div class="space-y-4">
+          <h3 class="flex justify-between text-2xl text-primary font-semibold font-dsRegular mb-12 border-b border-divider">
+            <p>Order: {{ order.name }}</p>
+            <p class="flex gap-2">
+              <span
+                aria-hidden="true"
+                class="icon"
+                data-icon="clock-anf"
+                data-testid="icon"
+              ></span>
+              {% comment %} <span class="p-1">{{- order.fulfillment_status | default: 'Processing' | capitalize }}</span> {% endcomment %}
+              <span class="p-1">
+                {%- assign fulfillment_status = order.fulfillment_status
+                  | default: 'sections.country-selector.processing'
+                  | downcase
+                %}
+                {% case fulfillment_status %}
+                  {% when 'fulfilled' %}
+                    {{ customer.order.fulfilled | t }}
+                  {% when 'partial' %}
+                    {{ 'customer.order.partially_fulfilled' | t }}
+                  {% when 'unfulfilled' %}
+                    {{ 'customer.order.unfulfilled' | t }}
+                  {% when 'restocked' %}
+                    {{ 'customer.order.restocked' | t }}
+                  {% else %}
+                    {{ 'sections.country-selector.processing' | t }}
+                {% endcase %}
+              </span>
+            </p>
+          </h3>
+          {% comment %}
+            <h1 class="customer__title">{{ 'customer.account.title' | t }}</h1>
+            <a href="{{ routes.account_url }}">{{ 'customer.account.return' | t }}</a>
+          {% endcomment %}
+        </div>
+
+        <div>
+          <div>
+            {% if order.shipping_method.title == 'Instant' %}
+              {% assign est_date = order.created_at | date: '%B %d, %Y' %}
+            {% else %}
+              {% assign est_date = order.created_at | date: '%s' | plus: 432000 | date: '%B %d, %Y' %}
+            {% endif %}
+            <div class="p-4 md:flex gap-24 mb-16">
+              <div class="md:w-1/2">
+                <span class="flex justify-between text-gray-600">
+                  <p class="!m-0 pb-4 !text-xl">{{ 'customer.orders.placed' | t }}:</p>
+                  <p class="!m-0 pb-4 !text-xl">
+                    {{ order.created_at | date: '%B %d, %Y' }}
+                  </p>
+                </span>
+                {% comment %}
+                  <span class="flex justify-between text-gray-600">
+                    <p class="!m-0 pb-4 !text-xl">{{ 'customer.purchase_history.est_text' | t }}</p>
+                    <p class="!m-0 pb-4 !text-xl">
+                      {{ est_date }}
+                    </p>
+                  </span>
+                {% endcomment %}
+                <span class="flex justify-between text-gray-600">
+                  <p class="!m-0 pb-4 !text-xl">{{ 'customer.orders.shipping_method' | t }}:</p>
+                  <p class="!m-0 pb-4 !text-xl">
+                    {% if order.shipping_lines.size > 0 %}
+                      {% for line in order.shipping_lines %}
+                        {{ line.title -}}
+                        {%- unless forloop.last %}, {% endunless %}
+                      {% endfor %}
+                    {% else %}
+                      N/A
+                    {% endif %}
+                  </p>
+                </span>
+                <span class="flex justify-between text-gray-600">
+                  <p class="!m-0 pb-4 !text-xl">{{ 'customer.orders.store' | t }}:</p>
+                  <p class="!m-0 pb-4 !text-xl">{{ shop.name }}</p>
+                </span>
+                <span class="flex justify-between text-2xl text-gray-600">
+                  <p>{{ 'customer.orders.total' | t }}:</p>
+                  <p class="font-bold">{{ order.total_price | money }}</p>
+                </span>
+                {%- if order.cancelled -%}
+                  <span class="flex justify-between text-red-600">
+                    <p class="!m-0 !text-xl">{{ 'customer.orders.cancelled' | t }}:</p>
+                    <p class="!m-0 !text-xl">
+                      {{ order.cancelled_at | date: '%B %d, %Y at %I:%M %p' }}
+                    </p>
+                  </span>
+                  <p class="text-sm text-red-500">
+                    {{ 'customer.orders.reason' | t }}: {{ order.cancel_reason_label }}
+                  </p>
+                {%- endif -%}
+              </div>
+              <div class="md:w-1/2" style="margin-top: 2rem;">
+                <a
+                  href="/pages/track-my-order"
+                  class="w-full mb-6"
+                >
+                  <button
+                    data-variant="tertiary-dark"
+                    class="button address-btn w-full"
+                    data-action="order-tracking"
+                  >
+                    {{ 'customer.orders.order_tracking' | t }}
+                  </button>
+                </a>
+                {% comment %}
+                  <a href="#" class="w-full mb-6">
+                    <button
+                      data-variant="tertiary-dark"
+                      class="button address-btn w-full"
+                      data-action="resend-order-confirmation"
+                    >
+                      Re-Send Order Confirmation
+                    </button>
+                  </a>
+                {% endcomment %}
+                {% comment %}
+                  <a href="#" class="w-full mb-6">
+                    <button
+                      data-variant="tertiary-dark"
+                      class="button address-btn w-full"
+                      data-action="cancel-order"
+                    >
+                      Cancel Entire Order
+                    </button>
+                  </a>
+                {% endcomment %}
+              </div>
+            </div>
+            <hr class="h-[0.1px] my-[25px] bg-divider border-0 dark:bg-divider">
+
+            {% comment %}
+              <h2>{{ 'customer.order.title' | t: name: order.name }}</h2>
+              {%- assign order_date = order.created_at | time_tag: format: 'date_at_time' -%}
+              <p>{{ 'customer.order.date_html' | t: date: order_date }}</p>
+              {%- if order.cancelled -%}
+                {%- assign cancelled_at = order.cancelled_at | time_tag: format: 'date_at_time' -%}
+                <p>{{ 'customer.order.cancelled_html' | t: date: cancelled_at }}</p>
+                <p>{{ 'customer.order.cancelled_reason' | t: reason: order.cancel_reason_label }}</p>
+              {%- endif -%}
+            {% endcomment %}
+
+            <div class="!my-20 md:grid md:grid-cols-2 gap-6 justify-between">
+              <div class="bg-bodycart  lg:p-12 px-10 !py-12 mb-8 md:mb-0">
+                <h2 class="text-2xl text-primary font-semibold font-dsRegular !m-0 mb-12">
+                  {{ 'customer.order.shipping_address' | t }}
+                </h2>
+                {% comment %}
+                  <p>
+                    <strong>{{ 'customer.order.fulfillment_status' | t }}:</strong> {{ order.fulfillment_status_label }}
+                    <p>Status: {{ transaction.status }}</p>
+                    <p>Payment Method: {{ transaction.payment_details.credit_card_company }}</p>
+                    <p>Last 4 Digits: {{ transaction.payment_details.credit_card_number }}</p>
+                  </p>
+                {% endcomment %}
+                <div class="customer-address detail">
+                  {{ order.shipping_address | format_address }}
+                </div>
+              </div>
+              <div class="bg-bodycart  lg:p-12 px-10 !py-12">
+                <h2 class="text-2xl text-primary font-semibold font-dsRegular !m-0 mb-12">
+                  {{ 'customer.order.billing_address' | t }}
+                </h2>
+                {% for transaction in order.transactions %}
+                  <p class="text-bodycolor !text-bodysize">{{ transaction.gateway }}</p>
+                {% endfor %}
+
+                <hr class="h-[0.1px] my-[25px] bg-divider border-0 dark:bg-divider">
+
+                {% comment %}
+                  <p>
+                    <strong>{{ 'customer.order.payment_status' | t }}:</strong> {{ order.financial_status_label }}
+                  </p>
+                {% endcomment %}
+
+                <div class="customer-address detail">
+                  {{ order.billing_address | format_address }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr class="h-[0.1px] my-[25px] bg-divider border-0 dark:bg-divider">
+
+          <!-- Order Details Table -->
+          <div class="p-4  mt-20">
+            <div role="table" class="order-details lg:w-full">
+              <ul class="order-items space-y-6 !p-0">
+                {%- for line_item in order.line_items -%}
+                  <li class="order-item md:flex gap-4 pb-4">
+                    <div class="order-item__media md:w-1/5">
+                      <div class="w-full bg-primary text-white font-semibold text-center py-2">
+                        {% if line_item.fulfillment == blank %}
+                          <p class="!text-base !m-0">{{ 'customer.orders.not_yet_shipped' | t }}</p>
+                        {% else %}
+                          <p class="!text-base !m-0">{{ 'customer.orders.shipped' | t }}</p>
+                        {% endif %}
+                      </div>
+                      {% if line_item.image %}
+                        <img
+                          src="{{ line_item.image | image_url: width: 200 }}"
+                          alt="{{ line_item.image.alt | escape }}"
+                          loading="lazy"
+                          class="w-full"
+                          width=""
+                          height=""
+                        >
+                      {% endif %}
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="order-item__details mr-[15px] flex-1 lg:pt-12">
+                      {% assign genders = line_item.product.metafields.shopify['target-gender'].value %}
+                      {% for gender in genders %}
+                        <p class="!text-[11px] mb-2 text-bodycolor">{{ gender.label }}</p>
+                      {% endfor %}
+                      <h2 class="font-garamond text-primary !font-light text-[15px] tracking-[0.6px] mt-12">
+                        {{ line_item.product.title | escape }}
+                      </h2>
+
+                      <div class="mt-14">
+                        {% if line_item.sku != blank %}
+                          <p class="!text-[13px] mb-0 text-bodycolor">SKU: {{ line_item.sku }}</p>
+                        {% endif %}
+
+                        {% assign property_size = line_item.properties | size %}
+                        {% if property_size > 0 %}
+                          {% for property in line_item.properties %}
+                            {% assign property_first_char = property.first | slice: 0 %}
+                            {% if property.last != blank and property_first_char != '_' %}
+                              <p class="!text-[13px] mt-2 text-bodycolor">
+                                Store Item: {{ property.first }}: {{ property.last }}
+                              </p>
+                            {% endif %}
+                          {% endfor %}
+                        {% endif %}
+
+                        {% unless line_item.product.has_only_default_variant %}
+                          <p class="!text-[12px] mt-2 text-bodycolor">{{ line_item.variant.title }}</p>
+                        {% endunless %}
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col gap-6 mt-4">
+                      <button
+                        type="button"
+                        data-variant="tertiary-dark"
+                        class="button text-gray-900 address-btn buy-again-btn mt-[20px]"
+                        data-variant-id="{{ line_item.variant.id }}"
+                        data-quantity="{{ line_item.quantity }}"
+                        data-product-handle="{{ line_item.product.handle }}"
+                        data-product-title="{{ line_item.product.title }}"
+                        data-variant-title="{{ line_item.variant.title }}"
+                        data-option1="{{ line_item.variant.option1 }}"
+                        data-option2="{{ line_item.variant.option2 }}"
+                        data-option3="{{ line_item.variant.option3 }}"
+                        data-available="{{ line_item.variant.available }}"
+                      >
+                        {{ 'customer.orders.buy_again' | t }}
+                      </button>
+
+                      <modal-opener
+                        data-modal="#ReviewModal"
+                        data-product-id="{{ line_item.product.id }}"
+                        data-product-title="{{ line_item.product.title }}"
+                        data-product-image="{{ line_item.product.featured_image | img_url: height:300 }}"
+                      >
+                        <button
+                          class="review-button button text-gray-900 address-btn mt-[20px] w-full"
+                          data-variant="tertiary-dark"
+                        >
+                          {{ 'customer.purchase_history.write_review' | t }}
+                        </button>
+                      </modal-opener>
+                      {% comment %}
+                        <button
+                          type="button"
+                          class="button text-gray-900 address-btn cancel-item-btn"
+                          data-line-item-id="{{ line_item.id }}"
+                        >
+                          Cancel Item
+                        </button>
+                      {% endcomment %}
+                    </div>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+
+            {% comment %}
+              <div class="lg:w-1/2 lg:text-right">
+                {%- for line_item in order.line_items -%}
+                  <button
+                    type="button"
+                    class="button address-btn w-full buy-again-btn mb-6 lg:w-3/4"
+                    data-variant-id="{{ line_item.variant.id }}"
+                    data-quantity="{{ line_item.quantity }}"
+                  >
+                    Buy Again
+                  </button>
+                {%- endfor -%}
+
+                <a href="#" class="w-full lg:w-3/4 mb-6">
+                  <button data-variant="tertiary-dark" class="button address-btn w-full" data-action="cancel-order">
+                    Cancel Item
+                  </button>
+                </a>
+              </div>
+            {% endcomment %}
+          </div>
+
+          {% comment %}
+            <table role="table" class="order-details">
+              <caption class="visually-hidden">
+                {{ 'customer.order.title' | t: name: order.name }}
+              </caption>
+              <thead role="rowgroup">
+                <tr role="row">
+                  <th id="ColumnProduct" scope="col">{{ 'customer.order.product' | t }}</th>
+                  <th id="ColumnSku" scope="col">{{ 'customer.order.sku' | t }}</th>
+                  <th id="ColumnPrice" scope="col">{{ 'customer.order.price' | t }}</th>
+                  <th id="ColumnQuantity" scope="col">{{ 'customer.order.quantity' | t }}</th>
+                  <th id="ColumnTotal" scope="col">{{ 'customer.order.total' | t }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {%- for line_item in order.line_items -%}
+                  <tr>
+                    <td headers="ColumnProduct">
+                      <div>
+                        {%- if line_item.url != blank -%}
+                          <a href="{{ line_item.url }}">{{ line_item.title | escape }}</a>
+                        {%- else -%}
+                          <p>{{ line_item.title | escape }}</p>
+                        {%- endif -%}
+                        {%- assign property_size = line_item.properties | size -%}
+                        {%- unless line_item.selling_plan_allocation == null and property_size == 0 -%}
+                          <div class="properties">
+                            {%- unless line_item.product.has_only_default_variant -%}
+                              <span>{{ line_item.variant.title | escape }}</span>
+                            {%- endunless -%}
+                            {%- unless line_item.selling_plan_allocation == null -%}
+                              <span>{{ line_item.selling_plan_allocation.selling_plan.name }}</span>
+                            {%- endunless -%}
+                            {%- if property_size != 0 -%}
+                              {%- for property in line_item.properties -%}
+                                {% assign property_first_char = property.first | slice: 0 %}
+                                {%- if property.last != blank and property_first_char != '_' -%}
+                                  <span>{{ property.first }}:</span>
+                                  <span>
+                                    {%- if property.last contains '/uploads/' -%}
+                                      <a href="{{ property.last }}">{{ property.last | split: '/' | last }}</a>
+                                    {%- else -%}
+                                      {{ property.last }}
+                                    {%- endif -%}
+                                  </span>
+                                {%- endif -%}
+                              {%- endfor -%}
+                            {%- endif -%}
+                          </div>
+                        {%- endunless -%}
+
+                        {%- if line_item.line_level_discount_allocations != blank -%}
+                          <ul>
+                            {%- for discount_allocation in line_item.line_level_discount_allocations -%}
+                              <li>
+                                {{ discount_allocation.discount_application.title | escape }} (-
+                                {{- discount_allocation.amount | money -}}
+                                )
+                              </li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+
+                        {%- if line_item.fulfillment -%}
+                          <div class="fulfillment">
+                            {%- assign created_at = line_item.fulfillment.created_at | time_tag: format: 'date' -%}
+                            <span>{{ 'customer.order.fulfilled_at_html' | t: date: created_at }}</span>
+                            {%- if line_item.fulfillment.tracking_url -%}
+                              <a href="{{ line_item.fulfillment.tracking_url }}">
+                                {{ 'customer.order.track_shipment' | t }}
+                              </a>
+                            {%- endif -%}
+                            <span>
+                              {{- line_item.fulfillment.tracking_company -}}
+                              {%- if line_item.fulfillment.tracking_number %}
+                                #{{ line_item.fulfillment.tracking_number -}}
+                              {%- endif -%}
+                            </span>
+                          </div>
+                        {%- endif -%}
+                      </div>
+                    </td>
+                    <td headers="ColumnSku">{{ line_item.sku }}</td>
+                    <td headers="ColumnPrice">{{ line_item.final_price | money }}</td>
+                    <td headers="ColumnQuantity">{{ line_item.quantity }}</td>
+                    <td headers="ColumnTotal">{{ line_item.final_line_price | money }}</td>
+                  </tr>
+                {%- endfor -%}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4">{{ 'customer.order.subtotal' | t }}</td>
+                  <td>{{ order.line_items_subtotal_price | money }}</td>
+                </tr>
+                {%- for shipping_method in order.shipping_methods -%}
+                  <tr>
+                    <td colspan="4">{{ 'customer.order.shipping' | t }} ({{ shipping_method.title | escape }})</td>
+                    <td>{{ shipping_method.price | money }}</td>
+                  </tr>
+                {%- endfor -%}
+                {%- for tax_line in order.tax_lines -%}
+                  <tr>
+                    <td colspan="4">
+                      {{ 'customer.order.tax' | t }} ({{ tax_line.title | escape }}
+                      {{ tax_line.rate | times: 100 }}%)
+                    </td>
+                    <td>{{ tax_line.price | money }}</td>
+                  </tr>
+                {%- endfor -%}
+                <tr>
+                  <td colspan="4">{{ 'customer.order.total' | t }}</td>
+                  <td>{{ order.total_net_amount | money_with_currency }}</td>
+                </tr>
+              </tfoot>
+            </table>
+          {% endcomment %}
+        </div>
+      </div>
+    </main>
+
+    <modal-dialog
+      id="ReviewModal"
+      class="review-modal hidden"
+    >
+      <div
+        class="bg-white w-[400px] md:w-[580px] shadow-lg relative content"
+        role="dialog"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div class="flex justify-between items-center px-10 py-10 review-wrapper">
+          <button
+            id="ModalClose-ReviewModal"
+            class="!relative"
+            aria-label="Close regional preferences"
+          >
+            <span
+              aria-hidden="true"
+              class="icon"
+              data-icon="close-anf"
+              data-testid="icon"
+            ></span>
+          </button>
+        </div>
+        <div class="p-[40px_20px_50px_20px] heading-review">
+          <div class="modal__product ">
+            <h2>How would you rate this product?</h2>
+
+            <div class="product-wrapper">
+              <img
+                src="{{ line_item.image | image_url}}"
+                alt="{{ line_item.image.alt | escape }}"
+                loading="lazy"
+                class="w-full"
+                width=""
+                height=""
+                style="width: 150px; height: auto;"
+                id="modal-product-image"
+              >
+              <div class="rating-wrapper">
+                <div class="product-title">
+                  <p class="font-medium">{{ product.title }}</p>
+                </div>
+                <div class="star-rating flex gap-1">
+                  <input
+                    type="radio"
+                    name="rating"
+                    value="5"
+                    id="star-1"
+                    class="peer star-input"
+                  >
+                  <label for="star-1" class="star cursor-pointer text-3xl">★</label>
+
+                  <input
+                    type="radio"
+                    name="rating"
+                    value="4"
+                    id="star-2"
+                    class="peer star-input"
+                  >
+                  <label for="star-2" class="star cursor-pointer text-3xl">★</label>
+
+                  <input
+                    type="radio"
+                    name="rating"
+                    value="3"
+                    id="star-3"
+                    class="peer star-input"
+                  >
+                  <label for="star-3" class="star cursor-pointer text-3xl">★</label>
+
+                  <input
+                    type="radio"
+                    name="rating"
+                    value="2"
+                    id="star-4"
+                    class="peer star-input"
+                  >
+                  <label for="star-4" class="star cursor-pointer text-3xl">★</label>
+
+                  <input
+                    type="radio"
+                    name="rating"
+                    value="1"
+                    id="star-5"
+                    class="peer star-input"
+                  >
+                  <label for="star-5" class="star cursor-pointer text-3xl">★</label>
+                </div>
+                <textarea
+                  id="review-text"
+                  name="review"
+                  class="review-textarea"
+                  placeholder="Write a review for product here"
+                ></textarea>
+                <div class="my-2 error-message hidden text-red-600" id="review-error-message">
+                  <span>Please select a star rating and write your review.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <form id="review-form" class="space-y-4 justify-center ">
+            <input
+              type="hidden"
+              name="name_id"
+              value="{{customer.first_name }}"
+              id="modal-name-id"
+            >
+            <input
+              type="hidden"
+              name="email_id"
+              value="{{customer.email }}"
+              id="modal-email-id"
+            >
+            <input
+              type="hidden"
+              name="product_id"
+              value=""
+              id="modal-product-id"
+            >
+
+            <input
+              type="hidden"
+              name="product_id"
+              value=""
+              id="modal-product-id"
+            >
+            <input
+              type="hidden"
+              name="product_title"
+              value=""
+              id="modal-product-title"
+            >
+
+            <button
+              type="submit"
+              data-variant="tertiary-dark"
+              class=" button"
+            >
+              Submit Review
+            </button>
+          </form>
+        </div>
+      </div>
+    </modal-dialog>
+  </div>
+  <!-- WRAPPER END -->
+</div>
+
+<!-- Buy Again Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const localePrefix = window.location.pathname.startsWith('/id') ? '/id' : '';
+
+    // Function to show Shopify-style spinner
+    const showSpinner = (button) => {
+      button.disabled = true;
+      button.classList.add('loading'); // Shopify built-in spinner
+      button.innerHTML = `
+      <div class="spinner"></div>
+      <span class="ml-2">Adding...</span>
+    `;
+    };
+
+    // Function to restore button
+    const restoreButton = (button, text = 'Buy Again') => {
+      button.disabled = false;
+      button.classList.remove('loading');
+      button.innerHTML = text;
+    };
+
+    document.querySelectorAll('.buy-again-btn').forEach((button) => {
+      button.addEventListener('click', async function (e) {
+        e.preventDefault();
+
+        const variantId = this.dataset.variantId;
+        const quantity = parseInt(this.dataset.quantity);
+        const available = this.dataset.available === 'true';
+        const productHandle = this.dataset.productHandle;
+
+        //  Sold-out product → redirect to product page with minimal param
+        if (!available) {
+          window.location.href = `${localePrefix}/products/${productHandle}?sold_out=true`;
+          return;
+        }
+
+        //  Available → Add to cart + open drawer
+        showSpinner(this);
+
+        try {
+          // Add product to cart
+          await fetch(`${localePrefix}/cart/add.js`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: variantId,
+              quantity: quantity,
+              properties: { _unique_id: crypto.randomUUID() },
+            }),
+          });
+
+          // Fetch updated cart sections
+          const sectionsRes = await fetch(`${localePrefix}/?sections=cart-drawer,cart-icon-bubble`);
+          const sections = await sectionsRes.json();
+          
+          //Update cart metafield
+          await updateCustomerCartMetafield();
+
+          const cartDrawer = document.querySelector('cart-drawer');
+          if (cartDrawer && typeof cartDrawer.renderContents === 'function') {
+            const cartRes = await fetch(`${localePrefix}/cart.js`);
+            const cart = await cartRes.json();
+
+            cartDrawer.renderContents({
+              items: cart.items,
+              sections,
+              total_price: cart.total_price,
+            });
+
+            const bubble = document.querySelector('#cart-icon-bubble');
+            if (bubble && sections['cart-icon-bubble']) {
+              bubble.innerHTML = new DOMParser()
+                .parseFromString(sections['cart-icon-bubble'], 'text/html')
+                .querySelector('.shopify-section').innerHTML;
+            }
+
+            cartDrawer.classList.toggle('is-empty', cart.items.length === 0);
+
+            if (!cartDrawer.shouldBlockDrawer()) {
+              cartDrawer.open();
+            }
+          }
+        } catch (err) {
+          console.error('Buy Again failed:', err);
+        } finally {
+          restoreButton(this);
+        }
+      });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.main-order.name",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ]
+}
+{% endschema %}
