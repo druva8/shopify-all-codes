@@ -1,0 +1,387 @@
+{{ 'customer.css' | asset_url | stylesheet_tag }}
+
+<script src="{{ 'customer.js' | asset_url }}" defer></script>
+
+{%- style -%}
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+      padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    }
+
+    @media screen and (min-width: 750px) {
+      .section-{{ section.id }}-padding {
+        padding-top: {{ section.settings.padding_top }}px;
+        padding-bottom: {{ section.settings.padding_bottom }}px;
+      }
+    }
+    .no-spinner::-webkit-outer-spin-button,
+    .no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Remove arrows in Firefox */
+  .no-spinner {
+    -moz-appearance: textfield;
+  }
+{%- endstyle -%}
+<script>
+  async function checkCustomerAddress() {
+    try {
+      const customerEmail = "{% if customer %}{{ customer.email }}{% endif %}";
+      const mapToken = getCookie("map_token");
+
+      if (!mapToken) {
+        console.log("Session out please login again");
+        if (customerEmail) window.location.href = "/account/logout";
+        return null; // ✅ allowed now
+      }
+
+      if (!customerEmail) {
+        console.log("email is required");
+        return null; // ✅ allowed now
+      }
+
+      const mapclubCheckAddress = await fetch('/apps/mapclub-1/check-customer-address', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          mapAccessToken: mapToken,
+          email: customerEmail,
+        }),
+      });
+
+      const mapclubCheckAddressData = await mapclubCheckAddress.json();
+      if(mapclubCheckAddressData?.result?.unmatchedMapclub.length > 0 || mapclubCheckAddressData?.result?.unmatchedShopify.length > 0) {
+        refreshMainAddressesSection();
+      }
+      return mapclubCheckAddressData;
+    } catch (err) {
+      console.log("Error while Mapping Addresses", err);
+    }
+  }
+
+  // Call it
+  document.addEventListener('DOMContentLoaded', () => {
+    checkCustomerAddress();
+  });
+
+  async function refreshMainAddressesSection({ urlBase = window.location.pathname, sectionHandle = 'main-addresses', containerSelector = '.customer.addresses' } = {}) {
+    const container = document.querySelector(containerSelector);
+    if (!container) {
+      console.warn('refreshMainAddressesSection: container not found for selector', containerSelector);
+      return;
+    }
+
+    // show a minimal loading state (you can replace this with your spinner)
+    const previousContent = container.innerHTML;
+    container.setAttribute('aria-busy', 'true');
+    const loader = document.createElement('div');
+    loader.className = 'addresses-loader';
+    loader.textContent = 'Refreshing addresses…';
+    container.innerHTML = '';
+    container.appendChild(loader);
+
+    try {
+      // Request the server to render just the section
+      // Example URL: /account?section_id=main-addresses or /customers/addresses?section_id=main-addresses
+      const fetchUrl = `${urlBase}${urlBase.includes('?') ? '&' : '?'}section_id=${encodeURIComponent(sectionHandle)}`;
+      const res = await fetch(fetchUrl, { credentials: 'same-origin' });
+
+      if (!res.ok) {
+        throw new Error(`Server returned ${res.status}`);
+      }
+
+      const html = await res.text();
+
+      // Parse the returned HTML and pick the section node from it.
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Try a few ways to find the section in the returned HTML:
+      // 1) an element with the same containerSelector
+      // 2) a section with data-section-id equal to the handle
+      let newSection = doc.querySelector(containerSelector)
+                    || doc.querySelector(`[data-section-id="${sectionHandle}"]`)
+                    || doc.querySelector(`#${container.id}`);
+
+      if (!newSection) {
+        // fallback: try to find any section with that section handle in HTML comment (less reliable)
+        const sectionByHandle = doc.querySelector(`[data-section-type="${sectionHandle}"], [data-section-id*="${sectionHandle}"]`);
+        newSection = sectionByHandle;
+      }
+
+      if (!newSection) {
+        // If nothing found, put back previous content and throw
+        container.innerHTML = previousContent;
+        throw new Error('Could not find section fragment in server response.');
+      }
+
+      // Replace the container's inner HTML with the new content
+      container.innerHTML = newSection.innerHTML;
+      initCustomerAddressScripts();
+      // Optional: re-run any JS initialization for components inside the addresses section
+      // e.g. if you need to rebind event listeners:
+      // initAddressesSection(); // implement if needed
+
+    } catch (err) {
+      console.error('refreshMainAddressesSection error:', err);
+      // restore previous content on error
+      container.innerHTML = previousContent;
+    } finally {
+      container.removeAttribute('aria-busy');
+    }
+  }
+</script>
+<div class="customer !max-w-full !p-0 account section-{{ section.id }}-padding">
+  <div class="lg:flex bg-bodycart min-h-screen">
+    <!-- Sidebar -->
+    {% render 'sidebar-CS',
+      purchase_history_link: section.settings.purchase_history_link,
+      customer_service_link: section.settings.customer_service_link,
+      account_settings_link: section.settings.account_settings_link,
+      help_redirect_link: section.settings.help_redirect_link
+    %}
+
+    <!-- Main Content -->
+    <main class="flex-1 py-18 px-8 lg:py-20 lg:px-20">
+      {%- paginate customer.addresses by 50 -%}
+        <div
+          class="customer addresses section-{{ section.id }}-padding bg-white py-8 px-12 !max-w-full"
+          data-customer-addresses
+        >
+          <h1 class="flex justify-between text-2xl text-primary font-semibold font-dsRegular mb-4 pb-6 border-b border-divider">
+            {{ 'customer.addresses.saved_addresses' | t }}
+          </h1>
+
+          {% if customer.addresses_count > 0 %}
+            <ul role="list" class="address-list md:flex md:flex-wrap md:-mx-6">
+              {%- for address in customer.addresses -%}
+                <li data-address class="!mt-12 w-full md:w-1/2 md:px-6">
+                  <div class="!bg-bodycart border border-[#eee] md:p-12 p-8 mb-12 md:mb-0 px-10 text-left">
+                    <div class="flex justify-between">
+                      <p class="text-bodysize text-primary font-semibold font-dsRegular pb-6 mb-4">
+                        {{ 'customer.account.address_title' | t }}
+                      </p>
+                      <modal-opener data-modal="#EditAddressModal-{{ address.id }}">
+                        <button
+                          type="button"
+                          class="edit-btn"
+                          aria-controls="EditAddressModal-{{ address.id }}"
+                          aria-expanded="false"
+                        >
+                          {{ 'customer.addresses.edit' | t }}
+                        </button>
+                      </modal-opener>
+                    </div>
+                    <div class="customer-address" style="height: 17.1vh;">{{ address | format_address }}</div>
+                    {%- if address == customer.default_address -%}
+                      <hr class="w-full justify-self-center bg-[#c6c6c6] border dark:bg-[#c6c6c6] my-4">
+                      <div class="flex items-center gap-8">
+                        <span
+                          aria-hidden="true"
+                          class="icon text-green-600"
+                          data-icon="check-anf"
+                          data-testid="icon"
+                        ></span>
+                        <p class="text-green-700 font-semibold" style="font-size: 1.5rem;">
+                          {{ 'customer.addresses.default_address' | t }}
+                        </p>
+                      </div>
+                    {%- else -%}
+                      <form
+                        method="post"
+                        action="/account/addresses/{{ address.id }}"
+                        class="!mt-8"
+                      >
+                        <input
+                          type="hidden"
+                          name="_method"
+                          value="put"
+                        >
+                        <input
+                          type="hidden"
+                          name="address[default]"
+                          value="true"
+                        >
+                        <button type="submit" class="button address-btn w-full">
+                          {{ 'customer.addresses.mark_default' | t }}
+                        </button>
+                      </form>
+                    {%- endif -%}
+                  </div>
+                  {%- render 'add-edit-address-modal', address: address -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          {% else %}
+            <p class="text-secondary text-left !text-bodysize !my-10">No saved addresses.</p>
+          {% endif %}
+
+          {%- render 'add-edit-address-modal' -%}
+          <hr class="w-full !m-0 justify-self-center bg-[#c6c6c6] border dark:bg-[#c6c6c6]">
+          <div data-address class="text-left mt-16">
+            <modal-opener data-modal="#AddAddressModal">
+              <button
+                type="button"
+                aria-expanded="false"
+                aria-controls="AddAddress"
+                class="w-full md:w-[30%]"
+              >
+                {{ 'customer.addresses.add_new' | t }}
+              </button>
+            </modal-opener>
+          </div>
+        </div>
+      {%- endpaginate -%}
+    </main>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('aside button');
+    const sections = document.querySelectorAll('.account-section');
+
+    function loadPage(url, targetId) {
+      const targetSection = document.querySelector(`#${targetId} .tab-content-inner`);
+      if (!targetSection) return;
+
+      fetch(url)
+        .then((res) => res.text())
+        .then((html) => {
+          const doc = new DOMParser().parseFromString(html, 'text/html');
+          const newContent = doc.querySelector('main') || doc.body;
+          targetSection.innerHTML = newContent ? `<div>${newContent.innerHTML}</div>` : '<p>No content found.</p>';
+
+          // Reinitialize modals inside loaded content
+          if (typeof CustomerAddresses !== 'undefined') new CustomerAddresses();
+          if (typeof ModalOpener !== 'undefined') new ModalOpener();
+        });
+    }
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        // Remove active state
+        buttons.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Hide all sections
+        sections.forEach((s) => s.classList.add('hidden'));
+
+        // Show target section
+        const targetId = btn.dataset.target;
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) targetSection.classList.remove('hidden');
+
+        // Load the page dynamically
+        const pageUrl = btn.dataset.pageUrl;
+        if (pageUrl) loadPage(pageUrl, targetId);
+      });
+    });
+
+    // Load first tab by default
+    if (buttons.length) {
+      buttons[0].click();
+    }
+  });
+
+  window.addEventListener('load', () => {
+    typeof CustomerAddresses !== 'undefined' && new CustomerAddresses();
+  });
+
+  document.querySelectorAll('.no-exp-input').forEach((input) => {
+    input.addEventListener('keydown', function (e) {
+      // Block 'e', 'E', '+', '-', and any invalid keys for integer input
+      if (['e', 'E', '+', '-'].includes(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    // Extra precaution: prevent pasting invalid numbers
+    input.addEventListener('paste', function (e) {
+      const pasted = e.clipboardData.getData('text');
+      if (/[^0-9.]/.test(pasted)) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.main-addresses.name",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    },
+
+    {
+      "type": "url",
+      "id": "purchase_history_link",
+      "label": "Purchase History Button Link",
+      "default": "/"
+    },
+    {
+      "type": "url",
+      "id": "customer_service_link",
+      "label": "Customer Service Button Link",
+      "default": "/"
+    },
+    {
+      "type": "url",
+      "id": "account_settings_link",
+      "label": "Account Settings Button Link",
+      "default": "/"
+    },
+    {
+      "type": "url",
+      "id": "help_redirect_link",
+      "label": "Redirected to login",
+      "default": "/"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "sidebar_item",
+      "name": "Sidebar Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Tab Title",
+          "default": "New Tab"
+        },
+        {
+          "type": "url",
+          "id": "page",
+          "label": "Select Page"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
