@@ -1,0 +1,248 @@
+<modal-dialog
+  id="regionalPreferencesModal"
+  class="fixed inset-0 z-50 content-center hidden p-4 bg-black/50 justify-items-center"
+>
+  <div class="template-popup bg-white w-[360px] shadow-lg relative overflow-auto" role="dialog" aria-modal="true">
+    <div class="flex justify-between items-center bg-bodycart px-14 py-10">
+      <h2 class="text-[2rem] text-primary font-bold font-dsRegular place-self-start">
+        {{ 'sections.country-selector.regional_preferences' | t }}
+      </h2>
+      <button
+        id="ModalClose-Preferences"
+        class="!relative"
+        aria-label="Close regional preferences"
+      >
+        <span aria-hidden="true" class="icon" data-icon="close-anf" data-testid="icon"></span>
+      </button>
+    </div>
+
+    <div class="p-[40px_20px_50px_20px]">
+      <p class="text-[13px] text-bodycolor leading-5 tracking-[0.6px] mx-5 mb-5">
+        {{ 'sections.country-selector.how_you_shop' | t }}
+      </p>
+
+      <ul class="mt-4">
+        <li>
+          <div class="flex justify-between items-center border-t border-divider mx-5 py-[30px]">
+            <div class="flex items-center">
+              <img
+                src="{{ 'icon-map-pin.svg' | asset_url }}"
+                alt="map pin icon"
+                class="text-[#253746] w-8 h-6 mr-6"
+                width=""
+                height=""
+              >
+              <span class="text-primary font-semibold text-bodysize">
+                {{- 'sections.country-selector.ship_to' | t -}}
+              </span>
+            </div>
+            <modal-opener data-modal="#CountrySelectorModal" data-context="preferences">
+              <button
+                id="selectedCountryDisplay"
+                data-role="selected-country-display"
+                class="text-bodysize text-bodycolor underline hover:text-btn-hover"
+              >
+                Indonesia
+              </button>
+            </modal-opener>
+          </div>
+        </li>
+        <li>
+          <div class="flex justify-between items-center border-t border-divider mx-5 py-5">
+            <div class="flex items-center">
+              <img
+                src="{{ 'icon-clipboard.svg' | asset_url }}"
+                alt="clipboard icon"
+                class="text-primary w-8 h-6 mr-6"
+                width=""
+                height=""
+              >
+              <span class="text-primary font-semibold text-[1.3rem]">{{ 'sections.country-selector.currency' | t }}</span>
+            </div>
+            <div id="currencyToggleWrapper" class="w-1/4 bg-primary justify-items-center">
+              <div id="currencyToggle" class="flex overflow-hidden" role="group">
+                <button
+                  id="localCurrencyButton"
+                  class="px-4 py-6 font-bold text-white bg-primary text-bodysize"
+                  data-currency="IDR"
+                  aria-pressed="true"
+                >
+                  IDR
+                </button>
+                {% comment %}
+                  <button
+                    id="usdCurrencyButton"
+                    class="px-4 py-6 text-[#374151] text-[1.3rem] font-bold"
+                    data-currency="USD"
+                    aria-pressed="false"
+                  >
+                    USD
+                  </button>
+                {% endcomment %}
+              </div>
+            </div>
+            <div id="currencyStaticLabel" class="hidden">
+              <span class="mx-4 text-bodycolor text-bodysize text-dsRegular">US Dollar (USD)</span>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <div class="flex justify-between items-center border-t border-divider mx-5 py-5 relative">
+            <div class="flex items-center">
+              <img
+                src="{{ 'icon-copy.svg' | asset_url }}"
+                alt="copy icon"
+                class="text-primary w-8 h-6 mr-6"
+                width=""
+                height=""
+              >
+              <span class="text-primary font-semibold text-bodysize">
+                {{- 'localization.language_label' | t -}}
+              </span>
+            </div>
+            <form
+              method="post"
+              action="/localization"
+              accept-charset="UTF-8"
+              enctype="multipart/form-data"
+              id="LanguageToggleForm"
+              class="flex overflow-hidden border border-gray-300"
+              role="group"
+            >
+              {% assign currentLang = localization.language.iso_code %}
+              <input type="hidden" name="form_type" value="localization">
+              <input type="hidden" name="utf8" value="✓">
+              <input type="hidden" name="_method" value="put">
+              <input type="hidden" name="return_to" value="{{ request.path }}">
+              <input type="hidden" name="locale_code" id="localeCode" value="{{ currentLang }}">
+
+              <button
+                type="button"
+                class="px-4 py-6 {% if currentLang == 'en' %}bg-primary text-white{% else %}text-primary{% endif %} text-bodysize font-bold"
+                data-lang="en"
+              >
+                English
+              </button>
+              <button
+                type="button"
+                class="px-4 py-6 {% if currentLang == 'id' %}bg-primary text-white{% else %}text-primary{% endif %} text-bodysize font-bold"
+                data-lang="id"
+              >
+                Indonesia
+              </button>
+            </form>
+            <span class="absolute left-0 right-0 bottom-[-1px] h-px border-t border-divider"></span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</modal-dialog>
+
+<script>
+  // Helper for updating flag across all instances
+  function updateFlag(position) {
+    const flagContainers = document.querySelectorAll('.india-flag-svg');
+    flagContainers.forEach((flagContainer) => {
+      flagContainer.innerHTML = `
+        <span class="block w-8 h-8 bg-no-repeat bg-[length:auto_100%]"
+              style="background-image: url('{{ 'country-flags.png' | asset_url }}');
+                     background-position: ${position};">
+        </span>
+      `;
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const defaultLocale = 'en'; 
+    const supportedLocales = ['en', 'id']; 
+
+    // Load existing preferences on load
+    const stored = localStorage.getItem('countryByUser');
+    if (stored) {
+      const savedCountry = JSON.parse(stored);
+      document
+        .querySelectorAll('[data-role="selected-country-display"]')
+        .forEach((btn) => (btn.textContent = savedCountry.name));
+      document
+        .querySelectorAll('[data-role="selected-country-code"]')
+        .forEach((btn) => (btn.textContent = savedCountry.code));
+      updateFlag(savedCountry.position);
+    }
+
+    // Currency toggle logic
+    document.querySelectorAll('[data-currency]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-currency]').forEach((b) => {
+          b.classList.remove('bg-primary', 'text-white');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('bg-primary', 'text-white');
+        btn.setAttribute('aria-pressed', 'true');
+      });
+    });
+
+    // Language toggle logic
+    document.querySelectorAll('#LanguageToggleForm button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document
+          .querySelectorAll('#LanguageToggleForm button')
+          .forEach((b) => b.classList.remove('bg-primary', 'text-white'));
+        btn.classList.add('bg-primary', 'text-white');
+        const selected = btn.dataset.lang;
+        document.getElementById('localeCode').value = selected;
+
+        // Update localStorage
+        localStorage.setItem('selectedLocale', selected);
+
+        // Check if current URL already has the correct locale prefix
+        const currentPath = window.location.pathname;
+        const currentLocale = currentPath.match(/^\/(id|en|ph)\//)?.[1];
+        
+        // Only submit if locale needs to change
+        if (currentLocale === selected) {
+          console.log('Already on correct locale, skipping reload');
+          return;
+        }
+
+        // Adjust return_to to include the selected locale in the URL prefix
+        const returnToInput = document.querySelector('input[name="return_to"]');
+        let parts = returnToInput.value.split('/');
+        if (supportedLocales.includes(parts[1])) {
+          parts.splice(1, 1);
+        }
+        if (selected !== defaultLocale) {
+          parts.splice(1, 0, selected);
+        }
+        returnToInput.value = parts.join('/');
+
+        document.getElementById('LanguageToggleForm').submit();
+      });
+    });
+
+    // Set title on Country Selector Modal opening (needs to be in both files for proper context setting)
+    document.querySelectorAll('[data-modal="#CountrySelectorModal"]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const fromPreferences = e.currentTarget.dataset.context === 'preferences';
+        setCountrySelectorTitle(fromPreferences);
+        document.getElementById('countrySelectorError')?.classList.add('hidden');
+      });
+    });
+  });
+
+  // Function to update Country Selector Modal title based on context
+  function setCountrySelectorTitle(fromPreferences) {
+    const title = document.getElementById('countrySelectorTitle');
+    const promoParagraph = document.getElementById('pricingPromotions');
+    if (!title) return;
+
+    if (fromPreferences) {
+      title.textContent = title.dataset.preferencesTitle;
+      if (promoParagraph) promoParagraph.classList.remove('hidden');
+    } else {
+      title.textContent = title.dataset.defaultTitle;
+      if (promoParagraph) promoParagraph.classList.add('hidden');
+    }
+  }
+</script>
