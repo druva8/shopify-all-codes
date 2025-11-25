@@ -1,0 +1,45 @@
+.gf-left .gf-option-block:first-child .gf-block-title .h3:after {
+    font-family: "Responsive Icons";
+    content: ""!important;   /* <-- replace with your up-arrow unicode */
+}
+.gf-left .gf-option-block:not(:first-child).is-collapsed .gf-block-title .h3:after {
+    font-family: "Responsive Icons";
+    content: "\F236" !important;
+}
+.gf-left .gf-option-block:not(:first-child) .gf-block-title .h3:after {
+    font-family: "Responsive Icons";
+    content: "\F216" !important; /* expanded icon */
+}
+.gf-option-block ul.gf-option-box li>div>button+span:after {
+  font-family: "Responsive Icons";
+  content: "\F16F" !important;
+  font-size: 1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  border-top: 0px !important;
+}
+.gf-theme-version-15.spf-has-filter .gf-option-block ul.gf-option-box li:not(.is-collapsed)>div>button+span:after {
+  transform: rotate(-180deg);
+  border-top: 0px !important;
+}
+.gf-option-block ul.gf-option-box li.is-collapsed>div>button+span:after {
+  border-bottom: 0px !important;
+}
+#gf-tree .gf-block-title .h3:hover {
+  text-decoration: none !important;
+}
+#gf-tree .gf-block-title .h3:hover span{
+  text-decoration: none !important;
+}
+.gf-option-box .gf-Checkbox {
+  background-color: #fff;
+    border: 1px solid #253746;
+    color: #253746;
+    height: 25px;
+    line-height: 1.7692307692;
+    width: 25px;
+    min-width: 25px;
+}
+.gf-block-scroll {
+  max-height: fit-content !important;
+}
