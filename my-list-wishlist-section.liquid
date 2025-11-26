@@ -1,0 +1,372 @@
+{{ 'quick-add.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+<div class="px-6 py-4 container">
+  <!-- Header -->
+  <div class="pt-[18px] px-[10px] pb-0 mb-8">
+    <div class="flex md:flex-row justify-between items-start border-b border-gray-200 px-0 py-[11px]">
+      <h2 class="font-garamond text-[28px] policies-text">{{ 'customer.my_list_page.title' | t }}</h2>
+      {% if customer %}
+        <p class="text-[1.3rem] text-[#5E5E5E] list-text">{{ 'customer.my_list_page.loginUser_text' | t }}</p>
+      {% else %}
+        <p class="text-[1.3rem] text-[#5E5E5E] list-text">
+          <modal-opener data-modal="#LoginModal">
+            <button class="underline font-semibold">{{ 'customer.login_page.sign_in' | t }}</button>
+          </modal-opener>
+          <span class="ml-1">{{ 'customer.my_list_page.list_subtext' | t }}</span>
+        </p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Wishlist Container -->
+  <div id="wishlist-container" class="wishlist-grid"></div>
+</div>
+<div id="QuickAdd-collection-page-sizeguide" class="quick-view-product-popup-modal"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const wishlistContainer = document.getElementById('wishlist-container');
+
+    async function renderWishlist() {
+      wishlistContainer.innerHTML = '';
+      let myWishlist = JSON.parse(localStorage.getItem('myWishlist')) || [];
+
+      const footer = document.querySelector('footer'); // footer element
+
+      // Toggle footer visibility based on wishlist items
+      if (myWishlist.length === 0) {
+        footer?.classList.remove('hidden'); // show footer
+      } else {
+        footer?.classList.add('hidden'); // hide footer
+      }
+
+      if (myWishlist.length === 0) {
+        // Empty state
+        wishlistContainer.innerHTML = `
+    ${[
+      `
+      <div class="p-8 text-center flex flex-col items-center justify-center card-wishlist">
+        <div class="text-2xl opacity-30 mb-4">
+          <span aria-hidden="true" class="icon" data-icon="heart"></span>
+        </div>
+        <p class="text-gray-600 font-bold text-center">
+          {{ 'customer.my_list_page.ety_msg_1' | t }}<br>
+          {{ 'customer.my_list_page.ety_msg_2' | t }}<br>
+          {{ 'customer.my_list_page.ety_msg_3' | t }}
+        </p>
+      </div>
+    `,
+      ...Array(3).fill(`
+      <div class="p-8 text-center flex flex-col items-center justify-center card-wishlist">
+        <div class="text-2xl opacity-30">
+          <span aria-hidden="true" class="icon" data-icon="heart"></span>
+        </div>
+      </div>
+    `),
+    ].join('')}
+  `;
+        return;
+      }
+
+      myWishlist.forEach((item, index) => {
+        const card = document.createElement('div');
+
+        card.innerHTML = `
+        <div class="relative group wishlist-area">
+        <div class="sold-out-badge text-white text-center font-semibold z-[2]" style="background: #4e6f84; font-size:1.1rem; border-radius: 8px 8px 0 0;">
+          {% unless item.variant.available %}
+            <div class="sold-out-badge" style="padding: .2rem 1rem; margin-bottom: 2px;">
+              {{ 'products.product.sold_out' | t }}
+            </div>
+          {% endunless %}
+        </div>
+          <a href="/products/${item.handle}?variant=${item.variantId}" class="block">
+            <div class="w-full bg-gray-100 flex items-center justify-center product-image-wrapper relative">
+              <span class="text-gray-400 text-sm">{{ 'accessibility.loading' | t }}</span>
+              <div class="sold-out-badge absolute left-0 top-0 bg-red-600 text-white text-center font-semibold z-[2] hidden">
+                {{ 'products.product.sold_out' | t }}
+              </div>
+            </div>
+          </a>
+          <modal-opener class="w-1/2" data-modal="#QuickAdd-${item.id}${item.variantId}-mylist">
+            <button class="bag-hover lg:opacity-70 lg:pointer-events-auto" data-product-url="/products/${
+              item.handle
+            }" 
+                        data-variant-id="${item.variantId}">
+              <span aria-hidden="true" class="icon" data-icon="bag-outline"></span>
+            </button>
+          </modal-opener>
+
+          <div class="overlay-button">
+            <button class="w-1/2 button remove-item btn__heart_fill"
+                    data-index="${index}" data-variant="overlay-button">
+              <span aria-hidden="true" class="icon" data-icon="heart-filled-hco"></span>
+              <span class="xl:inline ml-1">{{ 'customer.my_list_page.add_to_list' | t }}</span>
+            </button>
+
+            <modal-opener class="w-1/2" data-modal="#QuickAdd-${item.id}${item.variantId}-mylist">
+              <button class="w-full button btn__zoom_plus sm:hidden lg:flex"
+                      data-variant="overlay-button"
+                      data-product-url="/products/${item.handle}" 
+                      data-variant-id="${item.variantId}">
+                <span aria-hidden="true" class="icon px-2" data-icon="zoom-plus"></span>
+                <span class="xl:inline ml-1">{{ 'products.product.choose_options' | t }}</span>
+              </button>
+            </modal-opener>
+          </div>
+        </div>
+
+        <quick-add-modal id="QuickAdd-${item.id}${item.variantId}-mylist" class="quick-add-modal quick-add-btn add-to-bag-preview">
+          <div role="dialog" aria-modal="true" class="quick-add-modal__content global-settings-popup" tabindex="-1">
+            <button id="ModalClose-${item.id}${
+              item.variantId
+            }" type="button" class="quick-add-modal__toggle" aria-label="{{ 'accessibility.close' | t }}">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-close" viewBox="0 0 18 17">
+                <path d="M.865 15.978a.5.5 0 00.707.707l7.433-7.431 7.579 7.282a.501.501 0 00.846-.37.5.5 0 00-.153-.351L9.712 8.546l7.417-7.416a.5.5 0 10-.707-.708L8.991 7.853 1.413.573a.5.5 0 10-.693.72l7.563 7.268-7.418 7.417z" fill="currentColor"/>
+              </svg>
+            </button>
+            <div id="QuickAddInfo-${item.id}${item.variantId}" class="quick-add-modal__content-info add-to-bag-preview"></div>
+          </div>
+        </quick-add-modal>
+
+        <div class="mt-5 product-card-detail">
+          <h2 class="text-base font-normal">${item.title}</h2>
+          <div class="cart-item__price text-primary !text-bodysize !mt-0"></div>
+          <div class="sold-out-badge" style="color: #79776f;
+            font-family: DS PF DIN Max, PF DIN Max, sans-serif;
+            font-size: 1.8rem;">
+            {% unless item.variant.available %}
+              <div class="sold-out-badge">
+                {{ 'products.product.sold_out' | t }}
+              </div>
+            {% endunless %}
+          </div>
+        </div>
+      `;
+
+        wishlistContainer.appendChild(card);
+
+        // Fetch product JSON and Quick Add HTML in parallel
+        Promise.all([
+          fetch(`/products/${item.handle}.js`).then((res) => res.json()),
+          fetch(`/products/${item.handle}?view=quick-add`).then((res) => res.text()),
+        ])
+          .then(([product, html]) => {
+            // --- Handle JSON (image + price + availability) ---
+            {% comment %} const imgDiv = card.querySelector('div > a > div');
+            const selectedVariant = product.variants.find((v) => v.id == item.variantId);
+            const imageUrl = selectedVariant?.featured_image?.src || product.images?.[0] || null;
+            const isAvailable = selectedVariant?.available || false;
+
+            imgDiv.innerHTML = imageUrl
+              ? `<img src="${imageUrl}" alt="${item.title}" class="w-full h-full object-cover" />`
+              : `<span class="text-gray-400 text-sm">No image</span>`;
+
+            // Show sold-out badge if variant is not available
+            if (!isAvailable) {
+              card.querySelector('.sold-out-badge').classList.remove('hidden');
+            }
+
+            // Render price using similar logic to cart drawer with sale styling
+            const priceDiv = card.querySelector('.cart-item__price');
+            const price = selectedVariant?.price || product.price || 0;
+            const compareAtPrice = selectedVariant?.compare_at_price || null;
+            const isOnSale = compareAtPrice && compareAtPrice > price;
+
+            {% comment %} console.log('Rendering price for', item.title, { price, compareAtPrice, isOnSale }); {% endcomment %}
+            {% comment %} console.log("Rendering price for sold out:",item.title,product.price) {% endcomment %}
+            console.log("Rendering price for DETAILS:",item, product)
+
+            priceDiv.innerHTML = `
+              ${isOnSale ? `
+                <span class="price-item price-item--regular" style="text-decoration: line-through;">
+                  Rp${(compareAtPrice / 100).toLocaleString('id-ID')}
+                </span>
+                <span class="price-item price-item--sale" style="color: #981420;">
+                  Rp${(price / 100).toLocaleString('id-ID')}
+                </span>
+                <span class="sale-label" style="color: #981420; margin-left: 3px;">{{ 'products.product.on_sale' | t }}</span>
+              ` : `
+                <span class="price-item price-item--regular">
+                  Rp${(price / 100).toLocaleString('id-ID')}
+                </span>
+              `}
+            `; {% endcomment %}
+
+            // --- Handle JSON (image + price + availability) ---
+
+            const imgDiv = card.querySelector('div > a > div');
+            {% comment %} let selectedVariant = product.variants.find((v) => v.id == item.variantId) || product.variants[0]; {% endcomment %}
+            const selectedVariant = product.variants.find(v => v.id == item.variantId);
+            const imageUrl = selectedVariant?.featured_image?.src || product.images?.[0] || null;
+            const isAvailable = selectedVariant?.available ?? false;
+
+            imgDiv.innerHTML = imageUrl
+              ? `<img src="${imageUrl}" alt="${item.title}" class="w-full h-full object-cover" />`
+              : `<span class="text-gray-400 text-sm">No image</span>`;
+
+            if (!isAvailable) {
+              const soldOutBadge = card.querySelector('.sold-out-badge');
+              if (soldOutBadge) {
+                soldOutBadge.classList.remove('hidden');
+              }
+            }
+
+            const priceDiv = card.querySelector('.cart-item__price');
+
+            // Always take variant price (even if sold out)
+            let price = selectedVariant?.price;
+            let compareAtPrice = selectedVariant?.compare_at_price;
+            let isOnSale = !!(compareAtPrice && compareAtPrice > price);
+
+            // Fallback: if no selectedVariant or missing price, pick from first variant
+            if (!price && product.variants.length > 0) {
+              const firstVariant = product.variants.find(v => v.price);
+              price = firstVariant ? firstVariant.price : 0;
+              compareAtPrice = firstVariant?.compare_at_price;
+              isOnSale = !!(compareAtPrice && compareAtPrice > price);
+            }
+
+            // Render price correctly
+            priceDiv.innerHTML = `
+              ${
+                isOnSale
+                  ? `
+                    <span class="price-item price-item--regular" style="text-decoration: line-through;">
+                      Rp${(compareAtPrice / 100).toLocaleString('id-ID')}
+                    </span>
+                    <span class="price-item price-item--sale" style="color: #981420;">
+                      Rp${(price / 100).toLocaleString('id-ID')}
+                    </span>
+                    <span class="sale-label" style="color: #981420; margin-left: 3px;">
+                      {{ 'products.product.on_sale' | t }}
+                    </span>
+                  `
+                  : `
+                    <span class="price-item price-item--regular">
+                      Rp${(price / 100).toLocaleString('id-ID')}
+                    </span>
+                  `
+              }
+            `;
+
+            // --- Quick Add HTML ---
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const productContent = doc.querySelector('product-info') || doc.body.firstElementChild;
+            const target = card.querySelector(`#QuickAddInfo-${item.id}${item.variantId}`);
+
+            if (productContent && target) {
+              target.innerHTML = productContent.innerHTML;
+            } else if (target) {
+              target.innerHTML = `<p class="text-gray-500 p-4">Quick add not available</p>`;
+            }
+
+            // Ensure modal exists and strip unwanted class
+            const quickAddModal = document.getElementById(`QuickAdd-${item.id}${item.variantId}`);
+            if (quickAddModal) {
+              quickAddModal.classList.remove('quick-update-btn');
+            }
+          })
+          .catch((err) => console.error('Error loading product info:', err));
+      });
+
+      // Attach remove buttons
+      wishlistContainer.querySelectorAll('.remove-item').forEach((btn) => {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          const idx = parseInt(this.dataset.index);
+          myWishlist.splice(idx, 1);
+          localStorage.setItem('myWishlist', JSON.stringify(myWishlist));
+          renderWishlist();
+          syncWishlist();
+          
+        });
+      });
+    }
+    renderWishlist();
+   
+  });
+</script>
+
+<style>
+  .card-wishlist {
+    background: #f5f4f2;
+  }
+
+  .card-wishlist {
+    height: 450px;
+  }
+
+  @media (max-width: 639px) {
+    .card-wishlist {
+      height: 450px;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .card-wishlist {
+      height: 470px;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .card-wishlist {
+      height: 450px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .card-wishlist {
+      height: 370px;
+    }
+  }
+
+  .wishlist-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding-bottom: 30px;
+  }
+
+  @media (max-width: 659px) {
+    .wishlist-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 640px) {
+    .wishlist-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .wishlist-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .wishlist-grid {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  .price-item--regular {
+    {% comment %} font-weight: bold; {% endcomment %}
+     color: #5e5e5e;
+  }
+
+  .price-item--sale {
+    margin-left: 6px;
+  }
+
+  .sale-label {
+    margin-left: 5px;
+  }
+</style>
