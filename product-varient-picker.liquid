@@ -1,0 +1,522 @@
+{% comment %}
+  Renders product variant-picker
+
+  Accepts:
+  - product: {Object} product object.
+  - block: {Object} passing the block information.
+  - product_form_id: {String} Id of the product form to which the variant picker is associated.
+  Usage:
+  {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
+{% endcomment %}
+{%- unless product.has_only_default_variant -%}
+  <variant-selects
+    id="variant-selects-{{ section.id }}"
+    data-section="{{ section.id }}"
+    {{ block.shopify_attributes }}
+  >
+    {%- comment -%} Render Color first {%- endcomment -%}
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        assign swatch_count = option.values | map: 'swatch' | compact | size
+        assign picker_type = block.settings.picker_type
+
+        if swatch_count > 0 and block.settings.swatch_shape != 'none'
+          if block.settings.picker_type == 'dropdown'
+            assign picker_type = 'swatch_dropdown'
+          else
+            assign picker_type = 'swatch'
+          endif
+        endif
+      -%}
+      {% assign option_name = option.name | downcase %}
+      {%- if option_name == 'color' or option_name == 'warna' -%}
+        {%- if picker_type == 'swatch' -%}
+          <fieldset class="js product-form__input product-form__input--pill color-picker">
+            {% liquid
+              assign is_color_option = true
+              assign raw = option.selected_value | downcase | replace: '_', ' ' | replace: '-', ' '
+              assign base = raw | split: 'pattern' | first | strip
+              assign words = base | split: ' '
+              assign formatted = ''
+              for w in words
+                if w != ''
+                  assign cap = w | strip | capitalize
+                  if formatted == ''
+                    assign formatted = cap
+                  else
+                    assign formatted = formatted | append: ' ' | append: cap
+                  endif
+                endif
+              endfor
+              assign selected_display = formatted
+            %}
+            <legend class="form__label ">
+              <span
+                ><strong> {{ option.name }}:</strong
+                ><span id="selected-{{ option.name }}"> {{ selected_display }}</span>
+              </span>
+            </legend>
+            {% render 'product-variant-options',
+              product: product,
+              option: option,
+              block: block,
+              picker_type: picker_type
+            %}
+          </fieldset>
+          <div class="almost-gone">
+            {% assign variant = product.selected_or_first_available_variant %}
+            {% assign stock = variant.inventory_quantity %}
+            {% if stock > 0 and stock < 5 %}
+              <div class="almost-gone-block">
+                <span
+                  aria-hidden="true"
+                  class="icon"
+                  data-icon="clock-anf"
+                  data-testid="icon"
+                ></span>
+                <div class="almost-gone-text">Almost Gone!</div>
+              </div>
+            {% endif %}
+          </div>
+        {%- elsif picker_type == 'button' -%}
+          <fieldset class="js product-form__input product-form__input--pill {% if option_name == 'color' or option_name == 'warna' %}  color-picker {% endif %}  {% if option_name == 'size' or option_name == 'ukuran' %}  size-picker {% endif %} {% if option_name != 'color' and option_name != 'warna' and option_name != 'size' and option_name != 'ukuran' %}  length-picker {% endif %} ">
+            <legend class="form__label">
+              {% liquid
+                assign is_color_option = false
+              %}
+              {% if option_name == 'color' or option_name == 'warna' %}
+                {% assign is_color_option = true %}
+              {% endif %}
+              {% liquid
+                assign selected_display = option.selected_value
+                if is_color_option
+                  assign raw = option.selected_value | downcase | replace: '_', ' ' | replace: '-', ' '
+                  assign base = raw | split: 'pattern' | first | strip
+                  assign words = base | split: ' '
+                  assign formatted = ''
+                  for w in words
+                    if w != ''
+                      assign cap = w | strip | capitalize
+                      if formatted == ''
+                        assign formatted = cap
+                      else
+                        assign formatted = formatted | append: ' ' | append: cap
+                      endif
+                    endif
+                  endfor
+                  assign selected_display = formatted
+                endif
+              %}
+
+              <span
+                ><strong>{{ option.name }}:</strong>
+                <span id="selected-{{ option.name | handle }}">
+                  {{ selected_display }}
+                </span>
+              </span>
+
+              {% if option_name == 'size' or option_name == 'ukuran' %}
+                <span class="size-guide-product">
+                  {% render 'size-guide', product: product %}
+                </span>
+                <span class="size-guide-quick-view">
+                  <button
+                    class="product-popup-modal__button btn-link"
+                    type="button"
+                    aria-haspopup="dialog"
+                    onclick="handleOnClickSizeGuide()"
+                  >
+                    {{ 'products.product.size_guide' | t }}
+                  </button>
+                  {% render 'size-guide-quick-view', product: product %}
+                </span>
+              {% endif %}
+            </legend>
+
+            {% render 'product-variant-options',
+              product: product,
+              option: option,
+              block: block,
+              picker_type: picker_type
+            %}
+          </fieldset>
+
+        {%- else -%}
+          <div class="product-form__input product-form__input--dropdown">
+            <label class="form__label" for="Option-{{ section.id }}-{{ option.position | minus: 1 }}">
+              {{ option.name }}
+            </label>
+            <div class="select">
+              {%- if picker_type == 'swatch_dropdown' -%}
+                <span
+                  data-selected-value
+                  class="dropdown-swatch"
+                >
+                  {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+                </span>
+              {%- endif -%}
+              <select
+                id="Option-{{ section.id }}-{{ option.position | minus: 1 }}"
+                class="select__select"
+                name="options[{{ option.name | escape }}]"
+                form="{{ product_form_id }}"
+              >
+                {% render 'product-variant-options',
+                  product: product,
+                  option: option,
+                  block: block,
+                  picker_type: picker_type
+                %}
+              </select>
+              <span class="svg-wrapper">
+                {{- 'icon-caret.svg' | inline_asset_content -}}
+              </span>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- comment -%} Render Size second {%- endcomment -%}
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        assign swatch_count = option.values | map: 'swatch' | compact | size
+        assign picker_type = block.settings.picker_type
+
+        if swatch_count > 0 and block.settings.swatch_shape != 'none'
+          if block.settings.picker_type == 'dropdown'
+            assign picker_type = 'swatch_dropdown'
+          else
+            assign picker_type = 'swatch'
+          endif
+        endif
+      -%}
+      {% assign option_name = option.name | downcase %}
+      {%- if option_name == 'size' or option_name == 'ukuran' -%}
+        {%- if picker_type == 'swatch' -%}
+          <fieldset class="js product-form__input product-form__input--pill color-picker">
+            {% liquid
+              assign is_color_option = true
+              assign raw = option.selected_value | downcase | replace: '_', ' ' | replace: '-', ' '
+              assign base = raw | split: 'pattern' | first | strip
+              assign words = base | split: ' '
+              assign formatted = ''
+              for w in words
+                if w != ''
+                  assign cap = w | strip | capitalize
+                  if formatted == ''
+                    assign formatted = cap
+                  else
+                    assign formatted = formatted | append: ' ' | append: cap
+                  endif
+                endif
+              endfor
+              assign selected_display = formatted
+            %}
+            <legend class="form__label ">
+              <span
+                ><strong> {{ option.name }}:</strong
+                ><span id="selected-{{ option.name }}"> {{ selected_display }}</span>
+              </span>
+            </legend>
+            {% render 'product-variant-options',
+              product: product,
+              option: option,
+              block: block,
+              picker_type: picker_type
+            %}
+          </fieldset>
+        {%- elsif picker_type == 'button' -%}
+          <fieldset class="js product-form__input product-form__input--pill {% if option_name == 'color' or option_name == 'warna' %}  color-picker {% endif %}  {% if option_name == 'size' or option_name == 'ukuran' %}  size-picker {% endif %} {% if option_name != 'color' and option_name != 'warna' and option_name != 'size' and option_name != 'ukuran' %}  length-picker {% endif %} ">
+            <legend class="form__label">
+              {% liquid
+                assign is_color_option = false
+              %}
+              {% if option_name == 'color' or option_name == 'warna' %}
+                {% assign is_color_option = true %}
+              {% endif %}
+              {% liquid
+                assign selected_display = option.selected_value
+                if is_color_option
+                  assign raw = option.selected_value | downcase | replace: '_', ' ' | replace: '-', ' '
+                  assign base = raw | split: 'pattern' | first | strip
+                  assign words = base | split: ' '
+                  assign formatted = ''
+                  for w in words
+                    if w != ''
+                      assign cap = w | strip | capitalize
+                      if formatted == ''
+                        assign formatted = cap
+                      else
+                        assign formatted = formatted | append: ' ' | append: cap
+                      endif
+                    endif
+                  endfor
+                  assign selected_display = formatted
+                endif
+              %}
+
+              {% liquid
+                assign is_jean_product = false
+                assign display_option_name = option.name
+
+                if option_name == 'size' or option_name == 'ukuran'
+                  for tag in product.tags
+                    assign tag_lower = tag | downcase
+                    if tag_lower contains 'jean'
+                      assign is_jean_product = true
+                      assign display_option_name = 'products.waist' | t
+                      break
+                    endif
+                  endfor
+                endif
+              %}
+
+              <span
+                ><strong>{{ display_option_name }}:</strong>
+                <span id="selected-{{ option.name | handle }}">
+                  {{ selected_display }}
+                </span>
+              </span>
+
+              {% if option_name == 'size' or option_name == 'ukuran' %}
+                <span class="size-guide-product">
+                  {% render 'size-guide', product: product %}
+                </span>
+                <span class="size-guide-quick-view">
+                  <button
+                    class="product-popup-modal__button btn-link"
+                    type="button"
+                    aria-haspopup="dialog"
+                    onclick="handleOnClickSizeGuide()"
+                  >
+                    {{ 'products.product.size_guide' | t }}
+                  </button>
+                  {% render 'size-guide-quick-view', product: product %}
+                </span>
+              {% endif %}
+            </legend>
+
+            {% render 'product-variant-options',
+              product: product,
+              option: option,
+              block: block,
+              picker_type: picker_type
+            %}
+          </fieldset>
+
+        {%- else -%}
+          <div class="product-form__input product-form__input--dropdown">
+            <label class="form__label" for="Option-{{ section.id }}-{{ option.position | minus: 1 }}">
+              {{ option.name }}
+            </label>
+            <div class="select">
+              {%- if picker_type == 'swatch_dropdown' -%}
+                <span
+                  data-selected-value
+                  class="dropdown-swatch"
+                >
+                  {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+                </span>
+              {%- endif -%}
+              <select
+                id="Option-{{ section.id }}-{{ option.position | minus: 1 }}"
+                class="select__select"
+                name="options[{{ option.name | escape }}]"
+                form="{{ product_form_id }}"
+              >
+                {% render 'product-variant-options',
+                  product: product,
+                  option: option,
+                  block: block,
+                  picker_type: picker_type
+                %}
+              </select>
+              <span class="svg-wrapper">
+                {{- 'icon-caret.svg' | inline_asset_content -}}
+              </span>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- comment -%} Render remaining options last {%- endcomment -%}
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        assign swatch_count = option.values | map: 'swatch' | compact | size
+        assign picker_type = block.settings.picker_type
+
+        if swatch_count > 0 and block.settings.swatch_shape != 'none'
+          if block.settings.picker_type == 'dropdown'
+            assign picker_type = 'swatch_dropdown'
+          else
+            assign picker_type = 'swatch'
+          endif
+        endif
+      -%}
+      {% assign option_name = option.name | downcase %}
+      {%- if option_name != 'color' and option_name != 'warna' and option_name != 'size' and option_name != 'ukuran' -%}
+        {%- if picker_type == 'swatch' -%}
+          <fieldset class="js product-form__input product-form__input--pill color-picker">
+            {% liquid
+              assign is_color_option = true
+              assign raw = option.selected_value | downcase | replace: '_', ' ' | replace: '-', ' '
+              assign base = raw | split: 'pattern' | first | strip
+              assign words = base | split: ' '
+              assign formatted = ''
+              for w in words
+                if w != ''
+                  assign cap = w | strip | capitalize
+                  if formatted == ''
+                    assign formatted = cap
+                  else
+                    assign formatted = formatted | append: ' ' | append: cap
+                  endif
+                endif
+              endfor
+              assign selected_display = formatted
+            %}
+            <legend class="form__label ">
+              <span
+                ><strong> {{ option.name }}:</strong
+                ><span id="selected-{{ option.name }}"> {{ selected_display }}</span>
+              </span>
+            </legend>
+            {% render 'product-variant-options',
+              product: product,
+              option: option,
+              block: block,
+              picker_type: picker_type
+            %}
+          </fieldset>
+        {%- elsif picker_type == 'button' -%}
+          <fieldset class="js product-form__input product-form__input--pill {% if option_name == 'color' or option_name == 'warna' %}  color-picker {% endif %}  {% if option_name == 'size' or option_name == 'ukuran' %}  size-picker {% endif %} {% if option_name != 'color' and option_name != 'warna' and option_name != 'size' and option_name != 'ukuran' %}  length-picker {% endif %} ">
+            <legend class="form__label">
+              {% liquid
+                assign is_color_option = false
+              %}
+              {% if option_name == 'color' or option_name == 'warna' %}
+                {% assign is_color_option = true %}
+              {% endif %}
+              {% liquid
+                assign selected_display = option.selected_value
+                if is_color_option
+                  assign raw = option.selected_value | downcase | replace: '_', ' ' | replace: '-', ' '
+                  assign base = raw | split: 'pattern' | first | strip
+                  assign words = base | split: ' '
+                  assign formatted = ''
+                  for w in words
+                    if w != ''
+                      assign cap = w | strip | capitalize
+                      if formatted == ''
+                        assign formatted = cap
+                      else
+                        assign formatted = formatted | append: ' ' | append: cap
+                      endif
+                    endif
+                  endfor
+                  assign selected_display = formatted
+                endif
+              %}
+
+              <span
+                ><strong>{{ option.name }}:</strong>
+                <span id="selected-{{ option.name | handle }}">
+                  {{ selected_display }}
+                </span>
+              </span>
+            </legend>
+
+            {% render 'product-variant-options',
+              product: product,
+              option: option,
+              block: block,
+              picker_type: picker_type
+            %}
+          </fieldset>
+        {%- else -%}
+          <div class="product-form__input product-form__input--dropdown">
+            <label class="form__label" for="Option-{{ section.id }}-{{ option.position | minus: 1 }}">
+              {{ option.name }}
+            </label>
+            <div class="select">
+              {%- if picker_type == 'swatch_dropdown' -%}
+                <span
+                  data-selected-value
+                  class="dropdown-swatch"
+                >
+                  {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+                </span>
+              {%- endif -%}
+              <select
+                id="Option-{{ section.id }}-{{ option.position | minus: 1 }}"
+                class="select__select"
+                name="options[{{ option.name | escape }}]"
+                form="{{ product_form_id }}"
+              >
+                {% render 'product-variant-options',
+                  product: product,
+                  option: option,
+                  block: block,
+                  picker_type: picker_type
+                %}
+              </select>
+              <span class="svg-wrapper">
+                {{- 'icon-caret.svg' | inline_asset_content -}}
+              </span>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    <script type="application/json" data-selected-variant>
+      {{ product.selected_or_first_available_variant | json }}
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const variantSelects = document.querySelector('variant-selects');
+        if (variantSelects) {
+          const sizePickers = variantSelects.querySelectorAll('.size-picker');
+
+          sizePickers.forEach((picker) => {
+            // Get all radio inputs
+            const allInputs = Array.from(picker.querySelectorAll('input[type="radio"]'));
+
+            // Filter only visible inputs (ignore hidden toggles like in/cm)
+            const visibleInputs = allInputs.filter((input) => input.offsetParent !== null);
+
+            if (visibleInputs.length === 1) {
+              const targetInput = visibleInputs[0];
+
+              // Force check if not checked
+              if (!targetInput.checked) {
+                targetInput.checked = true;
+                targetInput.setAttribute('checked', 'checked');
+              }
+
+              // Trigger events to notify other scripts
+              targetInput.dispatchEvent(new Event('change', { bubbles: true }));
+              targetInput.click();
+
+              // MANUALLY UPDATE THE LABEL UI
+              // Find the legend label wrapper
+              const legend = picker.querySelector('legend');
+              if (legend) {
+                // Find the span that holds the selected value text
+                const selectedSpan = legend.querySelector('[id^="selected-"]');
+                if (selectedSpan) {
+                  // Update text content
+                  selectedSpan.textContent = ' ' + targetInput.value;
+                  // Ensure it is visible
+                  selectedSpan.style.display = 'inline';
+                }
+              }
+            }
+          });
+        }
+      });
+    </script>
+  </variant-selects>
+{%- endunless -%}
