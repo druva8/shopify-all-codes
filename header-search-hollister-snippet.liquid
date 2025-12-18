@@ -1,0 +1,279 @@
+{% comment %}
+  Renders a header search modal. Should be used with 'header.liquid'
+
+  Accepts:
+  - input_id: {String} Id for the search input element (required)
+
+  Usage:
+  {% render 'header-search', input_id: 'My-Id'%}
+{% endcomment %}
+
+<details-modal class="header__search header__search--main {% if header_top %}px-5 py-1 border min-h-16 w-80 2xl:w-[300px]{% endif %}">
+  <details class="w-[-webkit-fill-available]">
+    <summary
+      class="!w-full  header__icon header__icon--search header__icon--summary link focus-inset modal__toggle !no-underline"
+      aria-haspopup="dialog"
+      aria-label="{{ 'general.search.search' | t }}"
+    >
+      <span class="!justify-start">
+        <span aria-label="Search" class="icon" data-icon="search" role="img"></span>
+        <span class="!w-full svg-wrapper !justify-start">
+          {% comment %} {{- 'icon-search.svg' | inline_asset_content -}} {% endcomment %}
+          {% if header_top -%}
+            <span class="w-full ml-4 text-xl !justify-star search-text">{{ 'general.search.search' | t }}</span>
+          {%- endif %}
+        </span>
+        <span class="svg-wrapper header__icon-close">
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </span>
+      </span>
+    </summary>
+    <div
+      class="search-modal modal__content gradient"
+      role="dialog"
+      aria-modal="true"
+      aria-label="{{ 'general.search.search' | t }}"
+    >
+      <div class="modal-overlay"></div>
+      <div
+        class="search-modal__content{% if settings.inputs_shadow_vertical_offset != 0 and settings.inputs_shadow_vertical_offset < 0 %} search-modal__content-top{% else %} search-modal__content-bottom{% endif %} top-10"
+        tabindex="-1"
+      >
+        {%- if settings.predictive_search_enabled -%}
+          <predictive-search class="search-modal__form" data-loading-text="{{ 'accessibility.loading' | t }}">
+        {%- else -%}
+          <search-form class="search-modal__form">
+        {%- endif -%}
+        <span
+          aria-hidden="true"
+          class="icon search-logo"
+          data-icon="hco-logo-horizontal"
+          data-testid="icon"
+          style="padding: 1rem 0 2rem;"
+        ></span>
+        <form action="{{ routes.search_url }}" method="get" role="search" class="search search-modal__form">
+          <div class="field">
+            <input
+              class="search__input field__input header_search_input"
+              id="{{ input_id }}"
+              type="search"
+              name="q"
+              value="{{ search.terms | escape }}"
+              required
+              placeholder="{{ 'general.search.search' | t }}"
+              {%- if settings.predictive_search_enabled -%}
+                role="combobox"
+                aria-expanded="false"
+                aria-owns="predictive-search-results"
+                aria-controls="predictive-search-results"
+                aria-haspopup="listbox"
+                aria-autocomplete="list"
+                autocorrect="off"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+              {%- endif -%}
+            >
+            <label
+              class="field__label"
+              for="{{ input_id }}"
+              style="top: calc(1.5rem + var(--inputs-border-width)); left: calc(var(--inputs-border-width) + 2.5rem) !important;"
+            >
+              {{- 'general.search.search' | t -}}
+            </label>
+            <input type="hidden" name="options[prefix]" value="last">
+            <button
+              type="reset"
+              class="reset__button field__button{% if search.terms == blank %} hidden{% endif %}"
+              aria-label="{{ 'general.search.reset' | t }}"
+            >
+              <span aria-hidden="true" class="icon" data-icon="cancel-hco" data-testid="icon"></span>
+            </button>
+            <button
+              type="submit"
+              class="search__button field__button"
+              aria-label="{{ 'general.search.search' | t }}"
+              style="padding-left: 1rem;"
+            >
+              <span aria-label="Search" class="icon" data-icon="search" role="img"></span>
+            </button>
+          </div>
+
+          {%- if settings.predictive_search_enabled -%}
+            <div class="predictive-search predictive-search--header" tabindex="-1" data-predictive-search>
+              {%- render 'loading-spinner', class: 'predictive-search__loading-state' -%}
+            </div>
+
+            <span class="predictive-search-status visually-hidden" role="status" aria-hidden="true"></span>
+
+            <div aria-label="Search" class="search-container-before">
+              <div class="search-container-default-view-section">
+                <div class="search-container-area-section">
+                  <div
+                    class="search-container-section-module recent-searches-module"
+                    style="display:none; margin-bottom:5px;"
+                  >
+                    <div
+                      class="search-heading"
+                      style="display: flex; justify-content: space-between; align-items: center;"
+                    >
+                      <h2 class="h3">Recent Searches</h2>
+                      <button
+                        type="button"
+                        class="link link--text underline text-sm clear-recent-searches"
+                        style="text-decoration: underline; font-size: 12px;"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                    <div class="search-default-view-btn recent-searches-list">
+                      <!-- Recent searches will be injected here -->
+                    </div>
+                  </div>
+                  <div class="search-container-section-module">
+                    <div class="search-heading">
+                      <h2 class="h3">{{ 'general.search.popular_searches' | t }}</h2>
+                    </div>
+                    <div class="search-default-view-btn">
+                      <a href="/search?q=sweater&options%5Bprefix%5D=last">
+                        {{- 'general.search.popular.sweaters' | t -}}
+                      </a>
+                      <a href="/search?q=cardigans&options%5Bprefix%5D=last">
+                        {{- 'general.search.popular.cardigans' | t -}}
+                      </a>
+                      <a href="/search?q=holiday&options%5Bprefix%5D=last">
+                        {{- 'general.search.popular.holiday' | t -}}
+                      </a>
+                      <a href="/search?q=Y2K+Vault&options%5Bprefix%5D=last">
+                        {{- 'general.search.popular.y2k_vault' | t -}}
+                      </a>
+                      <a href="/search?q=camo&options%5Bprefix%5D=last">
+                        {{- 'general.search.popular.camo' | t -}}
+                      </a>
+                      <a href="/search?q=sweatpants&_pos=1&_psq=sweatp&_ss=e&_v=1.0">
+                        {{- 'general.search.popular.sweatpants' | t -}}
+                      </a>
+                    </div>
+                  </div>
+                  <div class="search-container-section-module help-link-module">
+                    <div class="search-heading">
+                      <h2 class="h3">{{ 'general.search.help_link' | t }}</h2>
+                    </div>
+                    <div
+                      class="search-default-view-btn"
+                    >
+                      <a href="/pages/account">{{ 'customer.account.my_acc' | t }}</a>
+                      <a href="/account">{{ 'customer.purchase_history.title' | t }}</a>
+                      <a href="/pages/my-list">{{ 'customer.my_list_page.title' | t }}</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </form>
+        {%- if settings.predictive_search_enabled -%}
+          </predictive-search>
+        {%- else -%}
+          </search-form>
+        {%- endif -%}
+        <button
+          type="button"
+          class="search-modal__close-button modal__close-button link link--text focus-inset"
+          aria-label="{{ 'accessibility.close' | t }}"
+        >
+          <span aria-hidden="true" class="icon" data-icon="close-hco" data-testid="icon"></span>
+        </button>
+      </div>
+    </div>
+  </details>
+</details-modal>
+
+ <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const storageKey = 'recent-searches-main';
+    const maxItems = 5;
+
+    function getRecentSearches() {
+      const searches = localStorage.getItem(storageKey);
+      return searches ? JSON.parse(searches) : [];
+    }
+
+    function saveRecentSearch(term) {
+      let searches = getRecentSearches();
+      searches = searches.filter((s) => s.toLowerCase() !== term.toLowerCase());
+      searches.unshift(term);
+      if (searches.length > maxItems) {
+        searches.pop();
+      }
+      localStorage.setItem(storageKey, JSON.stringify(searches));
+    }
+
+    function renderAllInstances() {
+      document.querySelectorAll('.header__search--main').forEach((modal) => {
+        const container = modal.querySelector('.recent-searches-module');
+        
+        if (!container) return;
+        const list = container.querySelector('.recent-searches-list');
+        const searchModalDiv = modal.querySelector('.search-modal');
+        const searches = getRecentSearches();
+        if (searches.length === 0) {
+          container.style.display = 'none';
+          if (searchModalDiv) searchModalDiv.classList.remove('has-recent-searches');
+          return;
+        }
+
+        container.style.display = 'block';
+        if (searchModalDiv) searchModalDiv.classList.add('has-recent-searches');
+        list.innerHTML = '';
+        searches.forEach((term) => {
+          const link = document.createElement('a');
+          link.href = `{{ routes.search_url }}?q=${encodeURIComponent(
+            term
+          )}&options%5Bprefix%5D=last`;
+          link.textContent = term;
+          list.appendChild(link);
+        });
+      });
+    }
+
+    document.querySelectorAll('.header__search--main').forEach((modal) => {
+      const form = modal.querySelector('form[action="{{ routes.search_url }}"]');
+      const clearBtn = modal.querySelector('.clear-recent-searches');
+      if (form) {
+        form.addEventListener('submit', function (e) {
+          const input = form.querySelector('input[name="q"]');
+          if (input && input.value.trim()) {
+            saveRecentSearch(input.value.trim());
+            // No need to render as we are navigating away
+          }
+        });
+      }
+
+      if (clearBtn) {
+        {% comment %} clearBtn.addEventListener('click', function () {
+          localStorage.removeItem(storageKey);
+          renderAllInstances();
+        }); {% endcomment %}
+        
+        clearBtn.addEventListener(
+        'pointerdown',
+        function (e) {
+          // STOP Shopify details-modal from closing
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          // Clear storage
+          localStorage.removeItem(storageKey);
+
+          // Re-render recent searches
+          renderAllInstances();
+        },
+        true
+        );
+      }
+    });
+
+    renderAllInstances();
+  });
+</script> 
