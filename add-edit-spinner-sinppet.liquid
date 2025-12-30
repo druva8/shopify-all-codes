@@ -1,0 +1,1207 @@
+{% comment %} Edit Address Modal {% endcomment %}
+<script src="{{ 'provinces.js' | asset_url }}" defer></script>
+<modal-dialog
+  id="EditAddressModal-{{ address.id }}"
+  class="hidden fixed inset-0 z-50 bg-black/50 md:justify-items-center content-center p-4 overflow-y-auto"
+>
+  {% assign customer_add_mapping = customer.metafields.mapclub.addressmap %}
+  {% assign customer_district_map = customer.metafields.mapclub.districts_map %}
+  {% assign raw = customer.metafields.mapclub.districts_map.value | default: "{}" %}
+  {% assign customer_district_mapping = raw %}
+  <div class="template-popup bg-white w-340px md:w-[580px] shadow-lg relative my-16" role="dialog" aria-modal="true">
+    <!-- Header -->
+    <div class="flex justify-between items-center bg-bodycart px-14 py-10">
+      <h2
+        style="
+          font-family: 'Trebuchet MS';
+          font-stretch: 50%;
+          font-weight: 600;
+          letter-spacing: .2px;
+          margin-bottom: 0;
+        "
+      >
+        {{ 'customer.addresses.edit_address' | t }}
+      </h2>
+      <button
+        type="button"
+        class="edit-close !text-primary !justify-end !lg:items-start !p-0"
+        onclick="document.getElementById('EditAddressModal-{{ address.id }}').classList.add('hidden');"
+      >
+        <span aria-hidden="true" class="icon p-2" data-icon="close-hco"></span>
+      </button>
+    </div>
+    <!-- Form -->
+    <div class="px-16 pb-16" style="margin-top: 2rem;">
+      {%- form 'customer_address', address -%}
+        <div id="EditAddressFormWrapper-{{ address.id }}" class="space-y-4 !basis-full !mr-4">
+          <!-- Name -->
+          {% assign address_id = address.id | append: "" %}
+          {% assign selected_district = customer_district_mapping[address_id] %}
+          <div
+            class="field-login mb-12 address_form-fields"
+            shopify-address='{{ form | json }}'
+            mapclub-add-mapping='{{ customer_add_mapping }}'
+            mapclub-district-mapping='{{ customer_district_map }}'
+            shopify-address-id="{{ address.id }}"
+            mapclub-current-add
+          >
+            <div class="field" data-error-group="firstname">
+              <input
+                type="text"
+                id="AddressFirstName_{{ form.id }}"
+                name="address[first_name]"
+                value="{{ form.first_name }}"
+                autocomplete="given-name"
+                placeholder="{{ 'customer.addresses.first_name' | t }}"
+                class="field__input"
+              >
+              <label class="field__label" for="AddressFirstName_{{ form.id }}">
+                {{- 'customer.addresses.first_name' | t -}}
+              </label>
+            </div>
+            <div class="field" data-error-group="lastname">
+              <input
+                type="text"
+                id="AddressLastName_{{ form.id }}"
+                name="address[last_name]"
+                value="{{ form.last_name }}"
+                autocomplete="family-name"
+                placeholder="{{ 'customer.addresses.last_name' | t }}"
+                class="field__input"
+              >
+              <label class="field__label" for="AddressLastName_{{ form.id }}">
+                {{- 'customer.addresses.last_name' | t -}}
+              </label>
+            </div>
+          </div>
+          <!-- Address -->
+          <input type="hidden" name="address[country]" value="Indonesia">
+          <div class="country hidden">
+            <select name="country">
+              {{ country_option_tags }}
+            </select>
+          </div>
+          <div class="field-login mb-12 address_form-fields">
+            <div class="field" data-error-group="address1">
+              <input
+                type="text"
+                id="AddressAddress1_{{ form.id }}"
+                name="address[address1]"
+                value="{{ form.address1 }}"
+                autocomplete="address-line1"
+                placeholder="{{ 'customer.addresses.address1' | t }}"
+                class="field__input"
+              >
+              <label class="field__label" for="AddressAddress1_{{ form.id }}">
+                {{- 'customer.addresses.address1' | t -}}
+              </label>
+            </div>
+            <div class="field" data-error-group="address2">
+              <input
+                type="text"
+                id="AddressAddress2_{{ form.id }}"
+                name="address[address2]"
+                value="{{ form.address2 }}"
+                autocomplete="address-line2"
+                placeholder="{{ 'customer.addresses.address2' | t }}"
+                class="field__input"
+              >
+              <label class="field__label" for="AddressAddress2_{{ form.id }}">
+                {{- 'customer.addresses.address2' | t -}}
+              </label>
+            </div>
+            <div class="field province_field select-input" data-error-group="province">
+              <select
+                id="AddressProvince_{{ form.id }}"
+                name="address[province]"
+                autocomplete="address-level1"
+                data-selected="{{ form.province }}"
+                class="field__input"
+              ></select>
+              <label class="field__label" for="AddressProvince_{{ form.id }}">
+                {{- 'customer.addresses.province' | t -}}
+              </label>
+              <span class="icon down-arrow" data-icon="down-anf" data-testid="icon"></span>
+            </div>
+            <div class="field city_field select-input" data-error-group="city">
+              <select
+                id="AddressCity_{{ form.id }}"
+                name="address[city]"
+                data-selected="{{ form.city }}"
+                class="field__input"
+              ></select>
+              <label class="field__label" for="AddressCity_{{ form.id }}">{{ 'customer.addresses.city' | t }}</label>
+              <span class="icon down-arrow" data-icon="down-anf" data-testid="icon"></span>
+            </div>
+            <div class="field district_field select-input" data-error-group="district">
+              <select
+                disabled
+                id="AddressDistrict_{{ form.id }}"
+                name="address[district]"
+                data-selected="{% unless selected_district == blank or selected_district == "null" or selected_district == empty %}{{ selected_district }}{% endunless %}"
+                data-selected-code="{% unless selected_district == blank or selected_district == "null" or selected_district == empty %}{{ selected_district }}{% endunless %}"
+                class="field__input"
+              ></select>
+              <label class="field__label" for="AddressDistrict_{{ form.id }}">District</label>
+              <span class="icon down-arrow" data-icon="down-anf" data-testid="icon"></span>
+            </div>
+            <div class="field" data-error-group="postal">
+              <input
+                type="number"
+                id="AddressZip_{{ form.id }}"
+                name="address[zip]"
+                value="{{ form.zip }}"
+                autocapitalize="characters"
+                autocomplete="postal-code"
+                placeholder="{{ 'customer.addresses.zip' | t }}"
+                class="field__input no-exp-input no-spinner"
+              >
+              <label class="field__label" for="AddressZip_{{ form.id }}">{{ 'customer.addresses.zip' | t }}</label>
+            </div>
+          </div>
+          <!-- Terms -->
+          <div class="flex gap-2 py-8">
+            <a href="/pages/website-terms-of-use" class="!text-[1.1rem] underline contrast-high">
+              {{- 'customer.recover_password.website_terms' | t -}}
+            </a>
+            <a href="/pages/privacy-policy" class="!text-[1.1rem] underline contrast-high">
+              {{- 'customer.recover_password.privacy_policy' | t -}}
+            </a>
+          </div>
+          <!-- Actions -->
+          <div>
+            <button class="button checkout-btn w-full">
+              {{ 'customer.addresses.update_address' | t }}
+            </button>
+          </div>
+        </div>
+      {%- endform -%}
+      <form
+        method="post"
+        action="{{ address.url }}"
+        onsubmit="return confirm('{{ 'customer.addresses.delete_confirm' | t }}')"
+        class="!m-0"
+      >
+        <div
+          class="hidden"
+          mapclub-district-mapping='{{ customer.metafields.mapclub.districts_map }}'
+          mapclub-add-mapping='{{ customer_add_mapping }}'
+          shopify-address-id="{{ address.id }}"
+          mapclub-address-id
+        ></div>
+        <input type="hidden" name="_method" value="delete">
+        <button type="submit" class="button address-btn w-full !mt-6">
+          {{ 'customer.addresses.delete' | t }}
+        </button>
+      </form>
+    </div>
+  </div>
+</modal-dialog>
+{% comment %} Add Address Modal {% endcomment %}
+<modal-dialog
+  id="AddAddressModal"
+  class="hidden fixed inset-0 z-50 bg-black/50 md:justify-items-center content-center p-4 overflow-y-auto"
+>
+  <div
+    class="template-popup bg-white w-340px md:w-[580px] shadow-lg relative my-16"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="AddressNewHeading"
+  >
+    <!-- Header -->
+    <div class="flex justify-between items-center bg-bodycart px-14 py-10">
+      <h2
+        id="AddressNewHeading"
+        style="
+          font-family: 'Trebuchet MS';
+          font-stretch: 50%;
+          font-weight: 600;
+          letter-spacing: .2px;
+          margin-bottom: 0;
+        "
+      >
+        {{ 'customer.account.select_address' | t }}
+      </h2>
+      <button
+        type="button"
+        class="edit-close !text-primary !justify-end !lg:items-start !p-0"
+        onclick="document.getElementById('AddAddressModal').classList.add('hidden');"
+      >
+        <span aria-hidden="true" class="icon p-2" data-icon="close-hco"></span>
+      </button>
+    </div>
+    <!-- Form -->
+    <div class="px-16 pb-16" style="margin-top: 2rem;">
+      <div id="AddAddress">
+        {%- form 'customer_address', customer.new_address, aria-labelledBy: 'AddressNewHeading' -%}
+          <input type="hidden" name="address[country]" value="Indonesia">
+          <div class="country hidden">
+            <select name="country">
+              {{ country_option_tags }}
+            </select>
+          </div>
+          <div id="AddAddressFormWrapper" class="add-address space-y-4 !basis-full">
+            <!-- Name -->
+            <div class="field-login mb-12 address_form-fields">
+              <div class="field" data-error-group="firstname">
+                <input
+                  type="text"
+                  id="AddressFirstNameNew"
+                  name="address[first_name]"
+                  value="{{ form.first_name }}"
+                  autocomplete="given-name"
+                  placeholder="{{ 'customer.addresses.first_name' | t }}"
+                  class="field__input"
+                >
+                <label class="field__label" for="AddressFirstNameNew">{{ 'customer.addresses.first_name' | t }}</label>
+              </div>
+              <div class="field" data-error-group="lastname">
+                <input
+                  type="text"
+                  id="AddressLastNameNew"
+                  name="address[last_name]"
+                  value="{{ form.last_name }}"
+                  autocomplete="family-name"
+                  placeholder="{{ 'customer.addresses.last_name' | t }}"
+                  class="field__input"
+                >
+                <label class="field__label" for="AddressLastNameNew">{{ 'customer.addresses.last_name' | t }}</label>
+              </div>
+            </div>
+            <!-- Address -->
+            <div class="field-login mb-12 address_form-fields">
+              <div class="field" data-error-group="address1">
+                <input
+                  type="text"
+                  id="AddressAddress1New"
+                  name="address[address1]"
+                  value="{{ form.address1 }}"
+                  autocomplete="address-line1"
+                  placeholder="{{ 'customer.addresses.address1' | t }}"
+                  class="field__input"
+                >
+                <label class="field__label" for="AddressAddress1New">{{ 'customer.addresses.address1' | t }}</label>
+              </div>
+              <div class="field" data-error-group="address2">
+                <input
+                  type="text"
+                  id="AddressAddress2New"
+                  name="address[address2]"
+                  value="{{ form.address2 }}"
+                  autocomplete="address-line2"
+                  placeholder="{{ 'customer.addresses.address2' | t }}"
+                  class="field__input"
+                >
+                <label class="field__label" for="AddressAddress2New">{{ 'customer.addresses.address2' | t }}</label>
+              </div>
+              <div class="field province_field select-input" data-error-group="province">
+                <select
+                  id="AddressProvinceNew"
+                  name="address[province]"
+                  autocomplete="address-level1"
+                  data-selected="{{ form.province }}"
+                  class="field__input"
+                ></select>
+                <label class="field__label" for="AddressProvinceNew">{{ 'customer.addresses.province' | t }}</label>
+                <span class="icon down-arrow" data-icon="down-anf" data-testid="icon"></span>
+              </div>
+              <div class="field city_field select-input" data-error-group="city">
+                <select
+                  disabled
+                  id="AddressCityNew"
+                  name="address[city]"
+                  data-selected="{{ form.city }}"
+                  class="field__input"
+                ></select>
+                <label class="field__label" for="AddressCityNew">{{ 'customer.addresses.city' | t }}</label>
+                <span class="icon down-arrow" data-icon="down-anf" data-testid="icon"></span>
+              </div>
+              <div class="field district_field select-input" data-error-group="district">
+                <select
+                  disabled
+                  id="AddressDistrictNew"
+                  name="address[district]"
+                  data-selected="{{ form.district }}"
+                  class="field__input"
+                ></select>
+                <label class="field__label" for="AddressDistrictNew">District</label>
+                <span class="icon down-arrow" data-icon="down-anf" data-testid="icon"></span>
+              </div>
+              <div class="field" data-error-group="postal">
+                <input
+                  type="number"
+                  id="AddressZipNew"
+                  name="address[zip]"
+                  value="{{ form.zip }}"
+                  autocapitalize="characters"
+                  autocomplete="postal-code"
+                  placeholder="{{ 'customer.addresses.zip' | t }}"
+                  class="field__input no-exp-input no-spinner"
+                >
+                <label class="field__label" for="AddressZipNew">{{ 'customer.addresses.zip' | t }}</label>
+              </div>
+            </div>
+            <!-- Terms -->
+            <div class="flex gap-2 py-8 ">
+              <a href="/pages/website-terms-of-use" class="!text-[1.1rem] underline contrast-high">
+                {{- 'customer.recover_password.website_terms' | t -}}
+              </a>
+              <a href="/pages/privacy-policy" class="!text-[1.1rem] underline contrast-high">
+                {{- 'customer.recover_password.privacy_policy' | t -}}
+              </a>
+            </div>
+            <!-- Actions -->
+            <div>
+              <button class="button checkout-btn w-full">{{ 'customer.addresses.add' | t }}</button>
+            </div>
+          </div>
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+</modal-dialog>
+<style>
+  .field-login-error input.field__input, .select-input.field-login-error select.field__input {
+    border-bottom: 2px solid #c6391e !important;
+    {% comment %} border-width: 2px !important; {% endcomment %}
+  }
+   .field-login-error label.field__label, .select-input.field-login-error label.field__label {
+    color: #c6391e;
+  }
+  .error-message-field,
+  .global-error-bar {
+    {% comment %} background: #981420; {% endcomment %}
+    padding: 10px 0;
+    color: #c6391e;
+    font-weight: 700;
+    font-size: 1.3rem;
+  }
+  .field-login:has(.field-login-error):after,
+  .field-login-error ~ hr {
+    display: none;
+  }
+  .address_form-fields:after {
+    content: none !important;
+  }
+  .customer .field select:focus~label,
+  .customer .field select~label.has-value {
+    font-size: 1rem;
+    top: calc(var(--inputs-border-width) + .5rem);
+    left: calc(var(--inputs-border-width) + 2rem);
+    letter-spacing: .04rem;
+  }
+  .field:has(select) .arrow {
+    position: absolute;
+    right: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #333;
+    transition: 0.2s ease;
+  }
+  /* Rotate arrow when select is focused */
+  .field select:focus-visible {
+    box-shadow: none;
+  }
+  .field select:focus ~ .arrow {
+    transform: translateY(-50%) rotate(180deg);
+  }
+  #EditAddressFormWrapper-{{ address.id }}{
+    margin-right: 0;
+  }
+  button.address-btn{
+    margin-right: 0 !important;
+  }
+  .field.select-input .field__label{
+    font-size: 1.6rem;
+    {% comment %} left: calc(var(--inputs-border-width) + 2rem); {% endcomment %}
+    left: 0;
+    top: calc(1rem + var(--inputs-border-width));
+    margin-bottom: 0;
+    pointer-events: none;
+    position: absolute;
+    transition: top var(--duration-short) ease, font-size var(--duration-short) ease;
+    color: rgba(var(--color-foreground), .75);
+    letter-spacing: .1rem;
+    line-height: 1.5;
+  }
+  .select-input select{
+    height: 5rem;
+  }
+  .field.select-input .field__input:focus ~ .field__label,
+  .field.select-input .field__label.has-value {
+    font-size: 1rem;
+    top: calc(var(--inputs-border-width) + 1rem) !important;
+    {% comment %} left: calc(var(--inputs-border-width) + 2rem); {% endcomment %}
+    left: 0;
+    letter-spacing: .04rem;
+  }
+  {% comment %} .district_field select, .city_field select{
+    margin: 0 2rem !important;
+    padding: 2.2rem 1.5rem .8rem 0 !important;
+  } {% endcomment %}
+  .select-input .icon.down-arrow{
+    position: absolute;
+    right: 0;
+    align-self: center;
+    pointer-events: none;
+  }
+  .icon.down-arrow::before{
+    font-size: 1.6rem;
+  }
+</style>
+
+<!-- Script -->
+
+<script>
+   function validateAddressForm(form) {
+      let isValid = true;
+      const nameRegex = /^[A-Za-z0-9\s]+$/;
+      const postalRegex = /^[0-9]{5}$/;
+
+      const requiredFields = [
+        {
+          selector: "input[name='address[first_name]']",
+          message: 'Please enter your First Name.',
+          invalidMessage: 'First Name should not contain special character.',
+          regex: nameRegex,
+          group: "div[data-error-group='firstname']",
+        },
+        {
+          selector: "input[name='address[last_name]']",
+          message: 'Please enter your Last Name.',
+          invalidMessage: 'Last Name should not contain special character.',
+          regex: nameRegex,
+          group: "div[data-error-group='lastname']",
+        },
+        {
+          selector: "input[name='address[address1]']",
+          message: 'Please enter your Address.',
+          group: "div[data-error-group='address1']",
+        },
+        {
+          selector: "select[name='address[city]']",
+          message: 'Please enter your City.',
+          group: "div[data-error-group='city']",
+        },
+        { 
+          selector: "select[name='address[district]']", 
+          message: 'Please enter your District.', 
+          group: "div[data-error-group='district']" 
+        },
+        {
+          selector: "select[name='address[province]']",
+          message: 'Please select your Province.',
+          group: "div[data-error-group='province']",
+        },
+        {
+          selector: "input[name='address[zip]']",
+          message: 'Please enter your Postal/ZIP code.',
+          invalidMessage: 'Postal Code must be 5 digits.',
+          regex: postalRegex,
+          group: "div[data-error-group='postal']",
+        },
+      ];
+
+      // Loop through each required field
+      requiredFields.forEach((field) => {
+        const input = form.querySelector(field.selector);
+        const group = form.querySelector(field.group);
+        const existingError = input.closest('.field').nextElementSibling;
+
+        if (existingError && existingError.classList.contains('error-message-field')) {
+          existingError.remove();
+          group.classList.remove('field-login-error');
+        }
+
+        // Empty validation
+        if (!input.value.trim()) {
+          isValid = false;
+          if (group) group.classList.add('field-login-error');
+          const error = document.createElement('div');
+          error.classList.add('error-message-field');
+          error.innerText = field.message;
+          input.closest('.field').insertAdjacentElement('afterend', error);
+        }
+        // Regex validation (if applicable)
+        else if (field.regex && !field.regex.test(input.value.trim())) {
+          isValid = false;
+          if (group) group.classList.add('field-login-error');
+          const error = document.createElement('div');
+          error.classList.add('error-message-field');
+          error.innerText = field.invalidMessage;
+          input.closest('.field').insertAdjacentElement('afterend', error);
+        }
+      });
+
+      // Global error bar
+      const existingGlobalError = form.querySelector('.global-error-bar');
+      if (!isValid) {
+        if (!existingGlobalError) {
+          const globalErrorBar = document.createElement('div');
+          globalErrorBar.classList.add('global-error-bar');
+          globalErrorBar.innerText = 'Please correct the invalid fields.';
+          form.querySelector('.space-y-4').insertBefore(globalErrorBar, form.querySelector('.flex.gap-2.py-8'));
+        }
+      } else {
+        if (existingGlobalError) existingGlobalError.remove();
+      }
+
+      return isValid;
+    }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initCustomerAddressScripts();
+     // === FINAL: Validate first → "Loading..." only if valid ===
+document.addEventListener('submit', async function(e) {
+  const form = e.target;
+  if (!form.closest('modal-dialog')) return;
+  if (form.querySelector('input[name="_method"][value="delete"]')) return;
+
+  e.preventDefault();
+
+  const button = form.querySelector('.checkout-btn');
+  if (!button) return;
+
+  
+  const originalHTML = button.dataset.originalText;
+
+  // CHECK VALIDATION FIRST
+  if (!validateAddressForm(form)) {
+    // Invalid → do nothing (errors already shown by validateAddressForm)
+    // Button stays as "Add address" or "Update address"
+    return;
+  }
+
+  // Valid → now show "Loading..."
+  button.disabled = true;
+  button.innerHTML = 'Loading...';
+
+  // Save address
+  try {
+    await customerAddressSend(form);
+    // Success → page reloads
+  } catch (err) {
+    // Error → restore original text
+    button.innerHTML = originalHTML;
+    button.disabled = false;
+    alert("Failed to save address. Please try again.");
+  }
+});
+// === END ===
+    {% comment %} // === FINAL FIXED: "Loading..." immediately → original text back on error ===
+document.addEventListener('submit', async function(e) {
+  const form = e.target;
+  if (!form.closest('modal-dialog')) return;
+  if (form.querySelector('input[name="_method"][value="delete"]')) return;
+
+  e.preventDefault();
+
+  const button = form.querySelector('.checkout-btn');
+  if (!button) return;
+
+  // FORCE save original text every time (safe fallback)
+  const originalHTML = button.dataset.originalText || button.innerHTML.trim();
+
+  // Always save it for next time
+  if (!button.dataset.originalText) {
+    button.dataset.originalText = button.innerHTML.trim();
+  }
+  
+
+  // Show "Loading..." immediately
+  button.disabled = true;
+  button.innerHTML = 'Loading...';
+
+  // Run validation
+  if (!validateAddressForm(form)) {
+    // Validation failed → restore original text
+    button.innerHTML = originalHTML;
+    button.disabled = false;
+    return;
+  }
+
+  // Valid → save address
+  try {
+    await customerAddressSend(form);
+    // Success → page reloads
+  } catch (err) {
+    // API error → restore original text
+    button.innerHTML = originalHTML;
+    button.disabled = false;
+    alert("Failed to save address. Please try again.");
+  }
+});
+// === END === {% endcomment %}
+  });
+
+  function initCustomerAddressScripts() {
+    document.querySelectorAll('modal-opener').forEach((opener) => {
+      opener.addEventListener('click', () => {
+        const target = document.querySelector(opener.dataset.modal);
+        if (target) {
+          target.classList.remove('hidden');
+          document.body.classList.add('modal-opener');
+          // Mapclub logic
+          const mapclubMapping = target.querySelector("[mapclub-add-mapping]");
+          const mapclubAddressId = target.querySelector("[mapclub-address-id]");
+          const mapclubAddIds = mapclubMapping ? JSON.parse(mapclubMapping.getAttribute("mapclub-add-mapping")) : {};
+          const shopifyCustomerId = mapclubMapping?.getAttribute("shopify-address-id") || "";
+          if (mapclubAddIds && shopifyCustomerId) {
+            mapclubMapping.setAttribute("mapclub-current-add", mapclubAddIds[shopifyCustomerId]);
+            if(mapclubAddressId) mapclubAddressId.setAttribute("mapclub-address-id", mapclubAddIds[shopifyCustomerId]);
+          }
+
+          // Populate provinces
+          const selectedCountry = target.querySelector('input[name="address[country]"]')?.value;
+          const provinceDropdown = target.querySelector(`select[name="address[province]"]`);
+          console.log("provinceDropdown ", provinceDropdown);
+          const selectedProvince = provinceDropdown?.dataset?.selected || '';
+          const countryOption = target.querySelector(`.country select[name="country"] option[value="${selectedCountry}"]`);
+          let provinces = countryOption?.dataset?.provinces;
+          provinces = provinces ? JSON.parse(provinces) : [];
+          if (selectedProvince) {
+            provinceDropdown.closest(".field")?.querySelector('label')?.classList.add("has-value");
+          }
+
+          let provinceOptionsHTML = !selectedProvince ? `<option value="" selected disabled hidden></option>` : '';
+          provinces.forEach(province => {
+            provinceOptionsHTML += `<option value="${province[0]}" ${selectedProvince === province[0] ? 'selected' : ''}>${province[1]}</option>`;
+          });
+          provinceDropdown.innerHTML = provinceOptionsHTML;
+
+          let provinceCode = Object.keys(window.shopifyProvinces).find(
+            key => window.shopifyProvinces[key] === selectedProvince
+          );
+          const stateText = provinceDropdown.querySelector(`option[value="${selectedProvince}"]`);
+          if(provinceCode == null || provinceCode == "") {
+            provinceCode = Object.keys(window.shopifyProvinces).find(
+              key => window.shopifyProvinces[key] === stateText?.textContent?.trim()
+            );
+          }
+          getCitiesbyState(target, provinceCode);
+          attachDropdownListeners(target);
+          let districtElement = target.querySelector(`select[name="address[district]"]`);
+          districtElement.value = window.districtsMap[shopifyCustomerId];
+          districtElement.dataset.selected = window.districtsMap[shopifyCustomerId];
+          districtElement.dataset.selectedCode = window.districtsMap[shopifyCustomerId];
+        }
+      });
+    });
+
+    // Attach province & city change listeners (once)
+    function attachDropdownListeners(targetModal) {
+      const provinceDropdown = targetModal.querySelector(`select[name="address[province]"]`);
+      const cityDropdown = targetModal.querySelector(`select[name="address[city]"]`);
+      const districtDropdown = targetModal.querySelector(`select[name="address[district]"]`);
+
+      // Province change listener
+      if (provinceDropdown && !provinceDropdown._listenerAdded) {
+        provinceDropdown.addEventListener("change", async (e) => {
+          districtDropdown.value = "";
+          districtDropdown?.closest(".field")?.querySelector('label')?.classList.remove("has-value");
+          cityDropdown.value = "";
+          cityDropdown?.closest(".field")?.querySelector('label')?.classList.remove("has-value");
+          if(cityDropdown.value == '') {
+            districtDropdown?.setAttribute("disabled", true);
+          }
+          const stateName = e.target.value;
+          let provinceCode = Object.keys(window.shopifyProvinces).find(
+            key => window.shopifyProvinces[key] === stateName
+          );
+          const stateText = provinceDropdown.querySelector(`option[value="${stateName}"]`);
+          if(provinceCode == null || provinceCode == "") {
+            provinceCode = Object.keys(window.shopifyProvinces).find(
+              key => window.shopifyProvinces[key] === stateText?.textContent?.trim()
+            );
+          }
+          console.log("provinceCode: ", provinceCode, stateText);
+          await getCitiesbyState(targetModal, provinceCode);
+        });
+        provinceDropdown._listenerAdded = true;
+      }
+
+      // City change listener
+      if (cityDropdown && !cityDropdown._listenerAdded) {
+        cityDropdown.addEventListener("change", async (e) => {
+          const cityValue = e.target.value;
+          const cityCode = cityDropdown.querySelector(`option[value="${cityValue}"]`)?.dataset?.code;
+          await getDistrictByCity(targetModal, cityCode);
+        });
+        cityDropdown._listenerAdded = true;
+      }
+    }
+
+    async function getCitiesbyState(targetModal, stateCode) {
+      const cityDropdown = targetModal.querySelector(`select[name="address[city]"]`);
+      const districtDropdown = targetModal.querySelector(`select[name="address[district]"]`);
+      if (!stateCode || !cityDropdown) return;
+
+      try {
+        const res = await fetch('/apps/mapclub-1/cities', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ stateCode })
+        });
+
+        const citiesData = await res.json();
+        const selectedCity = cityDropdown?.dataset?.selected || '';
+        const hasMatchingOption = citiesData?.data?.some((option) => option.name == selectedCity);
+        if(selectedCity) cityDropdown?.closest(".field")?.querySelector('label')?.classList.add("has-value");
+        if(!selectedCity || !hasMatchingOption) cityDropdown?.closest(".field")?.querySelector('label')?.classList.remove("has-value");
+
+        let cityOptionsHTML = !selectedCity || !hasMatchingOption ? `<option value="" selected disabled hidden></option>` : '';
+        citiesData?.data?.forEach(city => {
+          cityOptionsHTML += `<option data-code="${city.code}" value="${city.name}" ${selectedCity === city.name ? 'selected' : ''}>${city.name}</option>`;
+        });
+
+        cityDropdown.innerHTML = cityOptionsHTML;
+        cityDropdown.removeAttribute("disabled");
+        if(cityDropdown.value == '') {
+          districtDropdown?.setAttribute("disabled", true);
+        }
+        
+        // Update districts for pre-selected city
+        const cityCode = cityDropdown.querySelector(`option[value="${selectedCity}"]`)?.dataset?.code;
+        await getDistrictByCity(targetModal, cityCode);
+      } catch (err) {
+        console.log("Error fetching cities", err);
+      }
+    }
+
+    async function getDistrictByCity(targetModal, cityCode) {
+      const districtDropdown = targetModal.querySelector(`select[name="address[district]"]`);
+      if (!cityCode || !districtDropdown) return;
+
+      try {
+        const res = await fetch('/apps/mapclub-1/districts', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cityCode })
+        });
+
+        const districtsData = await res.json();
+        const selectedDistrict = districtDropdown?.dataset?.selected || '';
+        const districtAvailable = districtsData?.data?.find((key) => selectedDistrict == key.code);
+        if(!selectedDistrict || districtAvailable == null) districtDropdown?.closest(".field")?.querySelector('label')?.classList.remove("has-value");
+        if(selectedDistrict && districtAvailable != null) districtDropdown?.closest(".field")?.querySelector('label')?.classList.add("has-value");
+        let districtOptionsHTML = !selectedDistrict || districtAvailable == null ? `<option value="" selected disabled hidden></option>` : '';
+        districtsData?.data?.forEach(district => {
+          districtOptionsHTML += `<option data-code="${district.code}" value="${district.name}" ${selectedDistrict === district.code ? 'selected' : ''}>${district.name}</option>`;
+        });
+
+        districtDropdown.innerHTML = districtOptionsHTML;
+        districtDropdown.removeAttribute("disabled");
+      } catch (err) {
+        console.log("Error fetching districts", err);
+      }
+    }
+
+    // Label toggling on select fields
+    document.querySelectorAll('.customer .field select').forEach(select => {
+      select.addEventListener('change', () => {
+        const label = select.closest('.field').querySelector('label');
+        if (select.value !== '') label.classList.add('has-value');
+        else label.classList.remove('has-value');
+      });
+    });
+
+    {% comment %} 
+        document.querySelectorAll('modal-dialog .edit-close').forEach((btn) => {
+        btn.addEventListener('click', () => {
+        const modal = btn.closest('modal-dialog');
+        modal.classList.add('hidden');
+        document.body.classList.remove('modal-opener');
+        document.body.classList.remove('overflow-hidden');
+
+        // Only reset the form if it's the "Add New and Edit Address" modal
+        if (modal.id === 'AddAddressModal') {
+          const addressForm = modal.querySelector('form[action*="/account/addresses"]');
+          if (addressForm) addressForm.reset();
+        } 
+
+        {% comment %} if (
+      modal.id === 'AddAddressModal' || 
+      modal.id.startsWith('EditAddressModal')
+    ) {
+      const addressForm = modal.querySelector('form[action*="/account/addresses"]');
+      if (addressForm) {
+        addressForm.reset();
+
+        modal.querySelectorAll('label.has-value').forEach((lbl) =>
+          lbl.classList.remove('has-value')
+        );
+      }
+    } {% endcomment %}
+
+        const errorElements = modal.querySelectorAll('.field.field-login-error');
+        errorElements?.forEach((errorEle) => {
+          const existingError = errorEle.nextElementSibling;
+          if (existingError && existingError.classList.contains('error-message-field')) {
+            existingError.remove();
+            errorEle.classList.remove('field-login-error');
+          }
+        });
+        if (modal.querySelector('.global-error-bar')) modal.querySelector('.global-error-bar').remove();
+      });
+    }); {% endcomment %}
+
+    document.querySelectorAll('modal-dialog .edit-close').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const modal = btn.closest('modal-dialog');
+
+        // Hide modal and restore body scroll
+        modal.classList.add('hidden');
+        document.body.classList.remove('modal-opener', 'overflow-hidden');
+
+        // Reset form for both Add and Edit Address modals
+        if (modal.id === 'AddAddressModal' || modal.id.startsWith('EditAddressModal')) {
+          const addressForm = modal.querySelector('form[action*="/account/addresses"]');
+          if (addressForm) {
+            // Reset all form fields
+            addressForm.reset();
+            addressForm.querySelector(`select[name="address[city]"]`)?.setAttribute("disabled", true);
+            addressForm.querySelector(`select[name="address[district]"]`)?.setAttribute("disabled", true);
+
+            // Remove floating label active classes
+            modal.querySelectorAll('label.has-value').forEach((lbl) =>
+              lbl.classList.remove('has-value')
+            );
+
+            // Fix UI of province dropdown after reset
+            const provinceSelect = addressForm.querySelector('select[name="address[province]"]');
+            if (provinceSelect) {
+              // Dispatch a "change" event to re-sync Shopify's styled dropdown UI
+              const event = new Event('change', { bubbles: true });
+              provinceSelect.dispatchEvent(event);
+            }
+          }
+        }
+
+        // Clear validation error messages
+        const errorElements = modal.querySelectorAll('.field.field-login-error');
+        errorElements?.forEach((errorEle) => {
+          const existingError = errorEle.nextElementSibling;
+          if (existingError && existingError.classList.contains('error-message-field')) {
+            existingError.remove();
+            errorEle.classList.remove('field-login-error');
+          }
+        });
+
+        // Remove global error bar if present
+        if (modal.querySelector('.global-error-bar')) {
+          modal.querySelector('.global-error-bar').remove();
+        }
+      });
+    });
+
+
+   
+    // Apply validation on all address forms (Add & Edit)
+    document.querySelectorAll('modal-dialog form').forEach((form) => {
+      if (form.querySelector('input[name="_method"][value="delete"]')) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          await deleteMapclubAddress(form);
+        });
+      }
+      if (form.querySelector('input[name="_method"][value="delete"]')) return;
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!validateAddressForm(form)) return;
+         button.innerHTML = originalHTML;
+         button.disabled = false;
+         await customerAddressSend(form);
+      });
+    });
+  }
+
+  //Restrict postal code inputs (Add + Edit) to only 5 digits
+  document.querySelectorAll('input[name="address[zip]"]').forEach((postalInput) => {
+    postalInput.addEventListener('input', () => {
+      // Remove any non-digit characters (in case type changes)
+      postalInput.value = postalInput.value.replace(/\D/g, '');
+
+      // Limit to 6 digits maximum
+      if (postalInput.value.length > 5) {
+        postalInput.value = postalInput.value.slice(0, 5);
+      }
+    });
+  });
+
+function getFormValues(form) {
+  if (!form) return {};
+
+  const formData = new FormData(form);
+  const values = {};
+
+  for (let [key, value] of formData.entries()) {
+    values[key] = value.trim();
+  }
+
+  return values;
+}
+
+// Send customer address to mapclub
+async function customerAddressSend(form) {
+  if (form.dataset.submitting === "true") return;
+  form.dataset.submitting = "true";
+  const customerEmail = "{% if customer %}{{ customer.email }}{% endif %}";
+  const mapToken = getCookie("map_token");
+  if(!mapToken) {
+    console.log("Session out please login again");
+    if(customerEmail) window.location.href = "/account/logout";
+    form.dataset.submitting = "false";
+    throw new Error("No token");
+    return;
+  }
+  if(!customerEmail) {
+    console.log("email is required");
+    form.dataset.submitting = "false";
+    return;
+  }
+
+  const formData = getFormValues(form);
+  let provinceCode = Object.keys(window.shopifyProvinces).find(
+    key => window.shopifyProvinces[key] === formData["address[province]"]
+  );
+  const stateName = formData["address[province]"];
+  const stateText = form.querySelector(`select[name="address[province]"] option[value="${stateName}"]`);
+  if(provinceCode == null || provinceCode == "") {
+    provinceCode = Object.keys(window.shopifyProvinces).find(
+      key => window.shopifyProvinces[key] === stateText?.textContent?.trim()
+    );
+  }
+  const addressId = form.querySelector("[mapclub-current-add]")?.getAttribute("mapclub-current-add");
+  const shopifyAddressId = form?.querySelector("[shopify-address-id]")?.getAttribute("shopify-address-id");
+  const cityCode = form.querySelector(`select[name='address[city]'] option[value="${formData["address[city]"]}"]`)?.dataset?.code;
+  let districtEle = form.querySelector(`select[name='address[district]']`);
+  const stateCode = form.querySelector(`select[name='address[district]'] option[value="${formData["address[district]"]}"]`)?.dataset?.code;
+  const oldDistrictCode = districtEle?.dataset?.selectedCode;
+  const address = {
+    firstName: formData["address[first_name]"] || "",
+    lastName: formData["address[last_name]"] || "",
+    address1: formData["address[address1]"] || "",
+    address2: formData["address[address2]"] || "",
+    company: "",
+    phone: {{ customer.phone }},
+    countryCode: "ID",
+    provinceCode: provinceCode || "", // use shortcode if found
+    cityCode: cityCode || "",
+    city: formData["address[city]"] || "",
+    districtCode: stateCode || "",
+    districtName: formData["address[district]"] || "",
+    zip: formData["address[zip]"] || "",
+  }
+
+  //check if same address
+  const currentAddress = form.querySelector(".address_form-fields[shopify-address]")?.getAttribute("shopify-address");
+  if(currentAddress || currentAddress != null) {
+    const currentAddressJson = JSON.parse(currentAddress);
+    const compareRes = await compareAddress(currentAddressJson, formData, oldDistrictCode, stateCode);
+    if(compareRes) location.reload();
+  }
+
+  try {
+    const mapclubSendAddress = await fetch('/apps/mapclub-1/customer-address-send', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        mapAccessToken: mapToken,
+        email: customerEmail,
+        addressId: addressId || "",
+        shopifyAddressId: shopifyAddressId || "",
+        address
+      }),
+    });
+      const mapclubSendAddressData = await mapclubSendAddress.json();
+      // Check if response is successful
+      if (mapclubSendAddress.ok) {
+        // ✅ Proceed to actually submit the form after API response
+        addressId ? form.submit() : window.location.reload(true);
+      } else {
+        console.error('API returned error:', mapclubSendAddressData);
+        alert(mapclubSendAddressData?.data?.[0]?.message || mapclubSendAddressData?.message || 'Something went wrong. Please try again.');
+        form.dataset.submitting = "false";
+      }
+      return mapclubSendAddress;
+    } catch(err) {
+      console.log("Error while sending review", err);
+      form.dataset.submitting = "false";
+    }
+  }
+
+  //Compare Addresses
+  function compareAddress(cAdd, fData, oldDistrictCode, stateCode) {
+    const normalize = str => (str || "").trim().toLowerCase();
+    return (
+      normalize(cAdd.first_name) === normalize(fData["address[first_name]"]) &&
+      normalize(cAdd.last_name) === normalize(fData["address[last_name]"]) &&
+      normalize(cAdd.address1) === normalize(fData["address[address1]"]) &&
+      normalize(cAdd.address2 || "") === normalize(fData["address[address2]"] || "") &&
+      normalize(oldDistrictCode) === normalize(stateCode) &&
+      normalize(cAdd.city) === normalize(fData["address[city]"]) &&
+      normalize(cAdd.province) === normalize(fData["address[province]"]) &&
+      normalize(cAdd.zip) === normalize(fData["address[zip]"])
+    );
+  }
+  
+  // delete customer address from Mapclub
+  async function deleteMapclubAddress(form) {
+    if (form.dataset.submitting === "true") return;
+    form.dataset.submitting = "true";
+
+    const customerEmail = "{% if customer %}{{ customer.email }}{% endif %}";
+    const mapToken = getCookie("map_token");
+    if(!mapToken) {
+      console.log("Session out please login again");
+      if(customerEmail) window.location.href = "/account/logout";
+      form.dataset.submitting = "false";
+      return;
+    }
+    if(!customerEmail) {
+      console.log("email is required");
+      form.dataset.submitting = "false";
+      return;
+    }
+    const customerId = "{%if customer %}{{ customer.id }}{% endif %}";
+    const mapclubMapping = form.querySelector("[mapclub-add-mapping]");
+    const mapclubDistrictMapping = form.querySelector("[mapclub-district-mapping]");
+    const mapclubAddIds = mapclubMapping ? JSON.parse(mapclubMapping.getAttribute("mapclub-add-mapping")) : {};
+    const mapclubDistrictIds = mapclubDistrictMapping ? JSON.parse(mapclubDistrictMapping.getAttribute("mapclub-district-mapping")) : {};
+    const addressId = form.querySelector("[mapclub-address-id]")?.getAttribute("mapclub-address-id");
+    if(!addressId) {
+      console.log("Mapclub address id not found");
+      form.dataset.submitting = "false";
+      return;
+    }
+
+    try {
+      const mapclubDeleteAddress = await fetch('/apps/mapclub-1/delete-mapclub-address', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          mapAccessToken: mapToken,
+          addressId: addressId,
+          customerId,
+          mapclubAddIds,
+          mapclubDistrictIds: mapclubDistrictIds
+        }),
+      });
+      const mapclubDeleteAddressData = await mapclubDeleteAddress.json();
+      if (mapclubDeleteAddressData?.success) {
+        // ✅ Proceed to actually submit the form after API response
+        form.submit();
+      } else {
+        console.error('API returned error:', mapclubDeleteAddressData);
+        form.dataset.submitting = "false";
+        form.submit();
+      }
+    } catch(err) {
+      console.log("error while deleting address", err);
+    }
+  }
+  document.querySelectorAll('.customer .field select').forEach(select => {
+  const label = select.closest('.field').querySelector('label');
+  // Initial check
+  if (select.value !== '') {
+    label.classList.add('has-value');
+  } else {
+    label.classList.remove('has-value');
+  }
+  // Change listener
+  select.addEventListener('change', () => {
+    if (select.value !== '') {
+      label.classList.add('has-value');
+    } else {
+      label.classList.remove('has-value');
+    }
+  });
+});
+
+
+
+
+{% comment %} // === FINAL SPINNER + SUBMIT HANDLER (Add & Edit Address) ===
+document.addEventListener('submit', async function(e) {
+  const form = e.target;
+  if (!form.closest('modal-dialog')) return;
+  if (form.querySelector('input[name="_method"][value="delete"]')) return; // let delete work as is
+
+  e.preventDefault();
+
+  const button = form.querySelector('.checkout-btn');
+  if (!button) return;
+
+  // Save original button text
+  // Capture original text ONLY if not already saved
+
+  
+
+  const originalHTML = button.dataset.originalText;
+  
+
+  // Show spinner
+  button.disabled = true;
+  button.innerHTML = 'Loading...';
+
+  // Run validation
+  if (!validateAddressForm(form)) {
+    button.innerHTML = originalHTML;
+    button.disabled = false;
+    return;
+  }
+
+  // Call your existing API function
+  try {
+    await customerAddressSend(form);
+    // Success → page reloads (no need to restore button)
+  } catch (err) {
+    button.innerHTML = originalHTML;
+    button.disabled = false;
+    alert("Failed to save address. Please try again.");
+  }
+}); {% endcomment %}
+// === END OF FINAL HANDLER === 
+{% comment %} // Spinner + Submit Handler for Add & Update Address Buttons
+document.querySelectorAll('modal-dialog .checkout-btn').forEach(button => {
+  const form = button.closest('form');
+  if (!form || form.querySelector('input[name="_method"][value="delete"]')) return;
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevent double submission
+
+    // Show spinner
+    const originalText = button.innerHTML.trim();
+    button.disabled = true;
+    button.innerHTML = '<svg class="animate-spin h-6 w-6 text-white mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+
+    // Run your existing validation
+    if (!validateAddressForm(form)) {
+      // If invalid → restore original text
+      button.innerHTML = originalText;
+      button.disabled = false;
+      return;
+    }
+
+    // Run your existing API call
+    customerAddressSend(form)
+      .then(() => {
+        // Success → page will reload anyway, no need to restore
+      })
+      .catch(() => {
+        // If error → restore button (rare, since you reload on success)
+        button.innerHTML = originalText;
+        button.disabled = false;
+      });
+  });
+}); {% endcomment %}
+</script>
