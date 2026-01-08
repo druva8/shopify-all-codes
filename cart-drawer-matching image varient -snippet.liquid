@@ -1,0 +1,518 @@
+{% comment %}
+  Renders cart drawer with updated UI to display each item individually based on its quantity.
+  Usage:
+  {% render 'cart-drawer' %}
+{% endcomment %}
+
+{{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+<script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
+{{ 'component-cart-drawer.css' | asset_url | stylesheet_tag }}
+<cart-drawer class="drawer{% if cart == empty %} is-empty{% endif %}">
+  <div id="CartDrawer" class="cart-drawer fixed inset-0 z-50 bg-black/50 flex justify-end">
+    <div id="CartDrawer-Overlay" class="cart-drawer__overlay"></div>
+
+    <div
+      class="cart-drawer__inner"
+      role="dialog"
+      aria-modal="true"
+      aria-label="{{ 'sections.cart.title' | t }}"
+      tabindex="-1"
+    >
+      <div class="drawer__header">
+        <h2 class=" text-[2rem] contrast-high">
+          {{ 'sections.cart.shoppingbag' | t }} ({{ 'sections.cart.items_count' | t: count: cart.item_count }})
+        </h2>
+        <button
+          class="drawer__close"
+          type="button"
+          onclick="this.closest('cart-drawer').close()"
+          aria-label="{{ 'accessibility.close' | t }}"
+        >
+          <span aria-hidden="true" class="icon" data-icon="close-hco" data-testid="icon"></span>
+        </button>
+      </div>
+
+      {%- if cart == empty -%}
+        <div class="drawer__contents js-contents">
+          <p class="text-bodycolor text-bodysize text-dsRegular text-center py-16 px-8">
+            {{ 'sections.cart.cart_empty' | t }}
+          </p>
+          <hr class="h-[0.1px] my-0 bg-divider border-0 dark:bg-divider">
+        </div>
+      {%- else -%}
+        <div class="drawer__contents js-contents">
+          <cart-drawer-items>
+            <form
+              action="{{ routes.cart_url }}"
+              id="CartDrawer-Form"
+              class="cart__contents cart-drawer__form"
+              method="post"
+            >
+              <ul class="cart-items">
+                {% for item in cart.items %}
+                  {% for i in (1..item.quantity) %}
+                    <li class="cart-item_drawer" role="row">
+                      <div class="cart-item__media_drawer">
+                        {% if item.image %}
+                          <div class="quick-adds no-js-hidden">
+                            <modal-opener data-modal="#QuickAdd-{{ item.product.id }}{{ item.variant_id }}">
+                              <button
+                                id="{{ product_form_id }}-submit"
+                                type="button"
+                                name="add"
+                                class="quick-add__submit button button--full-width button--secondary{% if horizontal_quick_add %} card--horizontal__quick-add animate-arrow{% endif %}"
+                                aria-haspopup="dialog"
+
+                                aria-controls="QuickAdd-{{ item.product.id }}{{ item.variant_id }}"
+                                data-product-id="{{ item.product.id }}"
+                                data-product-url="{{ item.product.url }}"
+                                data-variant-id="{{ item.variant_id }}"
+                                data-line-index="{{ forloop.index }}"
+                                style="display: block;"
+                              >
+                                <div
+                                  class="sold-out-badge text-white text-center font-semibold z-[2]"
+                                  style="background:#c6391e; font-size:1.1rem; border-radius: 8px 8px 0 0;"
+                                >
+                                  {% unless item.variant.available %}
+                                    <div class="sold-out-badge" style="padding: .5rem 1rem;">
+                                      {{ 'products.product.sold_out' | t }}
+                                    </div>
+                                  {% endunless %}
+                                </div>
+                                <div class="product-image-wrapper relative contents">
+                                  {%- comment -%}Find correct image based on variant SKU color code{%- endcomment -%}
+
+                                  {%- assign cart_variant_image = item.image -%}
+
+                                  {%- assign variant_sku = item.variant.sku -%}
+
+                                  {%- if variant_sku != blank -%}
+
+                                    {%- assign variant_sku_clean = variant_sku | remove: ' ' -%}
+
+                                    {%- assign variant_sku_length = variant_sku_clean | size -%}
+
+                                    {%- assign variant_color_code = '' -%}
+
+                                    {%- assign size_patterns = 'XXL,0XL,00L,0XS,XXS,00S,00M,000,D16,W3C,1BK,156,910,7/8,5/6,0L,0M,0S,XL,XS,L,M,S'
+
+                                      | split: ','
+
+                                    -%}
+
+                                    {%- assign v_color_found = false -%}
+
+                                    {%- for size_pattern in size_patterns -%}
+
+                                      {%- unless v_color_found -%}
+
+                                        {%- assign pattern_len = size_pattern | size -%}
+
+                                        {%- assign suffix_start = variant_sku_length | minus: pattern_len -%}
+
+                                        {%- assign suffix = variant_sku_clean | slice: suffix_start, pattern_len -%}
+
+                                        {%- if suffix == size_pattern -%}
+
+                                          {%- assign diff = variant_sku_length | minus: pattern_len -%}
+
+                                          {%- assign remainder = variant_sku_clean | slice: 0, diff -%}
+
+                                          {%- assign rem_len = remainder | size -%}
+
+                                          {%- assign color_start = rem_len | minus: 3 -%}
+
+                                          {%- assign variant_color_code = remainder | slice: color_start, 3 -%}
+
+                                          {%- assign v_color_found = true -%}
+
+                                        {%- endif -%}
+
+                                      {%- endunless -%}
+
+                                    {%- endfor -%}
+
+                                    {%- unless v_color_found -%}
+
+                                      {%- if variant_sku_length >= 3 -%}
+
+                                        {%- assign color_start = variant_sku_length | minus: 3 -%}
+
+                                        {%- assign variant_color_code = variant_sku_clean | slice: color_start, 3 -%}
+
+                                      {%- endif -%}
+
+                                    {%- endunless -%}
+
+
+
+                                    {%- comment -%}Find first media matching this color code{%- endcomment -%}
+
+                                    {%- assign found_matching_image = false -%}
+
+                                    {%- for media in item.product.media -%}
+
+                                      {%- unless found_matching_image -%}
+
+                                        {%- if media.alt != blank -%}
+
+                                          {%- comment -%}First strip image sequence suffix{%- endcomment -%}
+
+                                          {%- assign media_alt_clean = media.alt | remove: ' ' -%}
+
+                                          {%- assign media_alt_length = media_alt_clean | size -%}
+
+                                          {%- assign last_dash_check = media_alt_clean | slice: -2, 1 -%}
+
+                                          {%- assign last_char = media_alt_clean | slice: -1, 1 -%}
+
+                                          {%- if last_dash_check == '-' and last_char >= '0' and last_char <= '9' -%}
+
+                                            {%- assign strip_len = media_alt_length | minus: 2 -%}
+
+                                            {%- assign media_alt_clean = media_alt_clean | slice: 0, strip_len -%}
+
+                                            {%- assign media_alt_length = media_alt_clean | size -%}
+
+                                          {%- endif -%}
+
+                                          {%- assign check_pos = media_alt_length | minus: 3 -%}
+
+                                          {%- assign dash_check_3 = media_alt_clean | slice: check_pos, 1 -%}
+
+                                          {%- assign digit1 = media_alt_clean | slice: -2, 1 -%}
+
+                                          {%- assign digit2 = media_alt_clean | slice: -1, 1 -%}
+
+                                          {%- if dash_check_3 == '-'
+
+                                            and digit1 >= '0'
+
+                                            and digit1 <= '9'
+
+                                            and digit2 >= '0'
+
+                                            and digit2 <= '9'
+
+                                          -%}
+
+                                            {%- assign strip_len = media_alt_length | minus: 3 -%}
+
+                                            {%- assign media_alt_clean = media_alt_clean | slice: 0, strip_len -%}
+
+                                            {%- assign media_alt_length = media_alt_clean | size -%}
+
+                                          {%- endif -%}
+
+
+
+                                          {%- assign media_color_code = '' -%}
+
+                                          {%- assign m_color_found = false -%}
+
+                                          {%- for size_pattern in size_patterns -%}
+
+                                            {%- unless m_color_found -%}
+
+                                              {%- assign pattern_len = size_pattern | size -%}
+
+                                              {%- assign suffix_start = media_alt_length | minus: pattern_len -%}
+
+                                              {%- assign suffix = media_alt_clean | slice: suffix_start, pattern_len -%}
+
+                                              {%- if suffix == size_pattern -%}
+
+                                                {%- assign diff = media_alt_length | minus: pattern_len -%}
+
+                                                {%- assign remainder = media_alt_clean | slice: 0, diff -%}
+
+                                                {%- assign rem_len = remainder | size -%}
+
+                                                {%- assign color_start = rem_len | minus: 3 -%}
+
+                                                {%- assign media_color_code = remainder | slice: color_start, 3 -%}
+
+                                                {%- assign m_color_found = true -%}
+
+                                              {%- endif -%}
+
+                                            {%- endunless -%}
+
+                                          {%- endfor -%}
+
+                                          {%- unless m_color_found -%}
+
+                                            {%- if media_alt_length >= 3 -%}
+
+                                              {%- assign color_start = media_alt_length | minus: 3 -%}
+
+                                              {%- assign media_color_code = media_alt_clean | slice: color_start, 3 -%}
+
+                                            {%- endif -%}
+
+                                          {%- endunless -%}
+
+
+
+                                          {%- if media_color_code == variant_color_code -%}
+
+                                            {%- assign cart_variant_image = media -%}
+
+                                            {%- assign found_matching_image = true -%}
+
+                                          {%- endif -%}
+
+                                        {%- endif -%}
+
+                                      {%- endunless -%}
+
+                                    {%- endfor -%}
+
+                                  {%- endif -%}
+                                  <img
+                                   class="cart-item__image cursor-pointer"
+
+                                    src="{{ cart_variant_image | image_url: width: 200 }}"
+
+                                    alt="{{ cart_variant_image.alt | escape }}"
+
+                                    loading="lazy"
+
+                                    width="100"
+
+                                    height="{{ 125 | divided_by: cart_variant_image.aspect_ratio | ceil }}"
+                                  >
+                                  {% comment %}
+                                    <div class="sold-out-badge absolute left-0 top-0 bg-red-600 text-white text-center font-semibold z-[2]">
+                                      {% unless item.variant.available %}
+                                        <div class="sold-out-badge">{{ 'products.product.sold_out' | t }}</div>
+                                      {% endunless %}
+                                    </div>
+                                  {% endcomment %}
+                                </div>
+
+                                {%- render 'loading-spinner' -%}
+                              </button>
+                            </modal-opener>
+                          </div>
+                        {% endif %}
+                      </div>
+
+                      <div class="cart-item__details_drawer">
+                        <cart-remove-button>
+                          <button
+                            type="button"
+                            class="cart-item__remove"
+                            aria-label="{{ 'sections.cart.remove_title' | t: title: item.title | escape }}"
+                            data-line="{{ forloop.parentloop.index }}"
+                            data-current-quantity="{{ item.quantity }}"
+                          >
+                            <span
+                              aria-hidden="true"
+                              class="icon text-xl pointer-events-none"
+                              data-icon="close-hco"
+                              data-testid="icon"
+                            ></span>
+                          </button>
+                        </cart-remove-button>
+
+                        <div
+                          {% comment %} href="{{ item.url }}" {% endcomment %}
+                          class="cart-item__name  text-primary text-base tracking-0_6 hover:!no-underline"
+                        >
+                          {{- item.product.title | escape -}}
+                        </div>
+
+                        <p class="text-[11px] mt-2 text-bodycolor font-dsNormal [letter-spacing:.2px] [font-stretch:70%]">
+                          {% assign genders = item.product.metafields.shopify['target-gender'].value %}
+                          {% for gender in genders -%}
+                            {{- gender.label -}}
+                          {%- endfor -%}
+                          {% comment %} : {{ item.variant_id }} {% endcomment %}
+                        </p>
+
+                        {%- if item.product.has_only_default_variant == false -%}
+                          <p class="cart-item__options text-bodysize text-bodycolor">
+                            {%- assign size_value = '' -%}
+                            {%- assign length_value = '' -%}
+                            {%- assign color_value = '' -%}
+
+                            {%- for option in item.options_with_values -%}
+                              {%- assign option_name_downcase = option.name | downcase -%}
+                              {%- if option_name_downcase == 'size' -%}
+                                {%- assign size_value = option.value -%}
+                              {%- elsif option_name_downcase == 'length' -%}
+                                {%- assign length_value = option.value -%}
+                              {%- elsif option_name_downcase == 'color' -%}
+                                {%- liquid
+                                  assign raw_color = option.value | downcase | replace: '_', ' ' | replace: '-', ' '
+                                  assign base_color = raw_color | split: 'pattern' | first | strip
+                                  assign words = base_color | split: ' '
+                                  assign formatted_color = ''
+                                  for w in words
+                                    if w != ''
+                                      assign cap = w | strip | capitalize
+                                      if formatted_color == ''
+                                        assign formatted_color = cap
+                                      else
+                                        assign formatted_color = formatted_color | append: ' ' | append: cap
+                                      endif
+                                    endif
+                                  endfor
+                                  assign color_value = formatted_color
+                                -%}
+                              {%- endif -%}
+                            {%- endfor -%}
+
+                            {%- assign details = '' -%}
+                            {%- if size_value != blank -%}
+                              {%- assign details = size_value -%}
+                            {%- endif -%}
+                            {%- if length_value != blank -%}
+                              {%- if details != '' -%}
+                                {%- assign details = details | append: ', ' -%}
+                              {%- endif -%}
+                              {%- assign details = details | append: length_value -%}
+                            {%- endif -%}
+                            {%- if color_value != blank -%}
+                              {%- if details != '' -%}
+                                {%- assign details = details | append: ', ' -%}
+                              {%- endif -%}
+                              {%- assign details = details | append: color_value -%}
+                            {%- endif -%}
+
+                            {{ details }}
+                          </p>
+                        {%- endif -%}
+
+                        <div class="cart-item__price drawer-badge text-primary !text-bodysize !mt-0">
+                          {%
+                            render 'price',
+                            product: item.product,
+                            use_variant: true,
+                            show_compare_at_price: true,
+                            show_badges: item.original_price > item.final_price,
+                            price_class: 'cart-item__price',
+                            variant_id: item.variant_id
+                          %}
+                        </div>
+                      </div>
+                    </li>
+                  {% endfor %}
+                {% endfor %}
+              </ul>
+
+              <p
+                id="CartDrawer-LiveRegionText"
+                class="visually-hidden"
+                role="status"
+              ></p>
+              <p
+                id="CartDrawer-LineItemStatus"
+                class="visually-hidden"
+                aria-hidden="true"
+                role="status"
+              >
+                {{ 'accessibility.loading' | t }}
+              </p>
+            </form>
+          </cart-drawer-items>
+        </div>
+      {%- endif -%}
+
+      <div class="drawer__footer">
+        <div class="totals_drawer">
+          <p>{{ 'sections.cart.sub_total' | t }}</p>
+          <p class="price__drawer">{{ cart.total_price | money_with_currency }}</p>
+        </div>
+        <!-- Free Shipping Progress Bar -->
+        <div class="free-shipping-progress">
+          <p class="progress-text" style="font-size: 1rem; color: #2c2a27; margin-bottom: 10px;">
+            {% assign cart_total = cart.total_price | plus: 0 %}
+            {% assign progress = cart_total | times: 100 | divided_by: 99000000 %}
+            {% assign remaining = 99000000 | minus: cart_total %}
+            {% if cart_total >= 99000000 %}
+              {{ 'sections.cart.free_shipping_achieved' | t }}
+            {% else %}
+              {% comment %} {{ progress | round: 3 }}% {{ 'sections.cart.free_shipping_progress' | t -}} {% endcomment %}
+              {{- 'sections.cart.add_rp' | t -}}
+              {{- remaining | divided_by: 1 | money_without_currency -}}
+              &nbsp;
+              {{- 'sections.cart.free_shipping_more' | t }}
+            {% endif %}
+          </p>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 13px; color: #555;">Rp0</span>
+            <div class="progress-bar" style="background: #e0e0e0; height: 10px; border-radius: 5px; overflow: hidden;">
+              <div
+                class="progress-bar__fill"
+                style="width: {{ progress | at_most: 100 }}%; height: 100%;"
+              ></div>
+            </div>
+            <span style="font-size: 13px; color: #555;">Rp990.000</span>
+          </div>
+        </div>
+        <div class="cart__ctas">
+          <a href="{{ routes.cart_url }}" class="cart__view-bag-button">
+            <span>{{ 'sections.cart.view_bag' | t }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</cart-drawer>
+
+<div id="ModalCartDrawerItems" class="modal-section-cart-drawer-items">
+  {% for item in cart.items %}
+    {% render 'quick-add-btn',
+      product: item.product,
+      item: item,
+      section: section,
+      line_index: forloop.index,
+      class: 'quick-update-btn'
+    %}
+  {% endfor %}
+</div>
+<script>
+  const cartDrawer = document.getElementById('CartDrawer');
+  const cartInner = document.querySelector('.cart-drawer__inner');
+
+  cartDrawer.addEventListener('click', function (e) {
+    if (!cartInner.contains(e.target)) {
+      const drawer = document.querySelector('.drawer__contents');
+      drawer.scrollTop = 0;
+      document.querySelector('.drawer__close').click();
+    }
+  });
+</script>
+
+{% comment %}
+  <script>
+  function openQuickAdd(button) {
+  event.preventDefault();
+  event.stopPropagation();
+  const productId = button.getAttribute('data-product-id');
+  const productUrl = button.getAttribute('data-product-url');
+  const lineIndex = button.getAttribute('data-line-index');
+  // Find the correct quick-add container
+  const quickAddContainer = document.querySelector(`#QuickAdd-${productId} .quick-add-btn`);
+  if (quickAddContainer) {
+  console.log('Sdfsdf');
+  quickAddContainer.setAttribute('data-product-id', productId);
+  quickAddContainer.setAttribute('data-product-url', productUrl);
+  quickAddContainer.setAttribute('data-line-index', lineIndex);
+  }
+  // Open the modal
+  const modalId = button.closest('modal-opener').getAttribute('data-modal');
+  const modal = document.querySelector(modalId);
+  if (modal) {
+  modal.style.display = 'block'; // or your modal open method
+  }
+  }
+  </script>
+{% endcomment %}
