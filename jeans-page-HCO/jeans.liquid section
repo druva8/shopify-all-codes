@@ -1,0 +1,258 @@
+{% comment %}
+  Jeans Fit Grid Section
+  - Each block is one clickable image tile with heading and link
+  - Fully responsive, single scrollable horizontal row
+  - No hover effects
+{% endcomment %}
+
+{% style %}
+  .jeans-fit-grid {
+    background-color: {{ section.settings.background_color }};
+    padding: 40px 20px;
+  }
+
+  .jeans-fit-grid__container {
+    max-width: {{ section.settings.page_width }}px;
+    margin: 0 auto;
+    overflow-x: auto;
+    scrollbar-width: thin; /* Hide scrollbar for Firefox */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    overflow-y: hidden;
+  }
+
+  .jeans-fit-grid__container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome/Safari */
+  }
+
+  .jeans-fit-grid__items {
+    display: flex;
+    gap: {{ section.settings.grid_gap }}px;
+    flex-wrap: nowrap;
+    margin-bottom: 30px;
+  }
+
+  .jeans-fit-tile {
+    flex: 0 0 auto;
+    text-decoration: none;
+    color: inherit;
+    width: calc((100% - ({{ section.blocks.size | minus: 1 }} * {{ section.settings.grid_gap }}px)) / {{ section.blocks.size }});
+    max-width: 240px;
+    height: 100%;
+  }
+
+  .jeans-fit-image-wrapper {
+    border-radius: {{ section.settings.image_border_radius }}px;
+    overflow: hidden;
+    background-color: #f4f4f4;
+    height: 100%;
+    width: 100%;
+    margin-bottom: 20px
+  }
+
+  .jeans-fit-image_grid {
+    display: block;
+    aspect-ratio: auto 4 / 5;
+    max-height: 360px;
+    min-height: 260px;
+    min-width: 208px
+  }
+
+  .jeans-fit-heading {
+    margin-top: 10px;
+    font-size: 1.2em;
+    color: #253746;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-weight: 700;
+    text-align: left;
+
+  }
+
+  /* --- Mobile Horizontal Slider --- */
+  @media screen and (max-width: 749px) {
+    .jeans-fit-grid {
+      padding: 20px 0;
+    }
+
+    .jeans-fit-grid__container {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 16px;
+      overflow-y: hidden;
+    }
+
+    .jeans-fit-grid__items {
+      gap: {{ section.settings.grid_gap }}px;
+    }
+
+    .jeans-fit-tile {
+      flex: 0 0 70%; /* makes each card take ~70% width for nice slider effect */
+      scroll-snap-align: start;
+      max-width: none;
+    }
+
+    .jeans-fit-heading {
+      font-size: calc({{ section.settings.heading_font_size }}px * 0.9);
+    }
+  }
+{% endstyle %}
+
+<div class="jeans-fit-grid container" {{ section.shopify_attributes }}>
+  <div class="jeans-fit-grid__container anf-body">
+    <div class="jeans-fit-grid__items">
+      {% for block in section.blocks %}
+        {% assign heading = block.settings.fit_heading %}
+        {% assign image = block.settings.fit_image %}
+        {% assign url = block.settings.fit_url %}
+
+        {% if url != blank %}
+          <a href="{{ url }}" class="jeans-fit-tile" {{ block.shopify_attributes }}>
+        {% else %}
+          <div class="jeans-fit-tile" {{ block.shopify_attributes }}>
+        {% endif %}
+        <div class="jeans-fit-image-wrapper">
+          {% if image %}
+            <img
+              src="{{ image | image_url: width: 600 }}"
+              alt="{{ heading | escape }}"
+              loading="lazy"
+              class="jeans-fit-image_grid"
+              width="360"
+              height="450"
+            >
+          {% else %}
+            <div class="jeans-fit-placeholder">
+              {{ 'product-apparel-1' | placeholder_svg_tag }}
+            </div>
+          {% endif %}
+        </div>
+        {% if heading != blank %}
+          <h3 class="jeans-fit-heading">{{ heading }}</h3>
+        {% endif %}
+        {% if url != blank %}
+          </a>
+        {% else %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Jeans fit grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "page_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 100,
+      "unit": "px",
+      "label": "Maximum width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "label": "Gap between items",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading font size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Image border radius",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "fit",
+      "name": "Fit tile",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "fit_image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "fit_heading",
+          "label": "Heading",
+          "default": "Relaxed"
+        },
+        {
+          "type": "url",
+          "id": "fit_url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Jeans fit grid",
+      "blocks": [
+        {
+          "type": "fit",
+          "settings": {
+            "fit_heading": "Relaxed"
+          }
+        },
+        {
+          "type": "fit",
+          "settings": {
+            "fit_heading": "Straight"
+          }
+        },
+        {
+          "type": "fit",
+          "settings": {
+            "fit_heading": "Wide & Baggy"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
