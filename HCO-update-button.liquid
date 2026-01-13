@@ -1,0 +1,138 @@
+{% comment %} {% comment %}
+  Renders a cart update button for a given product/variant.
+  Accepts:
+  - product: {Object} product object
+  - section_id: {String} id of section to which this snippet belongs
+  - product_form_id: {String} product form id
+
+  Usage:
+  {% render 'update-button', product: product, section_id: section.id, product_form_id: product_form_id %}
+{% endcomment %}
+
+<div id="product-udpate-price-{{ section_id }}" class="product-upate-price-flex">
+  <button
+    type="button"
+    class="product-form__submit button button--full-width view-full-details-btn product-page-hidden"
+    onclick="window.location.href='{{ product.url }}'"
+  >
+    <span>{{ 'products.product.view_full_details_short' | t }}</span>
+  </button>
+  {% assign variant = product.selected_or_first_available_variant %}
+  {% if product.selected_or_first_available_variant %}
+    {%- if variant.available -%}
+      <button
+        id="ProductUpdateButton-{{ section_id }}"
+        type="button"
+        class="product-form__submit button button--full-width button--primary update-button-quick-modal"
+        data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+        data-form-id="{{ product_form_id }}"
+        data-variant="primary"
+        disabled
+      >
+        <span>{{ 'products.product.update_cart' | t }} </span>
+        {%- render 'loading-spinner' -%}
+      </button>
+    {% else %}
+      <button
+        type="button"
+        class="product-form__submit button button--full-width button--primary quick-modal-sold-out"
+        disabled
+      >
+        {{ 'products.product.sold_out' | t }}
+      </button>
+    {% endif %}
+  {% else %}
+    <button
+      type="button"
+      class="product-form__submit button button--full-width button--primary"
+      disabled
+    >
+      {{ 'products.product.unavailable' | t }}
+    </button>
+  {% endif %}
+</div>
+<script src="{{ 'update-button.js' | asset_url }}" defer="defer"></script> {% endcomment %}
+
+
+{% comment %}
+  Renders a cart update button for a given product/variant.
+  Accepts:
+  - product: {Object} product object
+  - section_id: {String} id of section to which this snippet belongs
+  - product_form_id: {String} product form id
+{% endcomment %}
+
+<div id="product-update-price-{{ section_id }}" class="product-update-price-flex">
+  <button
+    type="button"
+    class="product-form__submit button button--full-width view-full-details-btn product-page-hidden"
+    onclick="window.location.href='{{ product.url }}'"
+  >
+    <span>{{ 'products.product.view_full_details_short' | t }}</span>
+  </button>
+
+  {%- liquid
+    assign variant = product.selected_or_first_available_variant
+
+    assign check_against_inventory = true
+    if variant.inventory_management != 'shopify' or variant.inventory_policy == 'continue'
+      assign check_against_inventory = false
+    endif
+
+    assign quantity_rule_soldout = false
+    if variant.quantity_rule.min > variant.inventory_quantity and check_against_inventory
+      assign quantity_rule_soldout = true
+    endif
+
+    assign sold_out = false
+    if variant.available == false or quantity_rule_soldout
+      assign sold_out = true
+    endif
+  -%}
+
+  {% if variant %}
+    {% if sold_out %}
+      <!-- SOLD OUT - FORCED DISABLED, non-clickable -->
+      <button
+        id="ProductUpdateButton-{{ section_id }}"
+        type="button"
+        class="product-form__submit button button--full-width button--primary quick-modal-sold-out"
+        data-variant-id="{{ variant.id }}"
+        data-form-id="{{ product_form_id }}"
+        data-variant="primary"
+        disabled="disabled"                 
+        aria-disabled="true"
+      >
+        <span>{{ 'products.product.sold_out' | t }}</span>
+        {%- render 'loading-spinner' -%}
+      </button>
+    {% else %}
+      <!-- AVAILABLE - Clickable (no disabled attribute) -->
+      <button
+        id="ProductUpdateButton-{{ section_id }}"
+        type="button"
+        class="product-form__submit button button--full-width button--primary update-button-quick-modal"
+        data-variant-id="{{ variant.id }}"
+        data-form-id="{{ product_form_id }}"
+        data-variant="primary"
+        disabled="disabled" 
+      >
+        <span>{{ 'products.product.update_cart' | t }}</span>
+        {%- render 'loading-spinner' -%}
+      </button>
+    {% endif %}
+  {% else %}
+    <button
+      type="button"
+      class="product-form__submit button button--full-width button--primary "
+      disabled="disabled"
+      style="background-color:#5682e8!important;color:white!important;"
+    >
+      <span>{{ 'products.product.sold_out' | t }}</span>
+      {%- render 'loading-spinner' -%}
+    </button>
+  {% endif %}
+</div>
+
+<script src="{{ 'update-button.js' | asset_url }}" defer="defer"></script>
+
