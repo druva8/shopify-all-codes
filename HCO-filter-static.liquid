@@ -1,0 +1,2594 @@
+{{ 'template-collection.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+<style>
+    @media screen and (min-width: 1025px) {
+      .Container-product {
+        flex-basis: calc(100% - 228px);
+        outline-offset: -5px;
+        padding-left: 28px;
+      }
+    }
+    .Container-product {
+      min-width: 0;
+      padding-left: 38px;
+      position: relative;
+      transition: opacity 0.3s;
+      z-index: 1;
+    }
+    @media screen and (max-width: 824px) {
+      .Container-product {
+        padding: 0 !important;
+      }
+      {% comment %} .gf-option-block[data-filter-type='Collection'] {
+        display: none !important;
+      } {% endcomment %}
+    }
+    @media screen and (max-width: 1024px) {
+      main {
+        flex: 1;
+      }
+    }
+    ul {
+      list-style: none;
+    }
+    body.android * {
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    .product-grid__products {
+      display: flex;
+      flex-wrap: wrap;
+      outline: none;
+    }
+    .catalog-ProductGrid-module__grid {
+      display: grid;
+      overflow: hidden;
+      row-gap: 15px;
+      margin-top: 5px;
+      column-gap: 6px;
+      padding: 0 5px;
+    }
+    .catalog-ProductGrid-module__mobile-columns-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    /* Mobile: Up to 824px */
+    @media screen and (max-width: 824px) {
+      ul.product-grid__products {
+        padding-top: 10px;
+      }
+      .product-grid__products {
+        padding: 0;
+      }
+    }
+    /* Tablet: Up to 1024px */
+    @media screen and (max-width: 1024px) {
+      .product-grid__products {
+        padding: 0 5px;
+        /* Adjust spacing on tablet */
+      }
+    }
+    /* Desktop: From 825px and above */
+    @media screen and (min-width: 825px) {
+      .catalog-ProductGrid-module__desktop-columns-3-medium {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .catalog-ProductGrid-module__grid {
+        column-gap: 16px;
+        overflow: visible;
+        padding-right: 16px;
+        width: 100%;
+      }
+    }
+    .custom-product-card {
+      display: block;
+      overflow: hidden;
+      max-height: 724px;
+    }
+    @media screen and (min-width: 1025px) {
+      .custom-product-card {
+        overflow: visible;
+      }
+    }
+    .custom-product-card {
+      display: block;
+      overflow: hidden;
+    }
+    @media screen and (min-width: 1025px) {
+      .custom-product-card:hover {
+        overflow: visible;
+        max-height: 724px;
+      }
+    }
+    .sidebar-scroll-menu {
+      overflow-y: auto;
+      max-height: calc(100vh - 80px);
+      /* or as needed for fit */
+      padding: 0 0 0 23px;
+      /* left align like heading, no top pad */
+      /* The scrollbar: modern look (Webkit/Blink) */
+      scrollbar-width: thin;
+      scrollbar-color: #ccc #f5f5f5;
+    }
+    .sidebar-scroll-menu::-webkit-scrollbar {
+      width: 7px;
+      background: #f5f5f5;
+      border-radius: 6px;
+    }
+    .sidebar-scroll-menu::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 6px;
+    }
+    .app-view-top,
+    .app-view-sort-overlay {
+      display: none !important;
+    }
+    /* Collection advertise card styling */
+    .grid__item.advertisement {
+      .card_advertise {
+        position: relative;
+      }
+      .adv_background__video {
+        padding-top: 14px;
+      }
+      .adv_top_content {
+        position: absolute;
+        bottom: 0;
+        padding: 15px 10px;
+      }
+      .video-button[data-state="playing"]::after {
+        bottom: 0;
+        content: "❚❚";
+        left: 0;
+        color: #fff;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        top: 0;
+        {% comment %} border-left: 5px solid #fcfcfa;
+        border-right: 5px solid #fcfcfa; {% endcomment %}
+        display: inline-block;
+        height: 22px;
+        width: 14px;
+      }
+      .video-button[data-state="paused"]::after {
+        bottom: 0;
+        content: "▶";
+        left: 0;
+        color: #fff;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        top: 0;
+        display: inline-block;
+        height: 22px;
+        width: 14px;
+      }
+      button.js-video-button.icon-button.video-button {
+        position: absolute;
+        top: 20px;
+        z-index: 2;
+        right: 5px;
+        height: 30px;
+        width: 30px;
+        background-color: rgba(0, 0, 0, .2);
+      }
+    }
+    {% comment %} .womens-bottom-area {
+    position: absolute;
+    justify-self: right;
+    z-index: 99;
+    max-width: 100%;
+    width: 90%;
+    padding-left: 28px;
+    padding-right: 56px;
+  }
+  .womens-bottom-container {
+    width: 75%;
+    margin: 0 auto;
+  }
+  .womens-bottom-image-area {
+    display: flex;
+    gap: 20px;
+    margin-top: 25px;
+    user-select: none;
+  } {% endcomment %}
+  /* .radio-button-group-content{
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+  } */
+  .banner-buttons {
+    display: block;
+    text-align: center;
+  }
+  {% comment %} .womens-bottom-image-area.womens-bottoms {
+    margin-bottom: 20px;
+    width: 65%;
+    justify-content: center;
+    gap: 1rem;
+    padding-block: 1rem;
+  } {% endcomment %}
+  .womens-bottom-container.womens-bottoms {
+    width: 100%;
+  }
+  .womens-bottom-area.womens-bottoms {
+    justify-self: center;
+    width: 100%;
+  }
+  .womens-bottom-wrapper {
+    text-align: center;
+    font-size: 2rem;
+    color: #292a33;
+    line-height: 20px;
+  }
+  .womens-bottom-wrapper p.suit-title {
+    margin-top: 10px;
+    width: 50%;
+    place-self: center;
+  }
+  .womens-bottom-image-wrapper .js-content-filter[data-state="filters-applied"] {
+    outline: 3px solid #253746;
+    outline-offset: -3px;
+  }
+  .womens-bottom-image-wrapper img:hover {
+    outline: 3px solid #374e62;
+    outline-offset: -3px;
+  }
+  .banner-buttons .js-content-filter[data-state="filters-applied"] {
+    background: #2c2a27;
+    border-color: #2c2a27;
+    color: #fcfcfa;
+  }
+  .banner-buttons-bottoms {
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    justify-content: center;
+  }
+  .banner-buttons .heading {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+  }
+</style>
+{% if section.settings.image_shape == 'blob' %}
+  {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
+{% endif %}
+{% unless section.settings.quick_add == 'none' %}
+  {{ 'quick-add.css' | asset_url | stylesheet_tag }}
+{% endunless %}
+{% if section.settings.quick_add == 'standard' %}
+  <script src="{{ 'quick-add.js' | asset_url }}" defer></script>
+  <script src="{{ 'product-form.js' | asset_url }}" defer></script>
+{% endif %}
+{% if section.settings.quick_add == 'bulk' %}
+  <script src="{{ 'quick-add-bulk.js' | asset_url }}" defer></script>
+  <script src="{{ 'quantity-popover.js' | asset_url }}" defer></script>
+  <script src="{{ 'price-per-item.js' | asset_url }}" defer></script>
+  <script src="{{ 'quick-order-list.js' | asset_url }}" defer></script>
+{% endif %}
+<div
+  class="
+    grid-content-wrap flex lg:flex-row lg:gap-8
+    max-w-[1568px] mx-auto relative z-[1] items-start mb-8
+  "
+>
+  <!-- Sidebar -->
+  {% comment %}
+    <div
+        class="
+          sticky-collection-sidebar sticky top-[127px]
+          h-[calc(100vh-111px)]
+           lg:w-[228px] md:mt-[6rem]
+        "
+      >
+        <div class="relative h-full overflow-y-auto container-filter-desktop">
+          <div class="box-border visible block w-full p-0 m-0 menu">
+            <nav aria-label="Sidebar navigation sidebar-scroll-menu">
+              <ul class="space-y-2 lg:pl-[22px]">
+                {% assign nav = linklists['new-arrivals'] %}
+                <h1 class="pt-8 !font-bold menu-heading anf-font text-bodysize mb-9 !text-primary">
+                  {{ nav.title }}
+                </h1>
+                {% for link in nav.links %}
+                  <li class="sidebar-menu__item-wrapper mb-[10px] pl-0 w-full pb-[10]">
+                    <div class="flex flex-wrap items-start">
+                      {% if link.links != blank %}
+                        <details class="w-full sidebar-menu__dropdown group" id="SidebarMenu-{{ forloop.index }}">
+                          <summary
+                            class="flex items-center justify-between w-full my-6 cursor-pointer sidebar-menu__item"
+                            tabindex="0"
+                          >
+                            <span class="w-2/3 menu-title anf-font">{{ link.title | escape }}</span>
+                            <span
+                              aria-hidden="true"
+                              class="accordion-icon block text-2xl leading-4 absolute right-8 top-auto text-[#2c2a27]"
+                              data-icon="plus"
+                              data-testid="accordion-icon"
+                            ></span>
+                          </summary>
+                          <div class="flex-none block basis-full">
+                            <ul class="sidebar-submenu sidebar-submenu--level-1 ml-[10px] my-5 px-5 w-full max-w-[95%] mt-2 pl-4 ">
+                              {% for childlink in link.links %}
+                                <li class="sidebar-menu__item-wrapper m-[20px] pr-5 pb-2 ml-3 max-w-[95%] w-full anf-font">
+                                  {% if childlink.links == blank %}
+                                    <a
+                                      href="{{ childlink.title | handleize }}"
+                                      class="sidebar-menu__item sidebar-menu__link hover:text-primary"
+                                      data-title="{{ childlink.title | escape }}"
+                                      data-href="{{ childlink.url }}"
+                                    >
+                                      {{ childlink.title | escape }}
+                                    </a>
+                                  {% else %}
+                                    <div>
+                                      <details class="sidebar-menu__nested-dropdown group">
+                                        <summary class="flex items-center justify-between cursor-pointer sidebar-menu__item">
+                                          <span class="menu-title">{{ childlink.title | escape }}</span>
+                                          <span class="transition-transform duration-300 arrow-icon group-open:rotate-180"
+                                            >▼</span
+                                          >
+                                        </summary>
+                                        <ul class="ml-4 sidebar-submenu sidebar-submenu--level-2">
+                                          {% for grandchildlink in childlink.links %}
+                                            <li>
+                                              <a
+                                                href="{{ grandchildlink.url }}"
+                                                class="sidebar-menu__item sidebar-menu__link hover:text-primary"
+                                                data-title="{{ grandchildlink.title | escape }}"
+                                              >
+                                                {{ grandchildlink.title | escape }}
+                                              </a>
+                                            </li>
+                                          {% endfor %}
+                                        </ul>
+                                      </details>
+                                    </div>
+                                  {% endif %}
+                                </li>
+                              {% endfor %}
+                            </ul>
+                          </div>
+                        </details>
+                      {% endif %}
+                    </div>
+                  </li>
+                {% endfor %}
+              </ul>
+            </nav>
+          </div>
+          <div class="sidebar-filter mt-0 pt-0 lg:mt-5 lg:pt-[10px] lg:pb-0 box-border text-gray-600 p-2">
+            {%- paginate collection.products by section.settings.products_per_page -%}
+              <div
+                class="
+                  {% if section.settings.filter_type == 'vertical' %}
+                  facets-vertical max-w-[1568px] mx-auto w-full
+                  {% endif %}
+                "
+              >
+                {{ 'component-facets.css' | asset_url | stylesheet_tag }}
+                <script src="{{ 'facets.js' | asset_url }}" defer></script>
+                {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
+                  <aside
+                    aria-labelledby="verticalTitle"
+                    class="
+                      facets-wrapper
+                      {% unless section.settings.enable_filtering %}
+                        facets-wrapper--no-filters
+                      {% endunless %}
+                      {% if section.settings.filter_type != 'vertical' %}
+                        page-width
+                      {% endif %}
+                      custom-filter-sidebar-collection box-border bg-[#f6f6f6]
+                    "
+                    id="main-collection-filters"
+                    data-id="{{ section.id }}"
+                  >
+                    {% render 'facets',
+                      results: collection,
+                      enable_filtering: true,
+                      enable_sorting: false,
+                      filter_type: 'vertical',
+                      paginate: paginate,
+                      drawerDisplay: false
+                    %}
+                  </aside>
+                {%- endif -%}
+              </div>
+            {%- endpaginate -%}
+          </div>
+        </div>
+    </div>
+  {% endcomment %}
+  <!-- Main product section -->
+  <div class="box-border w-full transition-opacity duration-300 Container-product max-lg:mt-0 mt-0 max-lg:!pl-[12px] max-lg:!pr-[12px]">
+    {% if section.settings.collection_banner_image %}
+      <div class="collection-banner-image-wrap">
+        <img
+          src="{{ section.settings.collection_banner_image | img_url: '2000x600', crop: 'center' }}"
+          alt="{{ collection.title | escape }}"
+          class="collection-banner-image"
+          loading="lazy"
+          width="2000"
+          height="600"
+          style="display: block; width: 100%; height: 320px; max-width: 100%; object-fit: cover; object-position: center;"
+        >
+      </div>
+    {% endif %}
+    {%- paginate collection.products by section.settings.products_per_page -%}
+      <div class="md:pr-[1.6rem] desktop-view sorting-desktop-container">
+        <div style="min-width:228px; display: block; height: 0;"></div>
+        <div class="drop-down-sort-by">
+          {% assign is_womens_collection = false %}
+          {% if collection.handle == 'womens' %}
+            <div class="womens-bottom-container">
+              <div class="womens-bottom-area">
+                <div class="womens-bottom-image-area">
+                  <div>
+                    <a href="/collections/womens-tops">
+                      <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/hco-woman-top.webp?v=1766400349">
+                      <div class="womens-bottom-area-desc">
+                        <p class="suit-title">Tops</p>
+                      </div>
+                    </a>
+                  </div>
+                  <div>
+                    <a href="/collections/womens-bottoms">
+                      <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/hco-woman-bottom.webp?v=1766400349">
+                      <div class="womens-bottom-area-desc">
+                        <p class="suit-title">Bottoms</p>
+                      </div>
+                    </a>
+                  </div>
+                  <div>
+                    <a href="/collections/womens-sweatshirts-sweatpants">
+                      <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/hco-woman-sweatshirts_pants.webp?v=1766400349">
+                      <div class="womens-bottom-area-desc">
+                        <p class="suit-title">Sweatshirts & Sweatpants</p>
+                      </div>
+                    </a>
+                  </div>
+                  <div>
+                    <a href="/collections/womens-sleepwear">
+                      <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/hco-woman-sleepover.webp?v=1766400349">
+                      <div class="womens-bottom-area-desc">
+                        <p class="suit-title">Sleepwear</p>
+                      </div>
+                    </a>
+                  </div>
+                  <div>
+                    <a href="/collections/womens-jackets-coats">
+                      <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/hco-woman-jackets_coats.webp?v=1766400349">
+                      <div class="womens-bottom-area-desc">
+                        <p class="suit-title">Jackets & Coats</p>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+          {% if collection.handle == 'mens' %}
+            <div class="womens-bottom-container">
+              <div class="womens-bottom-area">
+                <div class="womens-bottom-image-area">
+                  <div>
+                    <a href="/collections/mens-graphic-tees">
+                      <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/GraphicsShop.webp?v=1766407720">
+                      <div class="womens-bottom-area-desc">
+                        <p class="suit-title">Graphics Shop</p>
+                      </div>
+                    </a>
+                  </div>
+                  <div>
+                    <a href="/collections/mens-tops">
+                      <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/Mens_Tops.webp?v=1766407721">
+                      <div class="womens-bottom-area-desc">
+                        <p class="suit-title">Tops</p>
+                      </div>
+                    </a>
+                  </div>
+                  <div>
+                    <a href="/collections/mens-bottoms">
+                      <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/Mens_Bottoms.webp?v=1766407721">
+                      <div class="womens-bottom-area-desc">
+                        <p class="suit-title">Bottoms</p>
+                      </div>
+                    </a>
+                  </div>
+                  <div>
+                    <a href="/collections/mens-sweatshirts-sweatpants">
+                      <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/Mens_Sweats.webp?v=1766407720">
+                      <div class="womens-bottom-area-desc">
+                        <p class="suit-title">Sweatshirts & Sweatpants</p>
+                      </div>
+                    </a>
+                  </div>
+                  <div>
+                    <a href="/collections/mens-jackets-coats">
+                      <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/Mens_Jackets.webp?v=1766407721">
+                      <div class="womens-bottom-area-desc">
+                        <p class="suit-title">Jackets & Coats</p>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+          {% if collection.handle == 'womens-jeans' %}
+            {% assign is_womens_collection = true %}
+            <div class="womens-bottom-container womens-bottoms womens-jeans">
+              <div class="womens-bottom-area womens-bottoms">
+                <div class="womens-bottom-image-area womens-bottoms">
+                  {% for block in section.blocks %}
+                    {% if block.type == 'visual_filter_item' and block.settings.womens_only == is_womens_collection %}
+                      <div class="womens-bottom-wrapper">
+                        <div class="womens-bottom-image-wrapper">
+                          <button
+                            class="ds-override js-content-filter"
+                            type="button"
+                            data-filter-values="{{ block.settings.filter_value }}"
+                            data-variant="tertiary-dark"
+                            aria-label="{{ block.settings.title }}"
+                          >
+                            {% if block.settings.image != blank %}
+                              <img
+                                src="{{ block.settings.image | image_url }}"
+                                alt="{{ block.settings.title | escape }}"
+                                loading="lazy"
+                              >
+                            {% elsif block.settings.image_url != blank %}
+                              <img
+                                src="{{ block.settings.image_url }}"
+                                alt="{{ block.settings.title | escape }}"
+                                loading="lazy"
+                              >
+                            {% endif %}
+                          </button>
+                        </div>
+                        <p class="suit-title">{{ block.settings.title }}</p>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <div class="banner-buttons">
+                  <p class="sub-taitle-jeans">View by Rise:</p>
+                  {% if section.settings.show_filter_heading %}
+                    <div class="heading {% if collection.handle != 'womens-jeans' %}jeans-none {% endif %}">
+                      {{ section.settings.filter_heading }}
+                    </div>
+                  {% endif %}
+                  <div class="w-full banner-buttons-bottoms">
+                    {% for block in section.blocks %}
+                      {% if block.type == 'radio_filter_item' and block.settings.womens_only == is_womens_collection %}
+                        <div class="radio-button js-radio-button">
+                          <button
+                            id="{{ block.settings.option_id }}"
+                            class="js-content-filter filter-button button w-full"
+                            type="button"
+                            data-variant="tertiary-dark"
+                            data-filter-values="{{ block.settings.filter_value }}"
+                            data-state="{{ block.settings.data_state }}"
+                            data-group="{{ block.settings.group_name }}"
+                            aria-pressed="{% if block.settings.checked %}true{% else %}false{% endif %}"
+                          >
+                            {{ block.settings.title }}
+                          </button>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+          {% if collection.handle == 'mens-jeans' %}
+            <div class="womens-bottom-container womens-bottoms womens-jeans">
+              <div class="womens-bottom-area womens-bottoms">
+                <div class="womens-bottom-image-area womens-bottoms">
+                  {% for block in section.blocks %}
+                    {% if block.type == 'visual_filter_item' and block.settings.womens_only == false %}
+                      <div class="womens-bottom-wrapper">
+                        <div class="womens-bottom-image-wrapper">
+                          <button
+                            class="ds-override js-content-filter"
+                            type="button"
+                            data-filter-values="{{ block.settings.filter_value }}"
+                            data-variant="tertiary-dark"
+                            data-group="mens-jeans-fit"
+                            aria-label="{{ block.settings.title }}"
+                          >
+                            {% if block.settings.image != blank %}
+                              <img
+                                src="{{ block.settings.image | image_url }}"
+                                alt="{{ block.settings.title | escape }}"
+                                loading="lazy"
+                              >
+                            {% elsif block.settings.image_url != blank %}
+                              <img
+                                src="{{ block.settings.image_url }}"
+                                alt="{{ block.settings.title | escape }}"
+                                loading="lazy"
+                              >
+                            {% endif %}
+                          </button>
+                        </div>
+                        <p class="suit-title">{{ block.settings.title }}</p>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <div class="banner-buttons">
+                  {% if section.settings.show_filter_heading %}
+                    <div class="heading {%if collection.handle != 'mens-jeans' %}jeans-none {%endif%%}">
+                      {{ section.settings.filter_heading }}
+                    </div>
+                  {% endif %}
+                  <div class="w-full banner-buttons-bottoms">
+                    {% for block in section.blocks %}
+                      {% if block.type == 'radio_filter_item' and block.settings.womens_only == false %}
+                        <div class="radio-button js-radio-button">
+                          <button
+                            id="{{ block.settings.option_id }}"
+                            class="js-content-filter filter-button button w-full"
+                            type="button"
+                            data-variant="tertiary-dark"
+                            data-filter-values="{{ block.settings.filter_value }}"
+                            data-state="{{ block.settings.data_state }}"
+                            data-group="{{ block.settings.group_name }}"
+                            aria-pressed="{% if block.settings.checked %}true{% else %}false{% endif %}"
+                          >
+                            {{ block.settings.title }}
+                          </button>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+          <div
+            style="display: flex; justify-content: space-between; align-items: end; width: 100%; position: absolute;"
+            class="
+              desktop-filter-bar
+              {% if collection.handle contains 'new-arrival' %} new-arrival-title-area {% endif %}
+              {% if collection.handle == 'mens' %}mens-bottom-title-area{% endif %}
+              {% if collection.handle contains 'mens-suit' %} mens-suit-title-area {% endif %}
+              {% if collection.handle == 'womens' %} womens-bottom-title-area {% endif %}
+              {% if collection.handle == 'womens-jeans' %} womens-bottoms-title-area {% endif %}
+              {% if collection.handle == 'mens-jeans'%} men-bottoms-title-area {% endif %}
+            "
+          >
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; z-index: 9;">
+              <h1 class="collection-hero__title text-[18px] font-semibold leading-[22px] whitespace-nowrap">
+                <span class="visually-hidden"> {{ 'sections.collection_template.title' | t }}: </span>
+                {{- collection.title }}
+              </h1>
+              <div class="collection-result-count">
+                <span class="collection-result-count-text" role="status">
+                  <span>Results</span>
+                  <span id="resultCount">:0</span>
+                </span>
+                <button
+                  class="link-button clear-link-button"
+                  onclick="handleClearAll()"
+                  data-theme="default"
+                  type="button"
+                  style="text-decoration: underline;"
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
+            <div
+              style="
+                width: 33%; z-index: 9;
+                position: relative;
+              "
+            >
+              <div class="drop-down feature-dropdown" data-testid="drop-down">
+                <select data-filled="true" id="sort-by-dropdown">
+                  <optgroup label="{{ "products.facets.sort_by_label" | t }}">
+                    <option value="bestmatch" selected="">{{ 'general.search.bestmatch' | t }}</option>
+                    <option value="newest">{{ 'general.search.newest' | t }}</option>
+                    <option value="pricelow2high">{{ 'general.search.pricelow2high' | t }}</option>
+                    <option value="pricehigh2low">{{ 'general.search.pricehigh2low' | t }}</option>
+                    {% comment %} <option value="avgrating">{{ 'general.search.avgrating' | t }}</option> {% endcomment %}
+                    <option value="metricorderedunits">{{ 'general.search.metricorderedunits' | t }}</option>
+                  </optgroup></select
+                ><label class="placeholder" data-testid="placeholder" for="sort-by-dropdown">
+                  {{- 'products.facets.sort_by_label' | t -}}</label
+                ><span class="float-label" data-testid="float-label">{{ 'products.facets.sort_by_label' | t }}</span
+                ><span aria-hidden="true" class="arrow-icon" data-testid="arrow-icon"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if collection.handle == 'womens' %}
+        <div class="woman-bottom-slider-images mobile-only">
+          <slider-component class="swiper mobile-only womens-bottom-slider slider-mobile-gutter">
+            <ul class="slider slider--mobile womens-bottom-list" id="WomensBottomsSlider">
+              <li class="slider__slide womens-bottom-item">
+                <div>
+                  <a
+                    href="/collections/womens-tops"
+                    class="button ds-override js-content-filter"
+                    type="button"
+                    data-filter-values="Tops"
+                    data-variant="tertiary-dark"
+                  >
+                    <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/hco-woman-top.webp?v=1766400349">
+                  </a>
+                  <div class="womens-bottom-area-desc">
+                    <p class="suit-title">Tops</p>
+                  </div>
+                </div>
+              </li>
+              <li class="slider__slide womens-bottom-item">
+                <div>
+                  <a
+                    href="/collections/womens-bottoms"
+                    class="button ds-override js-content-filter"
+                    type="button"
+                    data-filter-values="Bottoms"
+                    data-variant="tertiary-dark"
+                  >
+                    <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/hco-woman-bottom.webp?v=1766400349">
+                  </a>
+                  <div class="womens-bottom-area-desc">
+                    <p class="suit-title">Bottoms</p>
+                  </div>
+                </div>
+              </li>
+              <li class="slider__slide womens-bottom-item">
+                <div>
+                  <a
+                    href="/collections/womens-sweatshirts-sweatpants"
+                    class="button ds-override js-content-filter"
+                    type="button"
+                    data-filter-values="Sweatpants"
+                    data-variant="tertiary-dark"
+                  >
+                    <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/hco-woman-sweatshirts_pants.webp?v=1766400349">
+                  </a>
+                  <div class="womens-bottom-area-desc">
+                    <p class="suit-title">Sweatshirts & Sweatpants</p>
+                  </div>
+                </div>
+              </li>
+              <li class="slider__slide womens-bottom-item">
+                <div>
+                  <a
+                    href="/collections/womens-sleepwear"
+                    class="button ds-override js-content-filter"
+                    type="button"
+                    data-filter-values="Sleepwear"
+                    data-variant="tertiary-dark"
+                  >
+                    <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/hco-woman-sleepover.webp?v=1766400349">
+                  </a>
+                  <div class="womens-bottom-area-desc">
+                    <p class="suit-title">Sleepwear</p>
+                  </div>
+                </div>
+              </li>
+              <li class="slider__slide womens-bottom-item">
+                <div>
+                  <a
+                    href="/collections/womens-jackets-coats"
+                    class="button ds-override js-content-filter"
+                    type="button"
+                    data-filter-values="Jackets"
+                    data-variant="tertiary-dark"
+                  >
+                    <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/hco-woman-jackets_coats.webp?v=1766400349">
+                  </a>
+                  <div class="womens-bottom-area-desc">
+                    <p class="suit-title">Jackets & Coats</p>
+                  </div>
+                </div>
+              </li>
+            </ul>
+            <div class="slider-buttons no-js-hidden">
+              <button class="slider-button slider-button--prev" name="previous">
+                <span
+                  aria-hidden="true"
+                  class="icon bot-nav-arrow"
+                  data-icon="left-large-hco"
+                  data-testid="icon"
+                ></span>
+              </button>
+              <button class="slider-button slider-button--next" name="next">
+                <span
+                  aria-hidden="true"
+                  class="icon bot-nav-arrow"
+                  data-icon="right-large-hco"
+                  data-testid="icon"
+                ></span>
+              </button>
+            </div>
+          </slider-component>
+        </div>
+      {% endif %}
+      {% if collection.handle == 'mens' %}
+        <div class="woman-bottom-slider-images mobile-only">
+          <slider-component class="swiper mobile-only womens-bottom-slider slider-mobile-gutter">
+            <ul class="slider slider--mobile womens-bottom-list" id="WomensBottomsSlider">
+              <li class="slider__slide womens-bottom-item">
+                <div>
+                  <a
+                    href="/collections/mens-graphic-tees"
+                    class="button ds-override js-content-filter"
+                    type="button"
+                    data-filter-values="Graphics"
+                    data-variant="tertiary-dark"
+                  >
+                    <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/GraphicsShop.webp?v=1766407720">
+                  </a>
+                  <div class="womens-bottom-area-desc">
+                    <p class="suit-title">Graphics Shop</p>
+                  </div>
+                </div>
+              </li>
+              <li class="slider__slide womens-bottom-item">
+                <div>
+                  <a
+                    href="/collections/mens-tops"
+                    class="button ds-override js-content-filter"
+                    type="button"
+                    data-filter-values="Tops"
+                    data-variant="tertiary-dark"
+                  >
+                    <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/Mens_Tops.webp?v=1766407721">
+                  </a>
+                  <div class="womens-bottom-area-desc">
+                    <p class="suit-title">Tops</p>
+                  </div>
+                </div>
+              </li>
+              <li class="slider__slide womens-bottom-item">
+                <div>
+                  <a
+                    href="/collections/mens-bottoms"
+                    class="button ds-override js-content-filter"
+                    type="button"
+                    data-filter-values="Bottoms"
+                    data-variant="tertiary-dark"
+                  >
+                    <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/Mens_Bottoms.webp?v=1766407721">
+                  </a>
+                  <div class="womens-bottom-area-desc">
+                    <p class="suit-title">Bottoms</p>
+                  </div>
+                </div>
+              </li>
+              <li class="slider__slide womens-bottom-item">
+                <div>
+                  <a
+                    href="/collections/mens-sweatshirts-sweatpants"
+                    class="button ds-override js-content-filter"
+                    type="button"
+                    data-filter-values="Sweatpants"
+                    data-variant="tertiary-dark"
+                  >
+                    <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/Mens_Sweats.webp?v=1766407720">
+                  </a>
+                  <div class="womens-bottom-area-desc">
+                    <p class="suit-title">Sweatshirts & Sweatpants</p>
+                  </div>
+                </div>
+              </li>
+              <li class="slider__slide womens-bottom-item">
+                <div>
+                  <a
+                    href="/collections/womens-jackets-coats"
+                    class="button ds-override js-content-filter"
+                    type="button"
+                    data-filter-values="Jackets"
+                    data-variant="tertiary-dark"
+                  >
+                    <img src="https://cdn.shopify.com/s/files/1/0673/8362/3766/files/Mens_Jackets.webp?v=1766407721">
+                  </a>
+                  <div class="womens-bottom-area-desc">
+                    <p class="suit-title">Jackets & Coats</p>
+                  </div>
+                </div>
+              </li>
+            </ul>
+            <div class="slider-buttons no-js-hidden">
+              <button class="slider-button slider-button--prev" name="previous">
+                <span
+                  aria-hidden="true"
+                  class="icon bot-nav-arrow"
+                  data-icon="left-large-hco"
+                  data-testid="icon"
+                ></span>
+              </button>
+              <button class="slider-button slider-button--next" name="next">
+                <span
+                  aria-hidden="true"
+                  class="icon bot-nav-arrow"
+                  data-icon="right-large-hco"
+                  data-testid="icon"
+                ></span>
+              </button>
+            </div>
+          </slider-component>
+        </div>
+      {% endif %}
+      {% if collection.handle == 'womens-jeans' %}
+        {% assign is_womens_collection = true %}
+        <div class="womens-bottom-container woman-bottom-slider-images womens-bottoms mobile-only womens-jeans">
+          <slider-component class="swiper mobile-only womens-bottom-slider slider-mobile-gutter">
+            <ul class="slider slider--mobile womens-bottom-list" id="WomensBottomsSlider">
+              {% for block in section.blocks %}
+                {% if block.type == 'visual_filter_item' and block.settings.womens_only == is_womens_collection %}
+                  <li class="slider__slide womens-bottom-item">
+                    <div class="womens-bottom-wrapper">
+                      <div class="womens-bottom-image-wrapper">
+                        <button
+                          class="ds-override js-content-filter"
+                          type="button"
+                          data-filter-values="{{ block.settings.filter_value }}"
+                          data-variant="tertiary-dark"
+                          aria-label="{{ block.settings.title }}"
+                        >
+                          {% if block.settings.image != blank %}
+                            <img
+                              src="{{ block.settings.image | image_url }}"
+                              alt="{{ block.settings.title | escape }}"
+                              loading="lazy"
+                            >
+                          {% elsif block.settings.image_url != blank %}
+                            <img
+                              src="{{ block.settings.image_url }}"
+                              alt="{{ block.settings.title | escape }}"
+                              loading="lazy"
+                            >
+                          {% endif %}
+                        </button>
+                      </div>
+                      <div class="womens-bottom-area-desc">
+                        <p class="suit-title">{{ block.settings.title }}</p>
+                      </div>
+                    </div>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+            <!-- slider arrows -->
+            <div class="slider-buttons no-js-hidden">
+              <button class="slider-button slider-button--prev" name="previous">
+                <span
+                  aria-hidden="true"
+                  class="icon bot-nav-arrow"
+                  data-icon="left-large-hco"
+                ></span>
+              </button>
+              <button class="slider-button slider-button--next" name="next">
+                <span
+                  aria-hidden="true"
+                  class="icon bot-nav-arrow"
+                  data-icon="right-large-hco"
+                ></span>
+              </button>
+            </div>
+          </slider-component>
+          <div class="banner-buttons">
+            <p class="sub-taitle-jeans">View by Rise:</p>
+            {% if section.settings.show_filter_heading %}
+              <div class="heading {% if collection.handle != 'womens-jeans' %}jeans-none {% endif %}">
+                {{ section.settings.filter_heading }}
+              </div>
+            {% endif %}
+            <div class="w-full banner-buttons-bottoms">
+              {% for block in section.blocks %}
+                {% if block.type == 'radio_filter_item' and block.settings.womens_only == is_womens_collection %}
+                  <div class="radio-button js-radio-button">
+                    <button
+                      id="{{ block.settings.option_id }}"
+                      class="js-content-filter filter-button button w-full"
+                      type="button"
+                      data-variant="tertiary-dark"
+                      data-filter-values="{{ block.settings.filter_value }}"
+                      data-state="{{ block.settings.data_state }}"
+                      data-group="{{ block.settings.group_name }}"
+                      aria-pressed="{% if block.settings.checked %}true{% else %}false{% endif %}"
+                    >
+                      {{ block.settings.title }}
+                    </button>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if collection.handle == 'mens-jeans' %}
+        <div class="womens-bottom-container woman-bottom-slider-images womens-bottoms mobile-only womens-jeans">
+          <slider-component class="swiper mobile-only womens-bottom-slider slider-mobile-gutter">
+            <ul class="slider slider--mobile womens-bottom-list" id="WomensBottomsSlider">
+              {% for block in section.blocks %}
+                {% if block.type == 'visual_filter_item' and block.settings.womens_only == false %}
+                  <li class="slider__slide womens-bottom-item">
+                    <div class="womens-bottom-wrapper">
+                      <div class="womens-bottom-image-wrapper">
+                        <button
+                          class="ds-override js-content-filter"
+                          type="button"
+                          data-filter-values="{{ block.settings.filter_value }}"
+                          data-variant="tertiary-dark"
+                          data-group="mens-jeans-fit"
+                          aria-label="{{ block.settings.title }}"
+                        >
+                          {% if block.settings.image != blank %}
+                            <img
+                              src="{{ block.settings.image | image_url }}"
+                              alt="{{ block.settings.title | escape }}"
+                              loading="lazy"
+                            >
+                          {% elsif block.settings.image_url != blank %}
+                            <img
+                              src="{{ block.settings.image_url }}"
+                              alt="{{ block.settings.title | escape }}"
+                              loading="lazy"
+                            >
+                          {% endif %}
+                        </button>
+                      </div>
+                      <div class="womens-bottom-area-desc">
+                        <p class="suit-title">{{ block.settings.title }}</p>
+                      </div>
+                    </div>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+            <!-- slider arrows -->
+            <div class="slider-buttons no-js-hidden">
+              <button class="slider-button slider-button--prev" name="previous">
+                <span
+                  aria-hidden="true"
+                  class="icon bot-nav-arrow"
+                  data-icon="left-large-hco"
+                ></span>
+              </button>
+              <button class="slider-button slider-button--next" name="next">
+                <span
+                  aria-hidden="true"
+                  class="icon bot-nav-arrow"
+                  data-icon="right-large-hco"
+                ></span>
+              </button>
+            </div>
+          </slider-component>
+          <div class="banner-buttons">
+            {% if section.settings.show_filter_heading %}
+              <div class="heading {% if collection.handle != 'womens-jeans' %}jeans-none {% endif %}">
+                {{ section.settings.filter_heading }}
+              </div>
+            {% endif %}
+            <div class="w-full banner-buttons-bottoms">
+              {% for block in section.blocks %}
+                {% if block.type == 'radio_filter_item' and block.settings.womens_only == false %}
+                  <div class="radio-button js-radio-button">
+                    <button
+                      id="{{ block.settings.option_id }}"
+                      class="js-content-filter filter-button button w-full"
+                      type="button"
+                      data-variant="tertiary-dark"
+                      data-filter-values="{{ block.settings.filter_value }}"
+                      data-state="{{ block.settings.data_state }}"
+                      data-group="{{ block.settings.group_name }}"
+                      aria-pressed="{% if block.settings.checked %}true{% else %}false{% endif %}"
+                    >
+                      {{ block.settings.title }}
+                    </button>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      <div class=" lg:min-h[95px] md:mb-[15px]">
+        <div class="facets-vertical">
+          <h2 class="filter-collection-title text-2xl font-bold mbl-collection-category-title">
+            {{ collection.title | link_to: collection.url }}
+          </h2>
+          <!-- APP-VIEW TOP BAR (visible only when body.app-view-active) -->
+          <div class="app-view-top hidden-by-default" aria-hidden="true">
+            <div class="app-view-top__inner">
+              <!-- Left: Category / dropdown -->
+              <div class="app-view-left">
+                <label for="app-view-category" class="sr-only">Category</label>
+                <select id="app-view-category" class="app-view-select">
+                  <option value="">All</option>
+                  {% if collection.metafields.custom.category %}
+                    {% assign category_metaobject = collection.metafields.custom.category.value %}
+                    {% if category_metaobject.collection %}
+                      {% for sub_collection in category_metaobject.collection.value %}
+                        <option
+                          value="{{ sub_collection.url }}"
+                          {% if sub_collection.handle == collection.handle %}
+                            selected
+                          {% endif %}
+                        >
+                          {{ sub_collection.title }}
+                        </option>
+                      {% endfor %}
+                    {% endif %}
+                  {% endif %}
+                </select>
+              </div>
+              <!-- Right: Filter + Sort buttons -->
+              <div class="app-view-right">
+                <button type="button" class="app-view-btn app-view-filter" aria-label="Open filters">
+                  <span class="icon-filter" aria-hidden="true">Filter</span>
+                </button>
+                <div class="app-view-sort-wrap">
+                  <button
+                    type="button"
+                    class="app-view-btn app-view-sort-toggle"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    aria-label="Open sort"
+                  >
+                    <span class="icon-sort" aria-hidden="true">Sort</span>
+                  </button>
+                  <!-- Hidden sort menu (shows when toggled) -->
+                  <div class="app-view-sort-menu" role="menu" aria-hidden="true">
+                    <select id="app-view-sort" class="app-view-select">
+                      <option value="manual">Featured</option>
+                      <option value="created-descending">Date: New to Old</option>
+                      <option value="price-ascending">Price: Low to High</option>
+                      <option value="price-descending">Price: High to Low</option>
+                      <option value="best-selling">Best Selling</option>
+                      <!-- add more as needed -->
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end app-view top bar -->
+          {% comment %}
+            Sort Modal for app-view mode
+          {% endcomment %}
+          <div id="appViewSortModal" class="app-view-sort-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+            <div class="app-view-sort-dialog" role="document" tabindex="-1">
+              {% comment %} <button class="app-view-sort-close" type="button" aria-label="Close sort menu">×</button> {% endcomment %}
+              <h2 class="app-view-sort-title">Sort</h2>
+              <ul class="app-view-sort-list" role="menu" aria-label="Sort options">
+                <li role="menuitem"><button data-sort="manual" class="app-view-sort-option">Featured</button></li>
+                <li role="menuitem">
+                  <button data-sort="created-descending" class="app-view-sort-option">Newest</button>
+                </li>
+                <li role="menuitem">
+                  <button data-sort="price-ascending" class="app-view-sort-option">Price: Low to High</button>
+                </li>
+                <li role="menuitem">
+                  <button data-sort="price-descending" class="app-view-sort-option">Price: High to Low</button>
+                </li>
+                <li role="menuitem">
+                  <button data-sort="rating-descending" class="app-view-sort-option">Customer Ratings</button>
+                </li>
+                <li role="menuitem">
+                  <button data-sort="best-selling" class="app-view-sort-option">Best Selling</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="tab-view-header mbl-header-collection absolute top-5 grid mb-0 mobile-top__filters lg:hidden max-lg:items-center max-lg:w-full max-lg:gap-0 max-lg:justify-between"
+            style="z-index: 9;"
+          >
+            <div class="category-drop max-lg:py-4 max-lg:px-[5px]">
+              <div class="drop-down feature-dropdown mobile-view category-drop-down" data-testid="drop-down">
+                {% if collection.metafields.custom.category %}
+                  {% assign category_metaobject = collection.metafields.custom.category.value %}
+                  {% if category_metaobject.collection %}
+                    <select data-filled="true" id="sort-by-dropdown">
+                      <optgroup label="Category">
+                        {% for sub_collection in category_metaobject.collection.value %}
+                          <option
+                            value="{{ sub_collection.url }}"
+                            {% if sub_collection.handle == collection.handle %}
+                              selected
+                            {% endif %}
+                          >
+                            {{ sub_collection.title }}
+                          </option>
+                        {% endfor %}
+                      </optgroup>
+                    </select>
+                    <label
+                      class="placeholder"
+                      data-testid="placeholder"
+                      for="sort-by-dropdown"
+                      >Category</label
+                    >
+                    <span class="float-label" data-testid="float-label">Category</span>
+                    <span
+                      aria-hidden="true"
+                      class="arrow-icon"
+                      data-testid="arrow-icon"
+                    ></span>
+                  {% endif %}
+                {% else %}
+                  <select data-filled="true" id="sort-by-dropdown">
+                    <optgroup label="{{ "products.facets.sort_by_label" | t }}">
+                      <option value="home" selected>Home</option>
+                    </optgroup>
+                  </select>
+                  <label
+                    class="placeholder"
+                    data-testid="placeholder"
+                    for="sort-by-dropdown"
+                    >Category</label
+                  >
+                  <span class="float-label" data-testid="float-label">Category</span>
+                  <span
+                    aria-hidden="true"
+                    class="arrow-icon"
+                    data-testid="arrow-icon"
+                  ></span>
+                {% endif %}
+              </div>
+              {% assign nav = linklists['main-menu'] %}
+            </div>
+            {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
+              <div class="refine-plp lg:hidden max-md:w-[49%] max-lg:w-[49%] max-lg:py-4 max-lg:px-[5px] max-lg:flex max-lg:justify-end refine-btn">
+                <div
+                  class="gf-refine-toggle-mobile"
+                  tabindex="0"
+                  style="border: 2px solid #d2d0ce !important; width: 100%; height:100%; min-height: 60px; align-content: center;"
+                >
+                  <span onclick="handleRefine()">
+                    <span aria-hidden="true" class="icon" data-icon="filter-hco">Refine</span>
+                  </span>
+                </div>
+              </div>
+            {%- endif -%}
+          </div>
+          <div
+            class="
+              product-grid-container mbl-product-container
+              {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}
+              {% if collection.handle contains 'new-arrival' %} new-arrival-product-grid {% endif %}
+              {% if collection.handle == 'mens' %} mens-bottom-product-grid {% endif %}
+              {% if collection.handle contains 'mens-suit' %} mens-suit-product-grid {% endif %}
+              {% if collection.handle == 'womens' %} womens-product-grid {% endif %}
+              {%if collection.handle == 'womens-jeans'%} womens-bottms-product-grid {% endif %}
+              {%if collection.handle == 'mens-jeans'%} mens-bottms-product-grid {% endif %}
+            "
+            id="ProductGridContainer"
+            {% if settings.animations_reveal_on_scroll %}
+              data-cascade
+            {% endif %}
+          >
+            {%- if collection.products.size == 0 -%}
+              <div
+                class="collection collection--empty page-width"
+                id="product-grid"
+                data-id="{{ section.id }}"
+              >
+                <div class="loading-overlay gradient"></div>
+                <div class="title-wrapper center">
+                  <h2 class="title title--primary">
+                    {{ 'sections.collection_template.empty' | t }}
+                    <br>
+                    {{
+                      'sections.collection_template.use_fewer_filters_html'
+                      | t: link: collection.url, class: 'underlined-link link'
+                    }}
+                  </h2>
+                </div>
+              </div>
+            {%- else -%}
+              <button
+                class="link-button clear-link-button mobile-clear-btn"
+                onclick="handleClearAll()"
+                data-theme="default"
+                type="button"
+                style="text-decoration: underline;"
+              >
+                Clear All
+              </button>
+              <div class="collection">
+                <div class="loading-overlay gradient"></div>
+                <ul
+                  id="product-grid"
+                  data-id="{{ section.id }}"
+                  class="
+                    product-grid__products catalog-ProductGrid-module__grid catalog-ProductGrid-module__mobile-columns-2 catalog-ProductGrid-module__desktop-columns-3-medium
+                    {% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %}
+                    gap-0 w-full
+                  "
+                >
+                  {% assign skip_card_product_styles = false %}
+                  {%- for product in collection.products -%}
+                    {% assign lazy_load = false %}
+                    {%- if forloop.index > 2 -%}
+                      {% assign lazy_load = true %}
+                    {%- endif -%}
+                    <li
+                      class="
+                        group relative custom-product-card sm:max-h[724px]
+                        {% if settings.animations_reveal_on_scroll %}
+                          scroll-trigger animate--slide-in
+                        {% endif %}
+                      "
+                      {% if settings.animations_reveal_on_scroll %}
+                        data-cascade
+                        style="--animation-order: {{ forloop.index }};"
+                      {% endif %}
+                    >
+                      {% render 'card-product',
+                        card_product: product,
+                        media_aspect_ratio: section.settings.image_ratio,
+                        image_shape: section.settings.image_shape,
+                        show_secondary_image: section.settings.show_secondary_image,
+                        show_vendor: section.settings.show_vendor,
+                        show_rating: section.settings.show_rating,
+                        lazy_load: lazy_load,
+                        skip_styles: skip_card_product_styles,
+                        quick_add: section.settings.quick_add,
+                        section_id: section.id
+                      %}
+                    </li>
+                    {% assign skip_card_product_styles = true %}
+                  {%- endfor -%}
+                </ul>
+                {%- if paginate.pages > 1 -%}
+                  {% render 'pagination', paginate: paginate, anchor: '' %}
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    {%- endpaginate -%}
+  </div>
+  {% if section.settings.image_shape == 'arch' %}
+    {{ 'mask-arch.svg' | inline_asset_content }}
+  {% endif %}
+</div>
+<div id="QuickAdd-collection-page-sizeguide" class="quick-view-product-popup-modal"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const appViewParam = urlParams.get('app-view');
+    const appViewTop = document.querySelector('.app-view-top');
+    const appViewOverlay = document.querySelector('.app-view-sort-overlay');
+    if (appViewParam === 'true') {
+      // Enable app-view mode
+      document.body.classList.add('app-view-active');
+      // Dynamically load app-view.css
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '{{ "app-view.css" | asset_url }}';
+      document.head.appendChild(link);
+      // Show app-view elements
+      if (appViewTop) {
+        appViewTop.style.display = 'block';
+        appViewTop.setAttribute('aria-hidden', 'false');
+      }
+      if (appViewOverlay) {
+        appViewOverlay.style.display = 'flex';
+        appViewOverlay.setAttribute('aria-hidden', 'false');
+      }
+    } else {
+      // Remove app-view class and hide elements
+      document.body.classList.remove('app-view-active');
+      if (appViewTop) {
+        appViewTop.style.display = 'none';
+        appViewTop.setAttribute('aria-hidden', 'true');
+      }
+      if (appViewOverlay) {
+        appViewOverlay.style.display = 'none';
+        appViewOverlay.setAttribute('aria-hidden', 'true');
+      }
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const overlay = document.getElementById('appViewSortModal');
+    const btnOpen = document.querySelector('.app-view-sort-toggle');
+    const btnClose = overlay ? overlay.querySelector('.app-view-sort-close') : null;
+    const options = overlay ? overlay.querySelectorAll('.app-view-sort-option') : [];
+    if (!overlay) return;
+    function openModal() {
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      // disable background scroll
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+    // only attach open if in app-view mode
+    if (document.body.classList.contains('app-view-active')) {
+      if (btnOpen) {
+        btnOpen.addEventListener('click', function (e) {
+          e.preventDefault();
+          openModal();
+        });
+      }
+      if (btnClose) {
+        btnClose.addEventListener('click', closeModal);
+      }
+      // click outside dialog to close
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) {
+          closeModal();
+        }
+      });
+      // ESC key
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && overlay.classList.contains('open')) {
+          closeModal();
+        }
+      });
+      // option selection
+      options.forEach(function (opt) {
+        opt.addEventListener('click', function (e) {
+          const value = e.currentTarget.getAttribute('data-sort');
+          if (value) {
+            if (typeof changeSortBy === 'function') {
+              changeSortBy(value);
+            } else {
+              const url = new URL(window.location.href);
+              url.searchParams.set('sort_by', value);
+              url.searchParams.set('app-view', 'true');
+              window.location.href = url.toString();
+            }
+          }
+          closeModal();
+        });
+      });
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Show the top bar only when app-view-active exists
+    const topBar = document.querySelector('.app-view-top');
+    if (!topBar) return;
+    if (document.body.classList.contains('app-view-active')) {
+      topBar.classList.remove('hidden-by-default');
+      topBar.setAttribute('aria-hidden', 'false');
+    } else {
+      topBar.classList.add('hidden-by-default');
+      topBar.setAttribute('aria-hidden', 'true');
+      return;
+    }
+    // CATEGORY dropdown navigation
+    const catSelect = document.getElementById('app-view-category');
+    if (catSelect) {
+      catSelect.addEventListener('change', function (e) {
+        const v = e.target.value;
+        if (v) {
+          // navigate to chosen sub-collection URL
+          if (v === 'home') window.location.href = '/';
+          else window.location.href = v;
+        }
+      });
+    }
+    // FILTER button: use existing handleRefine() (present in this file)
+    const filterBtn = document.querySelector('.app-view-filter');
+    if (filterBtn) {
+      filterBtn.addEventListener('click', function () {
+        // existing function toggles the Globo filter canvas
+        if (typeof handleRefine === 'function') {
+          handleRefine();
+        } else if (window.globofilter && typeof window.globofilter.toggleCanvas === 'function') {
+          window.globofilter.toggleCanvas();
+        } else {
+          console.warn('Filter toggle not available');
+        }
+      });
+    }
+    // SORT toggle: show custom small dropdown and map selection to changeSortBy()
+    const sortWrap = document.querySelector('.app-view-sort-wrap');
+    const sortToggle = document.querySelector('.app-view-sort-toggle');
+    const sortMenuSelect = document.getElementById('app-view-sort');
+    if (sortToggle && sortWrap) {
+      sortToggle.addEventListener('click', function () {
+        const isShown = sortWrap.classList.toggle('show');
+        sortToggle.setAttribute('aria-expanded', isShown ? 'true' : 'false');
+        if (isShown && sortMenuSelect) sortMenuSelect.focus();
+      });
+      // close the sort menu when clicking outside
+      document.addEventListener('click', function (e) {
+        if (!sortWrap.contains(e.target) && !sortToggle.contains(e.target)) {
+          sortWrap.classList.remove('show');
+          sortToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+    // When the user selects a sort option, call changeSortBy (existing mapping)
+    if (sortMenuSelect) {
+      sortMenuSelect.addEventListener('change', function (e) {
+        const map = {
+          manual: 'manual',
+          'created-descending': 'created-descending',
+          'price-ascending': 'price-ascending',
+          'price-descending': 'price-descending',
+          'best-selling': 'best-selling',
+        };
+        const key = map[e.target.value] || e.target.value;
+        // If your theme has changeSortBy defined (it was referenced earlier), call it
+        if (typeof changeSortBy === 'function') {
+          changeSortBy(key);
+        } else {
+          // fallback: update URL with sort_by param and reload
+          const url = new URL(window.location.href);
+          url.searchParams.set('sort_by', key);
+          window.location.href = url.toString();
+        }
+      });
+    }
+  });
+</script>
+<script>
+  let isCustomer = false;
+  {% if customer %}
+    isCustomer = true;
+  {% endif %}
+  window.wishlistLabel = {
+    customerLoggedIn: isCustomer,
+    addToWishlist: "{{ 'customer.my_list_page.flyout_text' | t }}",
+    signIn: "{{ 'customer.login_page.sign_in' | t }}",
+    listSubtext: "{{ 'customer.my_list_page.list_subtext' | t }}",
+    createAcc: "{{ 'customer.account.create_acc' | t }}",
+    itemSaveLogin: "{{ 'customer.my_list_page.item_save_login' | t }}",
+    viewList: "{{ 'customer.my_list_page.view_list' | t }}"
+  };
+</script>
+<script src="{{ 'collection.js' | asset_url }}" defer="defer"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdown = document.getElementById('sort-by-dropdown-category');
+    function handleChange(event) {
+      const selectedValue = event.target.value;
+      if (selectedValue) {
+        window.location.href = selectedValue; // optional navigation
+      }
+    }
+    if (dropdown) {
+      dropdown.addEventListener('change', handleChange);
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Wait 2 seconds (2000 ms) before running the code
+    setTimeout(function () {
+      const button = document.querySelector('.gf-filter-selection');
+      if (button) {
+        button.addEventListener('click', function () {
+          const el = document.querySelector('span[data-sort="price-descending"]');
+          if (el) {
+            el.textContent = 'Price: High to Low';
+          }
+          const eld = document.querySelector('span[data-sort="created-descending"]');
+          if (eld) {
+            eld.textContent = 'Date: New to Old';
+          }
+          const elp = document.querySelector('span[data-sort="price-ascending"]');
+          if (elp) {
+            elp.textContent = 'Price: Low to High';
+          }
+          // Add your code here
+        });
+      } else {
+        console.log('Button not found yet');
+      }
+    }, 2000); // 2000ms = 2 seconds
+  });
+</script>
+<style>
+  .wishlist-collection-icon,
+  .add-to-list-button.wishlist-filled-icon {
+    z-index: 2 !important;
+  }
+</style>
+<script>
+  function handleRefine() {
+    globofilter.toggleCanvas();
+    const gfFilterDiv = document.querySelector('.gf-filter-contents');
+    if (gfFilterDiv && !gfFilterDiv.querySelector('.drop-down.feature-dropdown[data-testid="drop-down"]')) {
+      gfFilterDiv.insertAdjacentHTML(
+        'afterbegin',
+        `
+  <div class="drop-down feature-dropdown mbl-filter-feature-dropdown res-feature-dropdown" data-testid="drop-down" style="width: calc(100% - 30px); margin: 25px 0 25px 13px;">
+    <select data-filled="true" id="sort-by-dropdown-mobile">
+      <optgroup label="{{ "products.facets.sort_by_label" | t }}">
+        <option value="bestmatch" selected="">{{ 'general.search.bestmatch' | t }}</option>
+        <option value="newest">{{ 'general.search.newest' | t }}</option>
+        <option value="pricelow2high">{{ 'general.search.pricelow2high' | t }}</option>
+        <option value="pricehigh2low">{{ 'general.search.pricehigh2low' | t }}</option>
+        {% comment %} <option value="avgrating">{{ 'general.search.avgrating' | t }}</option> {% endcomment %}
+        <option value="metricorderedunits">{{ 'general.search.metricorderedunits' | t }}</option>
+      </optgroup>
+    </select>
+    <label class="placeholder" data-testid="placeholder" for="sort-by-dropdown">
+      {{- 'products.facets.sort_by_label' | t -}}
+    </label>
+    <span class="float-label" data-testid="float-label">
+      {{ 'products.facets.sort_by_label' | t }}
+    </span>
+    <span aria-hidden="true" class="arrow-icon" data-testid="arrow-icon"></span>
+  </div>
+  `
+      );
+    }
+  }
+</script>
+{% comment %}
+  <style>
+      nav.breadcrumb a,
+      nav.breadcrumb span {
+        display: none;
+      }
+      nav.breadcrumb span:last-child {
+        display: block;
+        color: #5e5e5e;
+        font-size: 1.3rem;
+      }
+      .breadcrumb {
+        padding: 8px 0 8px 10px;
+        background-color: #f6f6f6;
+      }
+  </style>
+{% endcomment %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdown = document.getElementById('sort-by-dropdown');
+    const sortMapping = {
+      bestmatch: 'manual', // Featured
+      newest: 'created-descending', // Date, new to old
+      pricelow2high: 'price-ascending', // Low → High
+      pricehigh2low: 'price-descending', // High → Low
+      metricorderedunits: 'best-selling', // Best Selling
+      avgrating: 'rating-descending', // If supported
+    };
+    dropdown.addEventListener('change', function () {
+      const selectedValue = this.value;
+      const sortKey = sortMapping[selectedValue];
+      if (sortKey) {
+        // Call Globo/Shopify sorting function
+        changeSortBy(sortKey);
+      }
+    });
+  });
+  document.addEventListener('change', function (e) {
+    // matches the select by id or you can target a class, e.g. '.sort-by'
+    if (!e.target || !e.target.matches('#sort-by-dropdown-mobile')) return;
+    const selectedValue = e.target.value;
+    const sortMapping = {
+      bestmatch: 'manual', // Featured
+      newest: 'created-descending', // Date, new to old
+      pricelow2high: 'price-ascending', // Low → High
+      pricehigh2low: 'price-descending', // High → Low
+      metricorderedunits: 'best-selling', // Best Selling
+      avgrating: 'rating-descending', // If supported
+    };
+    const sortKey = sortMapping[selectedValue];
+    if (sortKey) {
+      // Call Globo/Shopify sorting function
+      changeSortBy(sortKey);
+    }
+  });
+</script>
+<script>
+  function handleClearAll() {
+    const elem = document.querySelector('.collection-result-count');
+    if (elem) {
+      elem.style.visibility = 'hidden';
+      elem.style.opacity = '0';
+    }
+    clearAllFilter();
+  }
+</script>
+<script>
+  document.addEventListener('click', function (e) {
+    const elem = document.querySelector('.collection-result-count');
+    const btn = e.target.closest("button[role='checkbox']");
+    if (btn && !btn.classList.contains('checked')) {
+      console.log(btn);
+      const intervalId = setInterval(() => {
+        const updatedSummary = document.querySelector('.gf-summary b');
+        if (updatedSummary && resultCount) {
+          const number = updatedSummary.textContent.trim();
+          // Check if the value is already the same
+          if (resultCount.innerHTML === number) {
+            clearInterval(intervalId); // stop the interval
+          } else {
+            resultCount.innerHTML = number; // update the value
+          }
+        }
+      }, 1000);
+      if (elem) {
+        elem.style.visibility = 'visible';
+        elem.style.opacity = '1';
+      }
+    } else if (btn) {
+      // This runs when GF checkbox becomes UNCHECKED
+      const gfValue = btn.getAttribute('data-fvalue')?.trim();
+      if (gfValue) {
+        const uiBtn = document.querySelector(`.js-content-filter[data-filter-values="${gfValue}"]`);
+        if (uiBtn && uiBtn.hasAttribute('data-state')) {
+          uiBtn.removeAttribute('data-state');
+        }
+      }
+    }
+    if (btn && btn.classList.contains('checked')) {
+      console.log('checked');
+      const elem = document.querySelector('.gf-actions .globo-selected-items-wrapper .globo-selected-items');
+      if (elem) {
+        const liCount = elem.querySelectorAll('li').length - 1;
+        if (liCount < 1) {
+          const elem = document.querySelector('.collection-result-count');
+          elem.style.visibility = 'hidden';
+          elem.style.opacity = '0';
+        }
+        const intervalId = setInterval(() => {
+          const updatedSummary = document.querySelector('.gf-summary b');
+          if (updatedSummary && resultCount) {
+            const number = updatedSummary.textContent.trim();
+            // Check if the value is already the same
+            if (resultCount.innerHTML === number) {
+              clearInterval(intervalId); // stop the interval
+            } else {
+              resultCount.innerHTML = number; // update the value
+            }
+          }
+        }, 1000);
+      }
+    }
+    const removeLink = e.target.closest("a[onclick^='removeFilterValue']");
+    if (removeLink) {
+      const closestUl = e.target.closest('ul');
+      if (closestUl?.classList?.contains('globo-selected-items')) {
+        const liCount = closestUl.querySelectorAll('li').length - 2;
+        const intervalId = setInterval(() => {
+          const updatedSummary = document.querySelector('.gf-summary b');
+          if (updatedSummary && resultCount) {
+            const number = updatedSummary.textContent.trim();
+            // Check if the value is already the same
+            if (resultCount.innerHTML === number) {
+              clearInterval(intervalId); // stop the interval
+            } else {
+              resultCount.innerHTML = number; // update the value
+            }
+          }
+        }, 1000);
+        // Hide result count if no selected filters remain
+        if (liCount < 1 && elem) {
+          elem.style.visibility = 'hidden';
+          elem.style.opacity = '0';
+        }
+      }
+    }
+  });
+  document.addEventListener('DOMContentLoaded', () => {
+    const checkExist = setInterval(() => {
+      const elem = document.querySelector('.gf-actions .globo-selected-items-wrapper .globo-selected-items');
+      if (elem) {
+        const liCount = elem.querySelectorAll('li').length;
+        if (liCount > 0) {
+          const ele = document.querySelector('.collection-result-count');
+          if (ele) {
+            clearInterval(checkExist);
+            ele.style.visibility = 'visible';
+            ele.style.opacity = '1';
+          }
+          const updatedSummary = document.querySelector('.gf-summary b');
+          if (updatedSummary && resultCount) {
+            const number = updatedSummary.textContent.trim();
+            resultCount.innerHTML = number;
+          }
+        }
+      }
+    }, 1000);
+  });
+</script>
+<script>
+  (function () {
+    const PRODUCT_SELECTOR = 'li.grid__item:not(.advertisement)';
+    const BANNER_SELECTOR = 'li.grid__item.advertisement[data-position]';
+    function repositionBanners() {
+      const products = document.querySelectorAll(PRODUCT_SELECTOR);
+      if (!products.length) return;
+      document.querySelectorAll(BANNER_SELECTOR).forEach((banner) => {
+        const position = parseInt(banner.dataset.position, 10);
+        if (!position || position < 1) return;
+        const targetIndex = Math.min(position - 1, products.length - 1);
+        const targetItem = products[targetIndex];
+        console.log(targetItem);
+        if (targetItem && banner.previousElementSibling !== targetItem) {
+          targetItem.before(banner);
+        }
+        playPauseButton(banner);
+      });
+    }
+    function playPauseButton(banner) {
+      const video = banner.querySelector('.adv_background__video video');
+      const button = banner.querySelector('.adv_background__video button.video-button');
+      button.addEventListener('click', () => {
+        if (video.paused) {
+          video.play();
+          button.dataset.state = 'playing';
+          button.setAttribute('aria-label', 'Pause video');
+        } else {
+          video.pause();
+          button.dataset.state = 'paused';
+          button.setAttribute('aria-label', 'Play video');
+        }
+      });
+    }
+    /* Initial load */
+    document.addEventListener('DOMContentLoaded', repositionBanners);
+    /* 🔥 Globo filter re-render */
+    window.addEventListener('globoFilterRenderCompleted', function (e) {
+      repositionBanners();
+    });
+  })();
+</script>
+<script>
+  /**
+   * Static Collection Filter Preserver (Robust Version)
+   * Keeps the Collection filter showing all collections with initial counts
+   * even when other filters (Color, Size, etc.) are applied
+   *
+   * Handles edge cases:
+   * - User opens page with filters already in URL
+   * - Uses sessionStorage to persist pristine state per collection
+   */
+  (function () {
+    const STORAGE_KEY_PREFIX = 'globo_collection_pristine_';
+    let initialCollectionHTML = null;
+    let currentCollectionHandle = null;
+    // Get current collection handle from URL
+    function getCollectionHandle() {
+      const match = window.location.pathname.match(/\/collections\/([^\/\?]+)/);
+      return match ? match[1] : 'default';
+    }
+    // Check if any filters are currently applied (via URL or Globo state)
+    function hasActiveFilters() {
+      // Check URL for filter params
+      const urlParams = new URLSearchParams(window.location.search);
+      for (const [key] of urlParams) {
+        if (key.startsWith('filter.') || key.startsWith('pf_') || key === 'q') {
+          console.log('[StaticCollection] Active filter detected in URL:', key);
+          return true;
+        }
+      }
+      // Check Globo selected items
+      const selectedItems = document.querySelector('.globo-selected-items li');
+      if (selectedItems) {
+        console.log('[StaticCollection] Active filter detected in Globo state');
+        return true;
+      }
+      // Check for checked filter buttons (excluding Collection type)
+      const checkedFilters = document.querySelectorAll(
+        '.gf-option-block:not([data-filter-type="Collection"]) button[aria-checked="true"]'
+      );
+      if (checkedFilters.length > 0) {
+        console.log('[StaticCollection] Active filter detected:', checkedFilters.length, 'checked');
+        return true;
+      }
+      return false;
+    }
+    // Get storage key for current collection
+    function getStorageKey() {
+      return STORAGE_KEY_PREFIX + currentCollectionHandle;
+    }
+    // Try to get pristine state from sessionStorage
+    function getPristineFromStorage() {
+      try {
+        return sessionStorage.getItem(getStorageKey());
+      } catch (e) {
+        return null;
+      }
+    }
+    // Save pristine state to sessionStorage
+    function savePristineToStorage(html) {
+      try {
+        sessionStorage.setItem(getStorageKey(), html);
+        console.log('[StaticCollection] Saved pristine state to storage for:', currentCollectionHandle);
+      } catch (e) {
+        console.warn('[StaticCollection] Could not save to sessionStorage');
+      }
+    }
+    // Capture initial Collection filter HTML
+    function captureInitialCollection() {
+      if (initialCollectionHTML) return true; // Already captured
+      currentCollectionHandle = getCollectionHandle();
+      const collectionBlock = document.querySelector('.gf-option-block[data-filter-type="Collection"]');
+      if (!collectionBlock) return false;
+      // First, try to get from storage (most reliable pristine state)
+      const storedPristine = getPristineFromStorage();
+      if (storedPristine) {
+        initialCollectionHTML = storedPristine;
+        console.log('[StaticCollection] Loaded pristine state from storage');
+        return true;
+      }
+      // If no filters are active, this is pristine state - capture and store it
+      if (!hasActiveFilters()) {
+        initialCollectionHTML = collectionBlock.innerHTML;
+        savePristineToStorage(initialCollectionHTML);
+        console.log('[StaticCollection] Captured pristine state (no active filters)');
+        return true;
+      }
+      // Filters are active and no stored state - we can't reliably get pristine state
+      // In this case, we'll capture current state but mark it as potentially filtered
+      console.log('[StaticCollection] Warning: Filters active on load, pristine state may not be accurate');
+      initialCollectionHTML = collectionBlock.innerHTML;
+      return true;
+    }
+    // Restore Collection filter to initial state
+    function restoreCollectionFilter() {
+      if (!initialCollectionHTML) return;
+      const collectionBlock = document.querySelector('.gf-option-block[data-filter-type="Collection"]');
+      if (collectionBlock) {
+        // Check if content changed (Globo updated it)
+        if (collectionBlock.innerHTML !== initialCollectionHTML) {
+          collectionBlock.innerHTML = initialCollectionHTML;
+          console.log('[StaticCollection] Restored to pristine state');
+        }
+      }
+    }
+    // Initialize
+    currentCollectionHandle = getCollectionHandle();
+    // Wait for Globo to render initially
+    const initInterval = setInterval(() => {
+      const collectionBlock = document.querySelector('.gf-option-block[data-filter-type="Collection"]');
+      if (collectionBlock) {
+        clearInterval(initInterval);
+        // Small delay to ensure Globo has finished rendering
+        setTimeout(() => {
+          captureInitialCollection();
+        }, 300);
+      }
+    }, 200);
+    // Timeout fallback
+    setTimeout(() => clearInterval(initInterval), 10000);
+    // Listen for Globo filter updates and restore Collection
+    document.addEventListener('globo.filter.updated', () => {
+      setTimeout(restoreCollectionFilter, 150);
+    });
+    window.addEventListener('globoFilterRenderCompleted', () => {
+      setTimeout(restoreCollectionFilter, 150);
+    });
+    // Also restore when clear all filters is clicked
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.clear-link-button') || e.target.closest('[onclick*="clearAllFilter"]')) {
+        // When clearing all filters, also clear storage to get fresh pristine state
+        try {
+          sessionStorage.removeItem(getStorageKey());
+          initialCollectionHTML = null;
+          console.log('[StaticCollection] Cleared storage, will recapture pristine state');
+        } catch (e) {}
+        // Recapture after clear
+        setTimeout(() => {
+          captureInitialCollection();
+        }, 500);
+      }
+    });
+  })();
+</script>
+<script>
+  (function () {
+    const ACTIVE = 'filters-applied';
+    const elements = document.querySelectorAll('.js-content-filter');
+    if (!elements.length) return;
+    const isWomensBottoms = !!document.querySelector('.womens-bottom-container');
+    let triggeredByButton = false;
+    let activeButtonEl = null;
+    const getGloboBtn = (value) => document.querySelector(`button[role="checkbox"][data-fvalue="${value}"]`);
+    const getGloboBtns = (valuesStr) => {
+      const values = valuesStr
+        .split(',')
+        .map((v) => v.trim())
+        .filter(Boolean);
+      return values.map(getGloboBtn).filter(Boolean);
+    };
+    const setActive = (el, active) => {
+      if (active) {
+        el.setAttribute('data-state', ACTIVE);
+        el.setAttribute('aria-pressed', 'true');
+      } else {
+        el.removeAttribute('data-state');
+        el.setAttribute('aria-pressed', 'false');
+      }
+    };
+    const clearVisuals = () => elements.forEach((el) => setActive(el, false));
+    const syncVisuals = () => {
+      elements.forEach((el) => {
+        const valuesStr = el.dataset.filterValues;
+        const gBtns = getGloboBtns(valuesStr);
+        if (!gBtns.length) {
+          setActive(el, false);
+          return;
+        }
+        if (el.dataset.group) {
+          // For radio-like groups
+          const allChecked = gBtns.every((g) => g.getAttribute('aria-checked') === 'true');
+          setActive(el, allChecked);
+        } else {
+          const allChecked = gBtns.every((g) => g.getAttribute('aria-checked') === 'true');
+          if (!allChecked) {
+            setActive(el, false);
+            return;
+          }
+          if (triggeredByButton && el === activeButtonEl) {
+            setActive(el, true);
+          }
+        }
+      });
+    };
+    const clearAllFilters = () => {
+      document.querySelectorAll('button[role="checkbox"][aria-checked="true"]').forEach((btn) => btn.click());
+    };
+    const deactivateGroup = (groupName) => {
+      document.querySelectorAll(`.js-content-filter[data-group="${groupName}"]`).forEach((el) => {
+        if (el.hasAttribute('data-state')) {
+          const valuesStr = el.dataset.filterValues;
+          const gBtns = getGloboBtns(valuesStr);
+          gBtns.forEach((g) => {
+            if (g.getAttribute('aria-checked') === 'true') g.click();
+          });
+          setActive(el, false);
+        }
+      });
+    };
+    elements.forEach((el) => {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        triggeredByButton = true;
+        activeButtonEl = this;
+        const valuesStr = this.dataset.filterValues;
+        const gBtns = getGloboBtns(valuesStr);
+        if (!gBtns.length) return;
+        const group = this.dataset.group;
+        const wasActive = gBtns.every((g) => g.getAttribute('aria-checked') === 'true');
+        if (group) {
+          deactivateGroup(group);
+          if (!wasActive) {
+            gBtns.forEach((g) => {
+              if (g.getAttribute('aria-checked') !== 'true') g.click();
+            });
+            setActive(this, true);
+          }
+        } else {
+          const anyChecked = gBtns.some((g) => g.getAttribute('aria-checked') === 'true');
+
+          const isActive = this.hasAttribute('data-state');
+
+          if (anyChecked && !isActive) {
+            setActive(this, true);
+          } else if (anyChecked && isActive) {
+            gBtns.forEach((g) => {
+              if (g.getAttribute('aria-checked') === 'true') {
+                g.click();
+              }
+            });
+            setActive(this, false);
+          } else {
+            gBtns.forEach((g) => {
+              if (g.getAttribute('aria-checked') !== 'true') {
+                g.click();
+              }
+            });
+            setActive(this, true);
+          }
+        }
+        setTimeout(() => {
+          triggeredByButton = false;
+          activeButtonEl = null;
+        }, 0);
+      });
+    });
+    const setupSync = () => {
+      syncVisuals();
+      document.addEventListener('globo.filter.updated', syncVisuals);
+      const observer = new MutationObserver(() => {
+        syncVisuals();
+      });
+      observer.observe(document.body, {
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['aria-checked'],
+      });
+      const clearAllBtn = document.querySelector('.clear-link-button');
+      if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', () => {
+          setTimeout(() => {
+            clearVisuals();
+            const viewAllDesktop = document.getElementById('jeans-viewAll');
+            const viewAllMobile = document.getElementById('jeans-viewAll-mobile');
+            if (viewAllDesktop) {
+              viewAllDesktop.checked = true;
+              setActive(viewAllDesktop, true);
+            }
+            if (viewAllMobile) {
+              viewAllMobile.checked = true;
+              setActive(viewAllMobile, true);
+            }
+          }, 250);
+        });
+      }
+    };
+    const wait = setInterval(() => {
+      if (getGloboBtn('Jeans') || getGloboBtn('Trousers') || getGloboBtns('321801617580,321801650348').length) {
+        clearInterval(wait);
+        setupSync();
+      }
+    }, 250);
+    setTimeout(() => clearInterval(wait), 10000);
+  })();
+  // mobile slider
+  document.addEventListener('DOMContentLoaded', function () {
+    const slider = document.getElementById('WomensBottomsSlider');
+    if (!slider) return;
+    const slides = slider.querySelectorAll('.slider__slide');
+    if (slides.length === 0) return;
+    const container = slider.closest('.womens-bottom-slider') || slider.parentElement;
+    if (!container) return;
+    const prevBtn = document.querySelector('.slider-button--prev');
+    const nextBtn = document.querySelector('.slider-button--next');
+    if (!prevBtn || !nextBtn) return;
+    // Force 3 visible slides initially
+    let visibleSlides = 3;
+    if (visibleSlides > slides.length) visibleSlides = slides.length;
+    // Calculate gutter (gap or margin-right)
+    const computedStyle = getComputedStyle(slider);
+    let gutter = parseInt(computedStyle.gap) || 0;
+    if (gutter === 0) {
+      gutter = parseInt(getComputedStyle(slides[0]).marginRight) || 0;
+    }
+    let containerWidth = container.offsetWidth;
+    let slideWidth = Math.round((containerWidth - (visibleSlides - 1) * gutter) / visibleSlides);
+    slides.forEach((slide) => {
+      slide.style.width = `${slideWidth}px`;
+      slide.style.flexShrink = '0';
+    });
+    let totalWidth = Math.round(slides.length * slideWidth + (slides.length - 1) * gutter);
+    slider.style.width = `${totalWidth}px`;
+    slider.style.display = 'flex';
+    slider.style.gap = `${gutter}px`;
+    let currentIndex = 0;
+    const maxIndex = Math.max(0, slides.length - visibleSlides);
+    let endTranslate = -(totalWidth - containerWidth);
+    let step = slideWidth + gutter;
+    let currentTranslate = 0;
+    function updateSlider() {
+      currentIndex = Math.max(0, Math.min(currentIndex, maxIndex));
+      let translateX = -currentIndex * step;
+      if (currentIndex === maxIndex) {
+        translateX = endTranslate;
+      }
+      slider.style.transform = `translateX(${translateX}px)`;
+      slider.style.transition = 'transform 0.3s ease-in-out';
+      currentTranslate = translateX;
+      prevBtn.style.display = currentIndex === 0 ? 'none' : '';
+      nextBtn.style.display = currentIndex >= maxIndex ? 'none' : '';
+    }
+    function navigate(direction) {
+      if (direction === 'prev' && currentIndex > 0) {
+        currentIndex--;
+      } else if (direction === 'next' && currentIndex < maxIndex) {
+        currentIndex++;
+      }
+      updateSlider();
+    }
+    prevBtn.addEventListener('click', () => navigate('prev'));
+    nextBtn.addEventListener('click', () => navigate('next'));
+    let isDragging = false;
+    let startPos = 0;
+    let prevTranslate = 0;
+    let hasMoved = false;
+    const DRAG_THRESHOLD = 6;
+    function dragStart(e) {
+      hasMoved = false;
+      startPos = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+      isDragging = true;
+      prevTranslate = currentTranslate;
+      slider.style.transition = '';
+      container.style.cursor = 'grabbing';
+      document.addEventListener('mousemove', dragMove);
+      document.addEventListener('mouseup', dragEnd);
+      document.addEventListener('touchmove', dragMove, { passive: false });
+      document.addEventListener('touchend', dragEnd);
+      document.addEventListener('touchcancel', dragEnd);
+    }
+    function dragMove(e) {
+      if (!isDragging) return;
+      const currentPosition = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+      const delta = currentPosition - startPos;
+      if (Math.abs(delta) > DRAG_THRESHOLD) {
+        hasMoved = true;
+        e.preventDefault();
+        currentTranslate = prevTranslate + delta;
+        currentTranslate = Math.min(0, Math.max(currentTranslate, endTranslate));
+        slider.style.transform = `translateX(${currentTranslate}px)`;
+      }
+    }
+    function dragEnd() {
+      if (!isDragging) return;
+      isDragging = false;
+      container.style.cursor = '';
+      document.removeEventListener('mousemove', dragMove);
+      document.removeEventListener('mouseup', dragEnd);
+      document.removeEventListener('touchmove', dragMove);
+      document.removeEventListener('touchend', dragEnd);
+      document.removeEventListener('touchcancel', dragEnd);
+      if (!hasMoved) return;
+      const potentialIndex = Math.round(-currentTranslate / step);
+      currentIndex = Math.max(0, Math.min(potentialIndex, maxIndex));
+      updateSlider();
+    }
+    slider.addEventListener('mousedown', dragStart);
+    slider.addEventListener('touchstart', dragStart, { passive: false });
+    slider.addEventListener('mouseleave', dragEnd);
+    updateSlider();
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        containerWidth = container.offsetWidth;
+        slideWidth = Math.round((containerWidth - (visibleSlides - 1) * gutter) / visibleSlides);
+        slides.forEach((slide) => {
+          slide.style.width = `${slideWidth}px`;
+        });
+        totalWidth = Math.round(slides.length * slideWidth + (slides.length - 1) * gutter);
+        slider.style.width = `${totalWidth}px`;
+        endTranslate = -(totalWidth - containerWidth);
+        step = slideWidth + gutter;
+        updateSlider();
+      }, 250);
+    });
+  });
+</script>
+{% schema %}
+{
+  "name": "t:sections.main-collection-product-grid.name",
+  "class": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 36,
+      "step": 4,
+      "default": 16,
+      "label": "t:sections.main-collection-product-grid.settings.products_per_page.label"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4,
+      "label": "t:sections.main-collection-product-grid.settings.columns_desktop.label"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "default": "2",
+      "label": "t:sections.main-collection-product-grid.settings.columns_mobile.label",
+      "options": [
+        {
+          "value": "1",
+          "label": "t:sections.main-collection-product-grid.settings.columns_mobile.options__1.label"
+        },
+        {
+          "value": "2",
+          "label": "t:sections.main-collection-product-grid.settings.columns_mobile.options__2.label"
+        }
+      ]
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "info": "t:sections.all.colors.has_cards_info",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main-collection-product-grid.settings.header__3.content"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__1.label"
+        },
+        {
+          "value": "portrait",
+          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__2.label"
+        },
+        {
+          "value": "square",
+          "label": "t:sections.main-collection-product-grid.settings.image_ratio.options__3.label"
+        }
+      ],
+      "default": "adapt",
+      "label": "t:sections.main-collection-product-grid.settings.image_ratio.label"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.all.image_shape.options__1.label"
+        },
+        {
+          "value": "arch",
+          "label": "t:sections.all.image_shape.options__2.label"
+        },
+        {
+          "value": "blob",
+          "label": "t:sections.all.image_shape.options__3.label"
+        },
+        {
+          "value": "chevronleft",
+          "label": "t:sections.all.image_shape.options__4.label"
+        },
+        {
+          "value": "chevronright",
+          "label": "t:sections.all.image_shape.options__5.label"
+        },
+        {
+          "value": "diamond",
+          "label": "t:sections.all.image_shape.options__6.label"
+        },
+        {
+          "value": "parallelogram",
+          "label": "t:sections.all.image_shape.options__7.label"
+        },
+        {
+          "value": "round",
+          "label": "t:sections.all.image_shape.options__8.label"
+        }
+      ],
+      "default": "default",
+      "label": "t:sections.all.image_shape.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "default": false,
+      "label": "t:sections.main-collection-product-grid.settings.show_secondary_image.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "t:sections.main-collection-product-grid.settings.show_vendor.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "default": false,
+      "label": "t:sections.main-collection-product-grid.settings.show_rating.label",
+      "info": "t:sections.main-collection-product-grid.settings.show_rating.info"
+    },
+    {
+      "type": "select",
+      "id": "quick_add",
+      "default": "none",
+      "label": "t:sections.main-collection-product-grid.settings.quick_add.label",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_1"
+        },
+        {
+          "value": "standard",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_2"
+        },
+        {
+          "value": "bulk",
+          "label": "t:sections.main-collection-product-grid.settings.quick_add.options.option_3"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main-collection-product-grid.settings.header__1.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "default": true,
+      "label": "t:sections.main-collection-product-grid.settings.enable_filtering.label",
+      "info": "t:sections.main-collection-product-grid.settings.enable_filtering.info"
+    },
+    {
+      "type": "select",
+      "id": "filter_type",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "t:sections.main-collection-product-grid.settings.filter_type.options__1.label"
+        },
+        {
+          "value": "vertical",
+          "label": "t:sections.main-collection-product-grid.settings.filter_type.options__2.label"
+        },
+        {
+          "value": "drawer",
+          "label": "t:sections.main-collection-product-grid.settings.filter_type.options__3.label"
+        }
+      ],
+      "default": "horizontal",
+      "label": "t:sections.main-collection-product-grid.settings.filter_type.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "default": true,
+      "label": "t:sections.main-collection-product-grid.settings.enable_sorting.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_heading",
+      "label": "Show filter heading",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "filter_heading",
+      "default": "Filter by Category",
+      "label": "Filter Heading"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "visual_filter_item",
+      "name": "Image Filter Item",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "womens_only",
+          "label": "Show for Women's collection",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Jeans"
+        },
+        {
+          "type": "text",
+          "id": "filter_value",
+          "label": "Filter Value",
+          "default": "321801650348"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "image_url",
+          "label": "Fallback Image URL"
+        }
+      ]
+    },
+    {
+      "type": "radio_filter_item",
+      "name": "Radio Filter Option",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "womens_only",
+          "label": "Show for Women's collection",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "option_id",
+          "label": "Input ID (unique)"
+        },
+        {
+          "type": "text",
+          "id": "group_name",
+          "label": "Radio Group Name",
+          "default": "jeans-style"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Label Text",
+          "default": "View All"
+        },
+        {
+          "type": "text",
+          "id": "filter_value",
+          "label": "Filter Values (comma separated)",
+          "default": "321801617580,321801650348"
+        },
+        {
+          "type": "text",
+          "id": "data_state",
+          "label": "Data State",
+          "default": "filters-applied"
+        },
+        {
+          "type": "checkbox",
+          "id": "checked",
+          "label": "Checked by default",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Women's Bottoms – Image + Radio Filters",
+      "blocks": [
+        {
+          "type": "visual_filter_item",
+          "settings": {
+            "title": "Jeans",
+            "filter_value": "Jeans",
+            "image_url": "https://cdn.shopify.com/s/files/1/0711/6668/9452/files/ANF-2025-AugWk4-USCAMX-Womens-Bottoms-Visual-Nav-Jeans.webp"
+          }
+        },
+        {
+          "type": "radio_filter_item",
+          "settings": {
+            "option_id": "jeans-viewAll",
+            "group_name": "jeans-style",
+            "title": "View All",
+            "filter_value": "321801617580,321801650348",
+            "data_state": "filters-applied",
+            "checked": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
