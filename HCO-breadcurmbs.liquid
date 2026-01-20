@@ -1,0 +1,79 @@
+{% unless template == 'index' or template == 'cart' or template == 'list-collections' %}
+  <div class="breadcrumb-section mbl-breadcrumb">
+    
+    <nav
+      class="breadcrumb"
+      role="navigation"
+      aria-label="breadcrumbs"
+    >
+      <a href="{{ routes.root_url }}" title="Home">Home</a>
+
+      {% if template contains 'page' %}
+        <span aria-hidden="true">›</span>
+        <span>{{ page.title }}</span>
+
+      {% elsif template contains 'product' %}
+        {% assign breadcrumbs = product.metafields.custom.breadcrumbs %}
+
+        {% if breadcrumbs != blank %}
+          {% for parent in breadcrumbs.value %}
+            <span aria-hidden="true">›</span>
+            <a href="{{ parent.url }}">{{ parent.title }}</a>
+          {% endfor %}
+          <span aria-hidden="true">›</span>
+          <span>{{ product.title }}</span>
+        {% else %}
+          {% if collection and collection.url %}
+            <span aria-hidden="true">›</span>
+            {{ collection.title | link_to: collection.url }}
+          {% elsif product.collections.size > 0 %}
+            <span aria-hidden="true">›</span>
+            {{ product.collections.first.title | link_to: product.collections.first.url }}
+          {% endif %}
+          <span aria-hidden="true">›</span>
+          <span>{{ product.title }}</span>
+        {% endif %}
+
+      {% elsif template contains 'collection' and collection.handle %}
+       {% assign breadcrumbs = collection.metafields.custom.breadcrumbs %}
+
+        {% if breadcrumbs != blank %}
+          {% for parent in breadcrumbs.value %}
+            <span aria-hidden="true">›</span>
+            <a href="{{ parent.url }}">{{ parent.title }}</a>
+          {% endfor %}
+        {% else %}
+          <span aria-hidden="true">›</span>
+          {% if current_tags %}
+            {% capture url %}/collections/{{ collection.handle }}{% endcapture %}
+            {{ collection.title | link_to: url }}
+            <span aria-hidden="true">›</span>
+            <span>{{ current_tags | join: ' + ' }}</span>
+          {% else %}
+            <span>{{ collection.title }}</span>
+          {% endif %}
+        {% endif %}
+
+      {% elsif template == 'blog' %}
+        <span aria-hidden="true">›</span>
+        {% if current_tags %}
+          {{ blog.title | link_to: blog.url }}
+          <span aria-hidden="true">›</span>
+          <span>{{ current_tags | join: ' + ' }}</span>
+        {% else %}
+          <span>{{ blog.title }}</span>
+        {% endif %}
+
+      {% elsif template == 'article' %}
+        <span aria-hidden="true">›</span>
+        {{ blog.title | link_to: blog.url }}
+        <span aria-hidden="true">›</span>
+        <span>{{ article.title }}</span>
+
+      {% else %}
+        <span aria-hidden="true">›</span>
+        <span>{{ page_title }}</span>
+      {% endif %}
+    </nav>
+  </div>
+{% endunless %}
