@@ -1,0 +1,1 @@
+{{compare_at_price | minus: price | times: 100 | divided_by:  compare_at_price }}% OFF
