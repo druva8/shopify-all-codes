@@ -1,0 +1,298 @@
+{{ 'customer.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'password-hide.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  #password-strength-bars [data-bar].bar--red { background: #c00; }
+  #password-strength-bars [data-bar].bar--yellow { background: #f5bd03; }
+  #password-strength-bars [data-bar].bar--green { background: #008533; }
+
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="customer register section-{{ section.id }}-padding">
+  <h1 class="text-[2.8rem] text-[#2c2a27] font-['DS PF DIN Max',serif] place-self-start">
+    {{ 'customer.register.title' | t }}
+  </h1>
+  {%- form 'create_customer', novalidate: 'novalidate' -%}
+    {%- if form.errors -%}
+      <h2 class="form__message" tabindex="-1" autofocus>
+        <span class="svg-wrapper">
+          {{- 'icon-error.svg' | inline_asset_content -}}
+        </span>
+        {{ 'templates.contact.form.error_heading' | t }}
+      </h2>
+      <ul>
+        {%- for field in form.errors -%}
+          <li>
+            {%- if field == 'form' -%}
+              {{ form.errors.messages[field] }}
+            {%- else -%}
+              <a href="#RegisterForm-{{ field }}">
+                {{ form.errors.translated_fields[field] | capitalize }}
+                {{ form.errors.messages[field] }}
+              </a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    <div class="field-login border border-[#c6c6c6]">
+      <div class="field">
+        <input
+          type="email"
+          name="customer[email]"
+          id="CustomerEmail"
+          autocomplete="email"
+          autocorrect="off"
+          autocapitalize="off"
+          {% if has_errors and form.errors contains 'form' %}
+            aria-invalid="true"
+          {% endif %}
+          placeholder="{{ 'customer.login_page.email' | t }}"
+        >
+        <label for="CustomerEmail">
+          {{ 'customer.login_page.email' | t }}
+        </label>
+      </div>
+
+      {%- if has_errors and form.errors contains 'email' -%}
+        <span id="RegisterForm-email-error" class="form__message">
+          <span class="svg-wrapper">
+            {{- 'icon-error.svg' | inline_asset_content -}}
+          </span>
+          {{ form.errors.translated_fields.email | capitalize }}
+          {{ form.errors.messages.email }}.
+        </span>
+      {%- endif -%}
+
+      <span class="block w-11/12 border-t-2 border-[#c6c6c6] justify-self-center"></span>
+
+      <div class="field">
+        <input
+          type="password"
+          name="customer[password]"
+          id="CustomerPasswordRegister"
+          autocomplete="current-password"
+          placeholder="{{ 'customer.login_page.password' | t }}"
+        >
+        <label for="CustomerPasswordRegister">{{ 'customer.login_page.password' | t }}</label>
+        <button type="button" class="toggle-password button" aria-label="Show password">
+          <span aria-hidden="true" class="icon eye-icon" data-icon="eye-filled-hco"></span>
+          <span aria-hidden="true" class="icon eye-icon hidden" data-icon="eye-hco"></span>
+        </button>
+      </div>
+
+      {%- if has_errors and form.errors contains 'password' -%}
+        <span id="RegisterForm-password-error" class="form__message">
+          <span class="svg-wrapper">
+            {{- 'icon-error.svg' | inline_asset_content -}}
+          </span>
+          {{ form.errors.translated_fields.password | capitalize }}
+          {{ form.errors.messages.password }}.
+        </span>
+      {%- endif -%}
+    </div>
+
+    <div class="flex flex-col gap-3 text-start">
+      <p id="password-requirements-text" class="text-[#5e5e5e] text-[1.3rem] mt-7">
+        {{ 'customer.login_page.password_characters' | t }}
+      </p>
+
+      <div class="flex justify-between gap-2 mt-2" id="password-strength-bars">
+        <span class="flex-1 h-2 rounded-full bg-gray-300 transition-all" data-bar></span>
+        <span class="flex-1 h-2 rounded-full bg-gray-300 transition-all" data-bar></span>
+        <span class="flex-1 h-2 rounded-full bg-gray-300 transition-all" data-bar></span>
+        <span class="flex-1 h-2 rounded-full bg-gray-300 transition-all" data-bar></span>
+      </div>
+
+      <p
+        id="password-hint"
+        class="text-[1.3rem] text-[#5e5e5e] mt-2 hidden"
+        data-password-requirements="{{ 'customer.login_page.password_requirments' | t }}"
+        data-password-strength="{{ 'customer.login_page.password_strength' | t }}"
+        data-weak="{{ 'customer.login_page.weak' | t }}"
+        data-good="{{ 'customer.login_page.good' | t }}"
+        data-strong="{{ 'customer.login_page.strong' | t }}"
+      >
+        {{ 'customer.login_page.password_requirments' | t }}
+      </p>
+    </div>
+
+    <!-- Keep Me Signed In -->
+    <div class="flex items-center gap-2 mt-4 login-btm">
+      <input
+        id="keep-signed-in"
+        name="keep-signed-in"
+        type="checkbox"
+        class="bg-white border border-[#2c2a27] text-[#2c2a27] w-[25px] h-[25px] text-center"
+      >
+      <label for="keep-signed-in" class="text-[1.5rem] text-[#1c1c1c] cursor-pointer">
+        {{ 'customer.login_page.keep_me_signed' | t }}
+      </label>
+      <button
+        type="button"
+        aria-controls="keep-me-signed-in-tooltip"
+        aria-expanded="false"
+        class="!text-primary !min-w-0 !px-8 tooltip-container !min-w-auto"
+      >
+        <span
+          aria-hidden="true"
+          class="icon"
+          data-icon="question-outline"
+          data-testid="icon"
+        ></span>
+        <span aria-hidden="true" class="tooltip-icon" data-testid="tooltip-icon"></span>
+        {% if settings.signed_in_tooltip_content %}
+          <span class="tooltip-text">
+            {{ settings.signed_in_tooltip_content | escape }}
+          </span>
+        {% endif %}
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-2 items-center mt-5" id="login-buttons">
+      <button id="continue-btn" class="w-full h-[7vh]">
+        {{ 'customer.login_page.guest_continue' | t }}
+      </button>
+      <button class="login-sign-btn w-full h-[7vh]">
+        {{ 'customer.login_page.sign_in' | t }}
+      </button>
+    </div>
+
+    <div id="almost-done-section" class="hidden">
+      <p class="text-primary font-bold text-2xl pb-12 pt-4">
+        <span>{{ 'customer.register.almost_done' | t }}</span>
+      </p>
+      <div class="field-login border border-[#c6c6c6] mb-8">
+        <div class="field">
+          <input
+            type="text"
+            name="customer[first_name]"
+            id="RegisterForm-FirstName"
+            {% if form.first_name %}
+              value="{{ form.first_name }}"
+            {% endif %}
+            autocomplete="given-name"
+            placeholder="{{ 'customer.register.first_name' | t }}"
+          >
+          <label for="RegisterForm-FirstName">
+            {{ 'customer.register.first_name' | t }}
+          </label>
+        </div>
+
+        <span class="block w-11/12 border-t-2 border-[#c6c6c6] justify-self-center"></span>
+
+        <div class="field">
+          <input
+            type="text"
+            name="customer[last_name]"
+            id="RegisterForm-LastName"
+            {% if form.last_name %}
+              value="{{ form.last_name }}"
+            {% endif %}
+            autocomplete="family-name"
+            placeholder="{{ 'customer.register.last_name' | t }}"
+          >
+          <label for="RegisterForm-LastName">
+            {{ 'customer.register.last_name' | t }}
+          </label>
+        </div>
+      </div>
+      <div class="field-login border border-[#c6c6c6]">
+        <div class="field ">
+          <input
+            type="tel"
+            id="AddressPhone_{{ form.id }}"
+            name="address[phone]"
+            value="{{ form.phone }}"
+            autocomplete="tel"
+            placeholder="{{ 'customer.addresses.phone' | t }}"
+          >
+          <label for="AddressPhone_{{ form.id }}">{{ 'customer.addresses.phone' | t }}</label>
+        </div>
+      </div>
+      <p class="text-bodycolor text-bodysize text-dsRegular text-left py-3">
+        <span>{{ 'customer.register.mobile_number' | t }}</span>
+      </p>
+      <p class="text-primary font-dsRegular font-bold text-bodysize text-left pt-6 pb-2">
+        <span>{{ 'customer.register.sign_marketing_emails' | t }}</span>
+      </p>
+      <div class="flex items-center gap-2 mt-4 login-btm pb-2">
+        <input
+          id="sign-in-anf"
+          name="sign-in-anf"
+          type="checkbox"
+          class="bg-white border border-[#2c2a27] text-[#2c2a27] w-[25px] h-[25px] text-center"
+        >
+        <label for="sign-in-anf" class="text-[1.1rem] text-bodycolor cursor-pointer text-left">
+          <span class="font-bold">{{ 'customer.login_page.hollister' | t }}</span> <br>
+          {{ 'customer.login_page.hco_insider' | t }}
+        </label>
+      </div>
+      {% comment %}
+        <div class="flex items-center gap-2 mt-4 login-btm border-b border-divider py-6">
+          <input
+            id="sign-in-anf-kid"
+            name="sign-in-anf-kid"
+            type="checkbox"
+            class="bg-white border border-[#2c2a27] text-[#2c2a27] w-[25px] h-[25px] text-center"
+          >
+          <label for="sign-in-anf-kid" class="text-[1.1rem] text-bodycolor cursor-pointer text-left">
+            <span class="font-bold">{{ 'customer.login_page.abercrombie_kids' | t }}</span>
+            {{ 'customer.login_page.abercrombie_kids_updates' | t }}
+          </label>
+        </div>
+      {% endcomment %}
+      <span class="tnc-register float-left py-4">
+        <a href="#" class="underline">{{ 'customer.recover_password.website_terms' | t }}</a>
+        <a href="#" class="underline">{{ 'customer.recover_password.privacy_policy' | t }}</a>
+      </span>
+      <button class="w-full h-[7vh] my-4">
+        {{ 'customer.login_page.create_account' | t }}
+      </button>
+    </div>
+  {%- endform -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.main-register.name",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ]
+}
+{% endschema %}
